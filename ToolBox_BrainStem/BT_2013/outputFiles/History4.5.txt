@@ -1,0 +1,1 @@
+OPENFILE {S:\Brainstem Toolbox\BT_2013\outputFiles\sample_BMAP_ASCII1.avg}
