@@ -11,8 +11,8 @@ ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_
 
 %% ------------------- Preprocess : filter, reref, epoch, set chan positions
 indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
-hp = 1; % high-pass (Hz) (APICE)
-lp = 30; % low-pass (Hz) (APICE) 
+hp =80; % high-pass (Hz) (APICE)
+lp = 3000; % low-pass (Hz) (APICE) 
 mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; trig = {'Erg1'}; % Ref and trigger channels 
 baseline = [-99, 0] ; win_of_interest = [-0.1, 0.5] ; 
 conditions = {'STD','DEV1','DEV2'} ; 
