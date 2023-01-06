@@ -1,0 +1,40 @@
+difference wave 	BLACK
+condition STD		PURPLE
+condition DEV1		YELLOW D
+condition DEV2		ORANGE
+group young		BLUE L	
+group OLD		GREEN D
+FFR group		RED
+
+
+
+classical:
+
+BLACK 	'k' or  "#000000"	[0 0 0]   X
+RED 	'r' or 	"#FF0000"	[1 0 0]   X
+GREEN 	'g' or 	"#00FF00"	[0 1 0]
+BLEU 	'b' or 	"#0000FF"	[0 0 1]	
+CYAN 	'c' or 	"#00FFFF"	[0 1 1]
+MAGENTA 'm' or 	"#FF00FF"	[1 0 1]
+YELLOW 	'y' or 	"#FFFF00"	[1 1 0]
+
+others :
+
+BLUE D		"#0072BD"	[0 0.4470 0.7410]	
+ORANGE		"#D95319"	[0.8500 0.3250 0.0980]	 X
+YELLOW D	"#EDB120"	[0.9290 0.6940 0.1250]   X
+PURPLE		"#7E2F8E"	[0.4940 0.1840 0.5560]   X
+GREEN D	 	"#77AC30"	[0.4660 0.6740 0.1880]   X	
+BLUE L		"#4DBEEE"	[0.3010 0.7450 0.9330]   X
+RED D		"#A2142F"	[0.6350 0.0780 0.1840]
+
+personnalized:
+
+STD_color = [0.4941 0.1019 0.8863]; %purple
+DEV1_color = [1 0.7686 0]; %light orange
+DEV2_color = [1 0.4 0]; %dark orange
+DEV_colors = {DEV1_color, DEV2_color};
+DIFF_color = [0 0 0]; %black
+grpA_color = [0.2 0.2 1]; %blue
+grpB_color = [0.2 0.7765 0.2]; %green
+FFR_color = [0.8902 0 0]; %red
