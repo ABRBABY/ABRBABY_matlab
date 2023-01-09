@@ -9,28 +9,35 @@ biosig_installer_path = '/Users/annesophiedubarry/Documents/0_projects/in_progre
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
-%% ------------------- Preprocess : filter, reref, epoch, set chan positions
+%% ------------------- Preprocess : reref, epoch, set chan positions
 indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
 hp =80; % high-pass (Hz) (APICE)
 lp = 3000; % low-pass (Hz) (APICE) 
-mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; trig = {'Erg1'}; % Ref and trigger channels 
-baseline = [-99, 0] ; win_of_interest = [-0.1, 0.5] ; 
+mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; trig = {'Erg1'}; abr= {'Left','Right'};  % Ref and trigger channels 
+
+baseline = [-39, 0] ; win_of_interest = [-0.04, 0.2] ; 
+
 conditions = {'STD','DEV1','DEV2'} ; 
 eeg_elec = 1:16 ; 
 chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 overwrite = 0 ; % this option allow to overwrite (=11) or not (=0) 
-[preproc_filenames] = reref_filter_epoch(ALLEEG, indir, hp,lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite);
+[preproc_filenames] = reref_epoch_ffr(ALLEEG, indir, hp,lp, mastos, trig, abr, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite);
 
-%% ------------------- Preprocess : generate a report on rejected trials
+%% ------------------- Preprocess : Reject BAD trials 
 rej_low = -150; %150 infants; 120 adults
 rej_high = 150; %150 infants; 120 adults
 
-% Write csv file directly into the subject dir
-reject_trials_write_report(preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high) ; 
-
-%% ------------------- Preprocess : Select trials to process
+% Reject bad trials and save new .set file
 select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'balanced') ; 
 select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'unbalanced') ; 
+
+% Write csv file directly into the subject dir
+write_report_on_rejected_trials(preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high) ; 
+
+
+%% ------------------- Preprocess : Filter 
+
+
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};

@@ -18,19 +18,20 @@ baseline = [-99, 0] ; win_of_interest = [-0.1, 0.5] ;
 conditions = {'STD','DEV1','DEV2'} ; 
 eeg_elec = 1:16 ; 
 chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
-overwrite = 0 ; % this option allow to overwrite (=11) or not (=0) 
-[preproc_filenames] = reref_filter_epoch(ALLEEG, indir, hp,lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite);
+overwrite = 0 ; % this option allow to overwrite (=1) or not (=0) 
+[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, indir, hp,lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite);
 
-%% ------------------- Preprocess : generate a report on rejected trials
+%% ------------------- Preprocess : Reject BAD trials 
 rej_low = -150; %150 infants; 120 adults
 rej_high = 150; %150 infants; 120 adults
 
-% Write csv file directly into the subject dir
-reject_trials_write_report(preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high) ; 
-
-%% ------------------- Preprocess : Select trials to process
+% Reject bad trials and save new .set file
 select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'balanced') ; 
 select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'unbalanced') ; 
+
+% Write csv file directly into the subject dir
+write_report_on_rejected_trials(preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high) ; 
+
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
