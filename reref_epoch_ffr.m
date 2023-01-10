@@ -1,4 +1,4 @@
-function [out_filenames] = reref_epoch_ffr(ALLEEG, indir, hp, lp, mastos, trig, abr, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite)
+function [out_filenames] = reref_epoch_ffr(ALLEEG, indir, mastos, trig, abr, eeg_elec, baseline, win_of_interest, chan_dir, overwrite)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -9,8 +9,7 @@ function [out_filenames] = reref_epoch_ffr(ALLEEG, indir, hp, lp, mastos, trig, 
 % Reject outliers events (flaw with ergo channel)
 % Map events (with labels) 
 % Epoch
-% Reject BAD trials 
-% Filter
+
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -84,31 +83,16 @@ for jj=1:length(subjects)
     EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;
 
     % Extract epochs for HF
-    EEG = pop_epoch( EEG, {  'HF'  }, epoch_timew, 'newname', 'epochs', 'epochinfo', 'yes');
+    EEG = pop_epoch( EEG, {  'HF'  }, win_of_interest, 'newname', 'epochs', 'epochinfo', 'yes');
     
     %Remove baseline
     EEG = pop_rmbase( EEG, baseline,[]);
-
-%     
-%     %% FILTERS the data with ERPLab
-%     EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
-%     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
-%     EEG = eeg_checkset( EEG );
-% 
-% %     %% SAVE DATASET BEFORE EPOCHING
-% %     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_filtered'),'savenew', fullfile(indir,subjects{jj}, strcat(filename,'_filtered')),'gui','off');
-% %     
-%     % Extract ALL conditions epochs
-%     EEG = pop_epoch(EEG, conditions, win_of_interest, 'newname', strcat(filename,'_ALL'), 'epochinfo', 'yes');
-% 
-%     % Remove baseline
-%     EEG = pop_rmbase( EEG, baseline,[] );
 
     % Add channels information
     EEG=pop_chanedit(EEG, 'lookup',chan_dir);
 
     %% SAVE DATASET 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched'),'savenew', out_filenames{jj},'gui','off');
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
 
 end
 end
