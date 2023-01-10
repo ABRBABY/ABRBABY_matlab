@@ -1,4 +1,4 @@
-function [out_filenames] = reref_epoch_ffr(ALLEEG, indir, mastos, trig, abr, eeg_elec, baseline, win_of_interest, chan_dir, overwrite)
+function [out_filenames] = reref_epoch_ffr(ALLEEG, indir, mastos, trig, abr, eeg_elec, baseline, win_of_interest, chan_dir,rej_low,rej_high, bloc, overwrite)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -90,9 +90,15 @@ for jj=1:length(subjects)
 
     % Add channels information
     EEG=pop_chanedit(EEG, 'lookup',chan_dir);
-
+ 
     %% SAVE DATASET 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
+
+    % Reject bad trials and write a report
+    EEG = reject_trials_produce_report(out_filenames(jj), find(ismember({EEG.chanlocs.labels},'ABR')), bloc, win_of_interest, rej_low, rej_high,'FFR') ; 
+
+    %% SAVE DATASET 
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG{1}, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
 
 end
 end
