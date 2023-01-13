@@ -1,4 +1,4 @@
-function [out_filenames] = reref_filter_epoch(ALLEEG, indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite)
+function [out_filenames] = reref_filter_epoch_erp(ALLEEG, indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -21,10 +21,11 @@ function [out_filenames] = reref_filter_epoch(ALLEEG, indir, hp, lp, mastos, tri
         [~,filename,~] = fileparts(fname.name);    
 
         % Creates resulting filename
-        out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_reref_filtered_epoched')) ; 
+        out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_reref_filtered_epoched.set')) ; 
  
-        % 
-        if exist(out_filenames{jj},'file') && overwrite == 0 ; break; end
+        % Skip if subject rerefe filtered_epochs already exist and we don't
+        % want to overwrite
+        if exist(out_filenames{jj},'file') && overwrite == 0; continue; end
 
         % Select bdf file in the folder
         EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
