@@ -1,6 +1,17 @@
 function [] = select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, opt_balance)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
+%INPUTS:
+%- ALLEEG = EEGLAB whole structure
+%- preproc_filenames = list of .set filenames that have already been
+%preprocessed (filter, reref, epoch, set chan positions steps)
+%- eeg_elec = list of indices corresponding to electrodes of interest
+%- win_of_interest = window of interest for epochs
+%- rej_low = low boundary of the rejection thresholds
+%- rej_high = high boundary of the rejection thresholds
+%- opt_balance = 'balanced' for balancing number of standard with number of
+%deviants, or 'unbalanced' to keep all standards that are not rejected
+%after trial rejection
 
 % Check balance option
 if strcmp(opt_balance,'balanced')

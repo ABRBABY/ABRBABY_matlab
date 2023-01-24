@@ -32,11 +32,11 @@ rej_high = 150; %150 infants; 120 adults
 bloc = repelem(1:30,30) ; % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 
 % Reject bad trials and save new .set file
-select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, bloc, win_of_interest, rej_low, rej_high, 'balanced') ; 
-select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, bloc, win_of_interest, rej_low, rej_high, 'unbalanced') ; 
+select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'balanced') ; 
+select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'unbalanced') ; 
 
 % Write csv file directly into the subject dir
-[~] = reject_trials_produce_report(preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high,'') ; 
+[~] = reject_trials_produce_report(preproc_filenames, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
 
 
 %% ------------------- Display : 
