@@ -5,15 +5,21 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
-eeglab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/eeglab2021.1' ; 
-erplab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/erplab8.30';
-biosig_installer_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/biosig4octmat-3.8.0/biosig_installer.m' ; 
+
+name = 'EH';
+%name = 'ASD';
+
+%eeglab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/eeglab2021.1' ; 
+%erplab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/erplab8.30';
+%biosig_installer_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/biosig4octmat-3.8.0/biosig_installer.m' ; 
+
+[eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir, BT_toolbox] = script_call(name);
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
 %% ------------------- Preprocess : reref, epoch, set chan positions, reject BAD trials 
-indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
+%indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
 mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; trig = {'Erg1'}; abr= {'Left','Right'};  % Ref and trigger channels 
 baseline = [-39, 0] ; win_of_interest = [-0.04, 0.2] ; 
 eeg_elec = 1:16 ; 
@@ -63,7 +69,8 @@ for jj=1:length(out)
     fprintf(fid,'%c\n',abr_shifted);
     fclose(fid);
 
-    addpath 'C:\Users\hervé\Documents\GitHub\ABRBABY\ToolBox_BrainStem\BT_2013\programFiles';
+    %addpath 'C:\Users\hervé\Documents\GitHub\ABRBABY\ToolBox_BrainStem\BT_2013\programFiles';
+    addpath(BT_toolbox);
     bt_txt2avg(fname_out, EEG.srate, epoch_timew(1)*1000, epoch_timew(2)*1000);
 
 end
@@ -78,5 +85,5 @@ fclose(fid);
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder' ; 
+%plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder' ; 
 display_timeseries_by_condition(preproc_filenames, elec_subset, 'balanced',plot_dir) ; 

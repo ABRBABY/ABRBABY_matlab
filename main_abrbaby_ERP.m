@@ -2,15 +2,20 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
-eeglab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/eeglab2021.1' ; 
-erplab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/erplab8.30';
-biosig_installer_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/biosig4octmat-3.8.0/biosig_installer.m' ; 
+name = 'EH';
+%name = 'ASD';
+
+%eeglab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/eeglab2021.1' ; 
+%erplab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/erplab8.30';
+%biosig_installer_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/biosig4octmat-3.8.0/biosig_installer.m' ; 
+
+[eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir,~] = script_call(name);
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
 %% ------------------- Preprocess : filter, reref, epoch, set chan positions
-indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
+%indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
 hp = 1; % high-pass (Hz) (APICE)
 lp = 30; % low-pass (Hz) (APICE) 
 mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; trig = {'Erg1'}; % Ref and trigger channels 
@@ -36,5 +41,5 @@ select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, bloc, 
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder' ; 
+%plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder' ; 
 display_timeseries_by_condition(preproc_filenames, elec_subset, 'balanced',plot_dir) ; 
