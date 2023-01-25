@@ -1,5 +1,5 @@
 % % Potential things to improve : 
-
+%
 % Create an history_abr variable to append to the EEG structure to document
 % the operations and implement the overwrite option
 
