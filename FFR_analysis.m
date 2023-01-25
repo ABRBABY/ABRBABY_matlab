@@ -1,5 +1,5 @@
 function [] = FFR_analysis(indir) 
-
+% ---------------------------------------------------------
 % ERPs analysis script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
