@@ -9,7 +9,7 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-%Color for plot
+%Color for plots
 DIFF_color = [0 0 0]; %black
 FFR_color = [0.8902 0 0]; %red
 grpA_color = [0.2 0.2 1]; %blue
