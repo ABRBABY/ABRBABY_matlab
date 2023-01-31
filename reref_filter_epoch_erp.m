@@ -1,9 +1,9 @@
-function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS)
+function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, overwrite)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
 % Get OPTIONS
-[indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite]= get_OPTIONS(OPTIONS) ;
+[indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -31,7 +31,7 @@ for jj=1:length(subjects)
     [does_exist, count] = check_exist_set_params(filename, subjects{jj},OPTIONS) ; 
 
     if does_exist && overwrite == 0; continue; end
-        
+
     % Creates resulting filename
     out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_reref_filtered_epoched_RFE',num2str(count),'.set')) ; 
 
@@ -116,7 +116,7 @@ end
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir, overwrite]= get_OPTIONS(OPTIONS) 
+function [indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir]= get_OPTIONS(OPTIONS) 
 
 indir = OPTIONS.indir ;
 hp = OPTIONS.hp;
@@ -128,7 +128,6 @@ baseline = OPTIONS.baseline;
 win_of_interest = OPTIONS.win_of_interest;
 conditions = OPTIONS.conditions;
 chan_dir = OPTIONS.chan_dir;
-overwrite = OPTIONS.overwrite;
 
 end
 

@@ -2,8 +2,8 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
-% name = 'EH';
-name = 'ASD';
+name = 'EH';
+%name = 'ASD';
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir,~] = get_custom_path(name);
@@ -11,17 +11,18 @@ name = 'ASD';
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
-%% ------------------- Preprocess : filter, reref, epoch, set chan positions
+% ------------------- Preprocess : filter, reref, epoch, set chan positions
 OPTIONS.indir = indir ;
 OPTIONS.hp = 1; % high-pass (Hz) (APICE)
 OPTIONS.lp = 30; % low-pass (Hz) (APICE) 
 OPTIONS.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; OPTIONS.trig = {'Erg1'}; % Ref and trigger channels 
-OPTIONS.baseline = [-99, 0] ; OPTIONS.win_of_interest = [-0.1, 0.5] ; 
+%OPTIONS.baseline = [-99, 0] ; OPTIONS.win_of_interest = [-0.1, 0.5] ; 
+OPTIONS.baseline = [-199, 0] ; OPTIONS.win_of_interest = [-0.2, 0.5] ; 
 OPTIONS.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS.eeg_elec = 1:16 ; 
 OPTIONS.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
-OPTIONS.overwrite = 1 ; % this option allow to overwrite (=1) or not (=0) 
-[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS);
+overwrite = 0 ; % this option allow to overwrite (=1) or not (=0) 
+[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, overwrite);
 
 %% ------------------- Preprocess : Reject BAD trials 
 rej_low = -150; %150 infants; 120 adults
