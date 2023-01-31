@@ -11,7 +11,7 @@ name = 'EH';
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
-% ------------------- Preprocess : filter, reref, epoch, set chan positions
+%% ------------------- Preprocess : filter, reref, epoch, set chan positions
 OPTIONS.indir = indir ;
 OPTIONS.hp = 1; % high-pass (Hz) (APICE)
 OPTIONS.lp = 30; % low-pass (Hz) (APICE) 
