@@ -1,17 +1,20 @@
-function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, indir, mastos, trig, abr, eeg_elec, baseline, win_of_interest, chan_dir,rej_low,rej_high, bloc, overwrite)
+function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, EEG, OPTIONS, overwrite, tube_length, propag_sound, BT_toolbox)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
 %%%%%%%%% TO UPDATE %%%% this comes from old code 
 
 % This function mainly do : 
-% Select channels
-% Compute FFR and create ABR channel
-% Detect trigg
-% Reject outliers events (flaw with ergo channel)
-% Map events (with labels) 
-% Epoch
+%Check if RERBT(number).set file exists
+%Filter data
+%Compute mean activity (FFR)
+%Add tube delay to mean
+%Export FFR data into .txt file
+%Convert .txt file into .avg for BT_toolbox
+%Export timepoints from last subject
 
+% Get OPTIONS
+[indir, hp, lp, RERBT]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -19,87 +22,72 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
+%Check if RERBT(number).set files exist for all subjects
+for jj=1:length(subjects) 
+    fil = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set')));
+    if isempty(fil) ; error('_reref_epoched_FFR_RERBT%s file does not exist for subject %s', num2str(RERBT),subjects{jj}); end
+end
+
 %Loop through subjects
 for jj=1:length(subjects) 
 
+     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
+    
+    filepath = fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set'));
+    [filepath,filename,ext] = fileparts(filepath) ;
 
-    %% IMPORT
-    % Get BDF file
-    %[ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab;
-    fname= dir(fullfile(indir,subjects{jj},'*.bdf'));
-    [~,filename,~] = fileparts(fname.name);    
+    %Check if output file with selected parameters already exists
+    [does_exist, count] = check_exist_set_params(filename, subjects{jj},OPTIONS) ; 
+
+    if does_exist && overwrite == 0; continue; end
+     
+    EEG = pop_loadset(strcat(filename, ext),filepath) ;
 
     % Creates resulting filename
-    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_epoched_filtered_FFR.set')) ; 
+    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(subjects{jj}, '_RERBT',num2str(RERBT),'_filtered_FFR_F', num2str(count),'.set')) ; 
 
     % Skip if subject rerefe filtered_epochs already exist and we don't
     % want to overwrite
     if exist(out_filenames{jj},'file') && overwrite == 0; continue; end
 
     % Select bdf file in the folder
-    EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
-
-    % Find REF electrodes indices by labels 
-    ref_elec = find(ismember({EEG.chanlocs.labels},mastos)); 
-
-    % Save a first dataset in EEGLAB 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
-
-    %% RE-REF (excluding trig channel)
-    % Find TRIG electrodes indices by labels 
-    trigg_elec = find(ismember({EEG.chanlocs.labels},trig)); 
-    abr_elec = find(ismember({EEG.chanlocs.labels},abr)); 
+    %EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
     
-    % Re-reference data and rename new file
-    EEG = pop_reref(EEG, ref_elec, 'exclude',[trigg_elec,abr_elec], 'keepref','on');
-    
-    %% Compute FFR
-    % forumla : {(Left)+(Right)}/-2 = Ref - {(LA+RA)/2}
-    id_left  = find(strcmp({EEG.chanlocs.labels},'Left')) ; 
-    id_right = find(strcmp({EEG.chanlocs.labels},'Right')) ; 
-   
-    abr_signal = (EEG.data(id_left,:) + EEG.data(id_right,:))/-2 ; 
-    
-    % Replace Left channel by a new one called ABR 
-    EEG.data(id_left,:) = abr_signal ; EEG.chanlocs(id_left).labels = 'ABR' ; 
-    
-    %% Select Channels
-    EEG = pop_select( EEG, 'channel',{'ABR', 'Erg1', EEG.chanlocs(eeg_elec).labels});
-    
-    % Re-index the trigger channel after removing some channels 
-    trigg_elec = find(ismember({EEG.chanlocs.labels},trig)); 
-   
-    %% EVENTS 
-    % Extract event from trigger channel (Erg1)
-    EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
+    %Filter data
+    EEG  = pop_basicfilter(EEG,  1 , 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2 ); % GUI: 11-Apr-2022 12:47:48
+    %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'gui','off');
 
-    % Identifies outliers events (e.g. boundaries) or too close events 
-    idx_to_remove = [   find(diff([EEG.event.latency])<0.1*EEG.srate),... % minimum intretrial duration = 220 ms
-                        find(diff([EEG.event.latency])>2*EEG.srate) ];  
-    % Removes outliers events
-    EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ; 
+    %Extract mean activity (erp) and replace data
+    abr = mean(EEG.data(1,:,:),3);
+    EEG.data = abr;
 
-    % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
-    EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;
-    EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;
+    % Add tube delay (27 cm x 340 m/s ) 
+    nsample_delay = fix(EEG.srate * (tube_length / propag_sound) ) ; 
 
-    % Extract epochs for HF
-    EEG = pop_epoch( EEG, {  'HF'  }, win_of_interest, 'newname', 'epochs', 'epochinfo', 'yes');
+    abr_shifted = circshift(abr,nsample_delay) ;
     
-    %Remove baseline
-    EEG = pop_rmbase( EEG, baseline,[]);
-
-    % Add channels information
-    EEG=pop_chanedit(EEG, 'lookup',chan_dir);
+    % Create a custom history variable to keep track of OPTIONS 
+    EEG.history_f = OPTIONS ;
     
-    % Reject bad trials and write a report
-    EEG = reject_trials_produce_report(out_filenames(jj), find(ismember({EEG.chanlocs.labels},'ABR')), bloc, win_of_interest, rej_low, rej_high,'FFR') ; 
-
-    %% SAVE DATASET 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG{1}, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
-
+    %% SAVE DATASET
+    pop_newset(ALLEEG, EEG, 1, 'setname', strcat(filename,'_filtered_FFR'),'savenew', out_filenames{jj},'gui','off');
+    
+    %% Export ABR data into .txt file
+    fname_out = fullfile(filepath,strcat(subjects{jj},'_RERBT', num2str(RERBT),'_F', num2str(count),'_abr_shifted_data_HF.txt')) ;
+    fid = fopen(fname_out,'w');
+    fprintf(fid,'%c\n',abr_shifted);
+    fclose(fid);
+    
+    addpath(BT_toolbox);
+    bt_txt2avg(fname_out, EEG.srate, EEG.history_rerbt.win_of_interest(1)*1000, EEG.history_rerbt.win_of_interest(2)*1000);
 end
+
+%% Export times (from any subject : just timepoints)
+fname_out = fullfile(indir,'ABR_timepoints.txt') ;
+fid = fopen(fname_out,'w');
+fprintf(fid,'%f\n',EEG.times);
+fclose(fid);
 end
 
 
@@ -118,5 +106,49 @@ my_events = table2array(my_events);
 out_event = struct('latency', {in_event(:).latency}, ...
                 'type', (my_events(:))',...
                 'urevent', {in_event(:).urevent});
+
+end
+
+%--------------------------------------------------------------
+% FUNCTION that get OPTIONS values
+%--------------------------------------------------------------
+function [indir, hp, lp, RERBT]= get_OPTIONS(OPTIONS) 
+
+indir = OPTIONS.indir ;
+hp = OPTIONS.hp;
+lp = OPTIONS.lp;
+RERBT = OPTIONS.RERBT;
+
+end
+
+%--------------------------------------------------------------
+% FUNCTION that check if that sets of param exist 
+%--------------------------------------------------------------
+function [does_exist, count] = check_exist_set_params(filename, subject, OPTIONS)
+
+% Reads all folders that are in indir 
+d = dir(fullfile(OPTIONS.indir,subject, strcat(subject,'RERBT',num2str(OPTIONS.RERBT),'_filtered_FFR_F*')));
+% No file exists 
+if isempty(d) ; does_exist=0 ; count =1 ; return ; end
+
+for ff=1:length(d) 
+    
+    EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
+    
+    % Check if the set of param correspond to the current file
+    if isequal(EEG.history_f,OPTIONS)
+        does_exist = 1 ; 
+        tmp = regexp(d(ff).name,'F\d*','Match');
+        tmp2 =  regexp(tmp,'\d*','Match');
+        count = cell2mat(tmp2{:}); 
+        return ; 
+    end
+    
+end
+
+% At this point the set of params does not exist and a new file needs to be
+% crated (with a count increment)
+does_exist = 0 ; 
+count = length(d) +1;
 
 end
