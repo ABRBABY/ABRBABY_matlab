@@ -1,4 +1,4 @@
-function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, overwrite)
+function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, flag_sub_to_create, count)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -10,6 +10,12 @@ d = dir(indir);
 isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
+
+% Inititalize output parameter
+out_filenames = [] ; 
+
+% Only keeps subjects to process
+subjects = subjects(flag_sub_to_create) ; 
 
 %Loop through subjects
 for jj=1:length(subjects) 
@@ -23,21 +29,9 @@ for jj=1:length(subjects)
     fname= dir(fullfile(indir,subjects{jj},'*.bdf'));
     [~,filename,~] = fileparts(fname.name);    
 
-    % Verifier les fichiers existants (+suffix) 
-    % lire les variables history 
-    % verifier quelle sont differentes de celles demandé
-    % Si different +1     
-
-    [does_exist, count] = check_exist_set_params(filename, subjects{jj},OPTIONS) ; 
-
-    if does_exist && overwrite == 0; continue; end
-
     % Creates resulting filename
     out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_reref_filtered_epoched_RFE',num2str(count),'.set')) ; 
-
-    % Skip if subject rerefe filtered_epochs already exist and we don't
-    % want to overwrite
-        
+            
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
 
@@ -73,9 +67,6 @@ for jj=1:length(subjects)
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
     EEG = eeg_checkset( EEG );
 
-%     %% SAVE DATASET BEFORE EPOCHING
-%     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_filtered'),'savenew', fullfile(indir,subjects{jj}, strcat(filename,'_filtered')),'gui','off');
-%     
     % Extract ALL conditions epochs
     EEG = pop_epoch(EEG, conditions, win_of_interest, 'newname', strcat(filename,'_ALL'), 'epochinfo', 'yes');
 
