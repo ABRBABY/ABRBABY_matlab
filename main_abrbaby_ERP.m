@@ -36,9 +36,14 @@ suffix = '_reref_filtered_epoched_RFE' ;
 [preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create, count_rfe, suffix);
 
 %% ------------------- Preprocess : Reject BAD trials 
-rej_low = -150;             % 150 infants; 120 adults
-rej_high = 150;             % 150 infants; 120 adults
-bloc = repelem(1:30,30) ;   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
+rej_low = -150;                                         % 150 infants; 120 adults
+rej_high = 150;                                         % 150 infants; 120 adults
+bloc = repelem(1:30,30) ;                               % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
+
+% % Test if this set of params exists and returns the files to process and
+% % counter to use to name the saved files
+% [flag_sub_to_create, count_rbt]= test_existance_of_params_in_db(OPTIONS, suffix); 
+
 
 % Reject bad trials and save new .set file
 select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, 'balanced') ; 
