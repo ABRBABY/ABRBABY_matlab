@@ -29,15 +29,27 @@ suffix = '_reref_filtered_epoched_RFE' ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix); 
+[flag_sub_to_create, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix) ; 
 
+% If one element of the vector is 0 (a subject to create)
+if ~all(flag_sub_to_create)
+    
+    fname_txt = fullfile(OPTIONS_rfe.indir,strcat('PARAM',suffix,num2str(count_rfe),'.txt')) ;
+        
+    % If txt file does not exist -> creates it 
+    if ~exist(fname_txt)
+        writetable(struct2table(OPTIONS_rfe), fname_txt, 'Delimiter',',') ;
+    end
+    
+end
+    
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create, count_rfe, suffix);
+[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create, count_rfe, suffix) ;
 
 %% ------------------- Preprocess : Reject BAD trials 
-rej_low = -150;                                         % 150 infants; 120 adults
-rej_high = 150;                                         % 150 infants; 120 adults
+rej_low = -150 ;                                         % 150 infants; 120 adults
+rej_high = 150 ;                                         % 150 infants; 120 adults
 bloc = repelem(1:30,30) ;                               % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 
 % % Test if this set of params exists and returns the files to process and
