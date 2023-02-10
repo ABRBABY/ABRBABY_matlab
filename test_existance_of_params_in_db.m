@@ -1,4 +1,4 @@
-function [flag_sub_to_create, counter] = test_existance_of_params_in_db(OPTIONS)
+function [flag_sub_to_create, counter] = test_existance_of_params_in_db(OPTIONS, suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2023 - %80PRIME Project
 
@@ -8,15 +8,13 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-suffix = '*_reref_filtered_epoched_RFE*' ; 
-
 %Loop through subjects
 for jj=1:length(subjects) 
 
     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
 
-    [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, suffix, OPTIONS) ; 
+    [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat('*',suffix,'*'), OPTIONS) ; 
     flag_sub_to_create(jj) = ~does_exist ; 
       
 end
