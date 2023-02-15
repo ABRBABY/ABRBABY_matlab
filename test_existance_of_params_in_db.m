@@ -42,11 +42,19 @@ if isempty(d) ; does_exist=0 ; count =1 ; return ; end
 for ff=1:length(d) 
     
     EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
-    
+  
+    if isequal(suffix,'*_reref_filtered_epoched_RFE*')
+        history_name = 'RFE\d*' ;
+        history = EEG.history_rfe ;
+    elseif isequal(suffix,'*_select_trials_ST*')
+        history_name = 'ST\d*';
+        history = EEG.history_st ; 
+    end
+   
     % Check if the set of param correspond to the current file
-    if isequal(EEG.history_rfe,OPTIONS)
+    if isequal(history,OPTIONS)
         does_exist = 1 ; 
-        tmp = regexp(d(ff).name,'RFE\d*','Match');
+        tmp = regexp(d(ff).name,history_name,'Match');
         tmp2 =  regexp(tmp,'\d*','Match');
         count = str2num(cell2mat(tmp2{:})); 
         return ; 

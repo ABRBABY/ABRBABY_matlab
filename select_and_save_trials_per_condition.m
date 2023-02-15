@@ -1,33 +1,59 @@
-function [] = select_and_save_trials_per_condition(ALLEEG, preproc_filenames, eeg_elec, win_of_interest, rej_low, rej_high, opt_balance)
+function [out_filenames] = select_and_save_trials_per_condition(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 %INPUTS:
 %- ALLEEG = EEGLAB whole structure
-%- preproc_filenames = list of .set filenames that have already been
-%preprocessed (filter, reref, epoch, set chan positions steps)
-%- eeg_elec = list of indices corresponding to electrodes of interest
-%- win_of_interest = window of interest for epochs
-%- rej_low = low boundary of the rejection thresholds
-%- rej_high = high boundary of the rejection thresholds
+%- OPTIONS = rbt options
 %- opt_balance = 'balanced' for balancing number of standard with number of
 %deviants, or 'unbalanced' to keep all standards that are not rejected
 %after trial rejection
 
-% Check balance option
-if strcmp(opt_balance,'balanced')
-    STD_number = 1 ;
-elseif strcmp(opt_balance,'unbalanced')
-    STD_number = 2 ;
-else 
-    error('Unknow option : choose ''balanced'' or ''unbalanced''') ;
+%Get options
+[indir, rej_low, rej_high, RFE]= get_OPTIONS_ST(OPTIONS) ;
+
+% Reads all folders that are in indir 
+d = dir(indir); 
+isub = [d(:).isdir]; % returns logical vector if is folder
+subjects = {d(isub).name}';
+subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
+
+% Inititalize output parameter
+out_filenames = [] ; 
+
+% Only keeps subjects to process
+subjects = subjects(flag_sub_to_create) ; 
+
+%Check if RFE(number).set files exist for all subjects
+%for jj=1:length(subjects)
+for jj=1:10
+    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_filtered_epoched_RFE',num2str(RFE),'.set')));
+    if isempty(setname) ; error('_reref_filtered_epoched_RFE%s file does not exist for subject %s', num2str(RFE),subjects{jj}); end
 end
 
 % Loop though subjects
-for ii=1:length(preproc_filenames)
+%for ii=1:length(subjects)
+for ii=1:10
+    % Printout the id of the subject in console
+    fprintf(strcat(subjects{ii}, '...\n'));
+    
+    %Set rfe file to work on
+    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'))) ;
+    
+    %Get filepath
+    filepath = file_rfe.folder ;
+  
+    %Load the RFE .set file to work on
+    EEG = pop_loadset(strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'), filepath) ; 
+    
+    %Creates resulting filename
+    out_filenames{ii} = fullfile(indir,subjects{ii}, strcat(subjects{ii},suffix,num2str(count),'.set')) ; 
 
-    [filepath,filename,ext] = fileparts(preproc_filenames{ii}) ;
-
-    EEG = pop_loadset(strcat(filename,'.set'),filepath) ;
+    %Load the RFE .set file to work on
+    EEG = pop_loadset(strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'),filepath) ;
+    
+    %Get eeg_elect and win_of_interest from RFE set of parameters
+    eeg_elec = EEG.history_rfe.eeg_elec ;
+    win_of_interest = EEG.history_rfe.win_of_interest ;
 
     % Select trials per conditions
     [EEG_DEV1,target_indices1] = pop_selectevent(EEG,'type','DEV1');
@@ -42,6 +68,8 @@ for ii=1:length(preproc_filenames)
     elseif strcmp(opt_balance,'unbalanced')
         idx_std1 = setdiff(target_indices_std,begining_of_block);
         idx_std2 = setdiff(target_indices_std,begining_of_block);
+    else
+        error('Unknow option : choose ''balanced'' or ''unbalanced''') ;
     end
     
     [EEG_STD1,target_indices_std1] = pop_selectevent(EEG,'event',idx_std1);
@@ -103,14 +131,33 @@ for ii=1:length(preproc_filenames)
         end
       
     end
+    
+    % Create a custom history variable to keep track of OPTIONS in each
+    % .set saved
+    EEG_DEV1_thresh.history_st = OPTIONS ;
+    EEG_DEV2_thresh.history_st = OPTIONS ;
+    EEG_STD1_thresh.history_st = OPTIONS ;
+    EEG_STD2_thresh.history_st = OPTIONS ;
 
     % Save datasets 
-    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(filename,'_','EEG_DEV1_thresh_',opt_balance),'savenew', fullfile(filepath, strcat(filename,'_DEV1_thresh_',opt_balance)),'gui','off');
-    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(filename,'_','EEG_DEV2_thresh_',opt_balance),'savenew', fullfile(filepath, strcat(filename,'_DEV2_thresh_',opt_balance)),'gui','off');
-    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(filename,'_','EEG_STD1_thresh_',opt_balance),'savenew', fullfile(filepath, strcat(filename,'_STD1_thresh_',opt_balance)),'gui','off');
-    pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(filename,'_','EEG_STD2_thresh_',opt_balance),'savenew', fullfile(filepath, strcat(filename,'_STD2_thresh_',opt_balance)),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
 
 end
+
+end
+
+%--------------------------------------------------------------
+% FUNCTION that get OPTIONS values
+%--------------------------------------------------------------
+function [indir, rej_low, rej_high, RFE]= get_OPTIONS_ST(OPTIONS) 
+
+indir = OPTIONS.indir ;
+rej_low = OPTIONS.rej_low ;
+rej_high = OPTIONS.rej_high ;
+RFE = OPTIONS.RFE; 
 
 end
 

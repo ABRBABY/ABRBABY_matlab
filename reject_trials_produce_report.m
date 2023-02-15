@@ -18,7 +18,6 @@ for ii=1:length(preproc_filenames)
     condition = {EEG.event.type} ;
     latency = [EEG.event.latency]/EEG.srate;  
     rejected = ismember(trial_index,idx_rejected_all) ; 
-%     bloc = repelem(1:30,30) ; % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
     
     % Create table to store these information
     list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...

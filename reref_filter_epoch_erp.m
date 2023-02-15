@@ -18,7 +18,8 @@ out_filenames = [] ;
 subjects = subjects(flag_sub_to_create) ; 
 
 %Loop through subjects
-for jj=1:length(subjects) 
+%for jj=1:length(subjects) 
+for jj=1:10 
 
     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
