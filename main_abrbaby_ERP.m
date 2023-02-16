@@ -3,8 +3,8 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
-name = 'EH';
-% name = 'ASD';
+% name = 'EH';
+name = 'ASD';
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir,~] = get_custom_path(name);
