@@ -1,4 +1,4 @@
-function [out_filenames] = reref_epoch_ffr(ALLEEG, OPTIONS, bloc, overwrite)
+function [out_filenames] = reref_epoch_ffr(ALLEEG, OPTIONS,flag_sub_to_create, count,suffix,bloc)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -19,6 +19,12 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
+% Inititalize output parameter
+out_filenames = [] ; 
+
+% Only keeps subjects to process
+subjects = subjects(flag_sub_to_create) ; 
+
 %Loop through subjects
 for jj=1:length(subjects)
 
@@ -31,28 +37,12 @@ for jj=1:length(subjects)
     fname= dir(fullfile(indir,subjects{jj},'*.bdf'));
     [~,filename,~] = fileparts(fname.name);    
     
-    % Verifier les fichiers existants (+suffix) 
-    % lire les variables history 
-    % verifier quelle sont differentes de celles demandé
-    % Si different +1     
-
-    [does_exist, count] = check_exist_set_params(filename, subjects{jj},OPTIONS) ; 
-
-    if does_exist && overwrite == 0; continue; end
-    
     % Creates resulting filename
     %RERBT = Reref, Epoch, Reject Bad Trial
-    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_reref_epoched_FFR_RERBT',num2str(count),'.set')) ; 
-
-    % Skip if subject rerefe filtered_epochs already exist and we don't
-    % want to overwrite
+    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,suffix,num2str(count),'.set')) ; 
         
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
-
-    % Skip if subject rerefe filtered_epochs already exist and we don't
-    % want to overwrite
-    if exist(out_filenames{jj},'file') && overwrite == 0; continue; end
 
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
@@ -116,8 +106,8 @@ for jj=1:length(subjects)
     %% SAVE DATASET 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
 
-    % Reject bad trials and write a report
-    EEG = reject_trials_produce_report(out_filenames(jj), find(ismember({EEG.chanlocs.labels},'ABR')), bloc, win_of_interest, rej_low, rej_high,'FFR') ; 
+%     % Reject bad trials and write a report
+%     EEG = reject_trials_produce_report(out_filenames(jj), find(ismember({EEG.chanlocs.labels},'ABR')), bloc, win_of_interest, rej_low, rej_high,'FFR') ; 
 
     %% SAVE DATASET 
     %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG{1}, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'savenew', out_filenames{jj},'gui','off');
@@ -162,35 +152,35 @@ rej_high = OPTIONS.rej_high;
 
 end
 
-%--------------------------------------------------------------
-% FUNCTION that check if that sets of param exist 
-%--------------------------------------------------------------
-function [does_exist, count] = check_exist_set_params(filename, subject, OPTIONS)
-
-% Reads all folders that are in indir 
-d = dir(fullfile(OPTIONS.indir,subject, strcat(filename,'_reref_epoched_FFR_RERBT*.set')) ); 
-
-% No file exists 
-if isempty(d) ; does_exist=0 ; count =1 ; return ; end
-
-for ff=1:length(d) 
-    
-    EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
-    
-    % Check if the set of param correspond to the current file
-    if isequal(EEG.history_rerbt,OPTIONS)
-        does_exist = 1 ; 
-        tmp = regexp(d(ff).name,'RERBT\d*','Match');
-        tmp2 =  regexp(tmp,'\d*','Match');
-        count = cell2mat(tmp2{:}); 
-        return ; 
-    end
-    
-end
-
-% At this point the set of params does not exist and a new file needs to be
-% crated (with a count increment)
-does_exist = 0 ; 
-count = length(d) +1;
-
-end
+% %--------------------------------------------------------------
+% % FUNCTION that check if that sets of param exist 
+% %--------------------------------------------------------------
+% function [does_exist, count] = check_exist_set_params(filename, subject, OPTIONS)
+% 
+% % Reads all folders that are in indir 
+% d = dir(fullfile(OPTIONS.indir,subject, strcat(filename,'_reref_epoched_FFR_RERBT*.set')) ); 
+% 
+% % No file exists 
+% if isempty(d) ; does_exist=0 ; count =1 ; return ; end
+% 
+% for ff=1:length(d) 
+%     
+%     EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
+%     
+%     % Check if the set of param correspond to the current file
+%     if isequal(EEG.history_rerbt,OPTIONS)
+%         does_exist = 1 ; 
+%         tmp = regexp(d(ff).name,'RERBT\d*','Match');
+%         tmp2 =  regexp(tmp,'\d*','Match');
+%         count = cell2mat(tmp2{:}); 
+%         return ; 
+%     end
+%     
+% end
+% 
+% % At this point the set of params does not exist and a new file needs to be
+% % crated (with a count increment)
+% does_exist = 0 ; 
+% count = length(d) +1;
+% 
+% end

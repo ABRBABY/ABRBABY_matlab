@@ -1,4 +1,4 @@
-function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, EEG, OPTIONS, overwrite, tube_length, propag_sound, BT_toolbox)
+function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -14,7 +14,7 @@ function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, EEG, OPTIO
 %Export timepoints from last subject
 
 % Get OPTIONS
-[indir, hp, lp, RERBT]= get_OPTIONS(OPTIONS) ;
+[indir, hp, lp, RERBT, BT_toolbox]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -22,42 +22,39 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
+% Inititalize output parameter
+out_filenames = [] ; 
+
+% Only keeps subjects to process
+subjects = subjects(flag_sub_to_create) ; 
+
 %Check if RERBT(number).set files exist for all subjects
-for jj=1:length(subjects) 
-    fil = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set')));
-    if isempty(fil) ; error('_reref_epoched_FFR_RERBT%s file does not exist for subject %s', num2str(RERBT),subjects{jj}); end
-end
+% for jj=1:length(subjects)
+%     setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set')));
+%     if isempty(setname) ; error('_reref_epoched_FFR_RERBT%s file does not exist for subject %s', num2str(RERBT),subjects{jj}); end
+% end
 
 %Loop through subjects
-for jj=1:length(subjects) 
+for ii=1:length(subjects) 
 
      % Printout the id of the subject in console
-    fprintf(strcat(subjects{jj}, '...\n'));
+    fprintf(strcat(subjects{ii}, '...\n'));
     
-    filepath = fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set'));
-    [filepath,filename,ext] = fileparts(filepath) ;
-
-    %Check if output file with selected parameters already exists
-    [does_exist, count] = check_exist_set_params(filename, subjects{jj},OPTIONS) ; 
-
-    if does_exist && overwrite == 0; continue; end
-     
-    EEG = pop_loadset(strcat(filename, ext),filepath) ;
-
+    %Set rerbt file to work on
+    file_rerbt = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set'))) ;
+    
+    %Get filepath
+    filepath = file_rerbt.folder ;
+    
     % Creates resulting filename
-    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(subjects{jj}, '_RERBT',num2str(RERBT),'_filtered_FFR_F', num2str(count),'.set')) ; 
-
-    % Skip if subject rerefe filtered_epochs already exist and we don't
-    % want to overwrite
-    if exist(out_filenames{jj},'file') && overwrite == 0; continue; end
-
-    % Select bdf file in the folder
-    %EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
+    out_filenames{ii} = fullfile(indir,subjects{ii}, strcat(subjects{ii},suffix,num2str(count),'.set')) ; 
+    
+    %Load the RERBT .set file to work on
+    EEG = pop_loadset(strcat(subjects{ii},'_reref_epoched_FFR_RERBT',num2str(RERBT),'.set'), filepath) ; 
     
     %Filter data
     EEG  = pop_basicfilter(EEG,  1 , 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2 ); % GUI: 11-Apr-2022 12:47:48
-    %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_epoched_FFR'),'gui','off');
-
+    
     %Extract mean activity (erp) and replace data
     abr = mean(EEG.data(1,:,:),3);
     EEG.data = abr;
@@ -71,8 +68,8 @@ for jj=1:length(subjects)
     EEG.history_f = OPTIONS ;
     
     %% SAVE DATASET
-    pop_newset(ALLEEG, EEG, 1, 'setname', strcat(filename,'_filtered_FFR'),'savenew', out_filenames{jj},'gui','off');
-    
+    pop_newset(ALLEEG, EEG, 1, 'setname', strcat(subjects{ii},'_filtered_FFR'),'savenew', fullfile(filepath, strcat(subjects{ii},'_filtered_FFR','_RERBT',num2str(RERBT),'_F',num2str(count))),'gui','off');
+
     %% Export ABR data into .txt file
     fname_out = fullfile(filepath,strcat(subjects{jj},'_RERBT', num2str(RERBT),'_F', num2str(count),'_abr_shifted_data_HF.txt')) ;
     fid = fopen(fname_out,'w');
@@ -112,13 +109,13 @@ end
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [indir, hp, lp, RERBT]= get_OPTIONS(OPTIONS) 
+function [indir, hp, lp, RERBT, BT_toolbox]= get_OPTIONS(OPTIONS) 
 
 indir = OPTIONS.indir ;
 hp = OPTIONS.hp;
 lp = OPTIONS.lp;
 RERBT = OPTIONS.RERBT;
-
+BT_toolbox = OPTIONS.bt_toolbox;
 end
 
 %--------------------------------------------------------------
