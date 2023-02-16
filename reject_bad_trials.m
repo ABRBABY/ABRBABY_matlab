@@ -1,4 +1,4 @@
-function [out_filenames] = select_and_save_trials_per_condition(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix)
+function [out_filenames] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 %INPUTS:
@@ -9,7 +9,7 @@ function [out_filenames] = select_and_save_trials_per_condition(ALLEEG, OPTIONS,
 %after trial rejection
 
 %Get options
-[indir, rej_low, rej_high, RFE]= get_OPTIONS_ST(OPTIONS) ;
+[indir, rej_low, rej_high, RFE, bloc]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -25,8 +25,8 @@ subjects = subjects(flag_sub_to_create) ;
 
 %Check if RFE(number).set files exist for all subjects
 for jj=1:length(subjects)
-    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_filtered_epoched_RFE',num2str(RFE),'.set')));
-    if isempty(setname) ; error('_reref_filtered_epoched_RFE%s file does not exist for subject %s', num2str(RFE),subjects{jj}); end
+    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},RFE,'.set')));
+    if isempty(setname) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
 end
 
 % Loop though subjects
@@ -35,7 +35,7 @@ for ii=1:length(subjects)
     fprintf(strcat(subjects{ii}, '...\n'));
     
     %Set rfe file to work on
-    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'))) ;
+    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},RFE,'.set'))) ;
     
     %Get filepath
     filepath = file_rfe.folder ;
@@ -44,7 +44,7 @@ for ii=1:length(subjects)
     out_filenames{ii} = fullfile(indir,subjects{ii}, strcat(subjects{ii},suffix,num2str(count),'.set')) ; 
 
     %Load the RFE .set file to work on
-    EEG = pop_loadset(strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'),filepath) ;
+    EEG = pop_loadset(strcat(subjects{ii},RFE,'.set'),filepath) ;
     
     %Get eeg_elec and win_of_interest from RFE set of parameters
     eeg_elec = EEG.history_rfe.eeg_elec ;
@@ -129,30 +129,65 @@ for ii=1:length(subjects)
     
     % Create a custom history variable to keep track of OPTIONS in each
     % .set saved
-    EEG_DEV1_thresh.history_st = OPTIONS ;
-    EEG_DEV2_thresh.history_st = OPTIONS ;
-    EEG_STD1_thresh.history_st = OPTIONS ;
-    EEG_STD2_thresh.history_st = OPTIONS ;
+    EEG_DEV1_thresh.history_rej = OPTIONS ;
+    EEG_DEV2_thresh.history_rej = OPTIONS ;
+    EEG_STD1_thresh.history_rej = OPTIONS ;
+    EEG_STD2_thresh.history_rej = OPTIONS ;
 
+    suffix_rfe = strsplit(RFE,'_') ; 
+    
     % Save datasets 
-    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_RFE',num2str(RFE),'_ST',num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+
+    % Name of the file report 
+    fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
+    
+    % Write csv file directly into the subject dir
+    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high) ; 
 
 end
+
+end
+
+%--------------------------------------------------------------
+% FUNCTION that write a report on rejected trials. Regardless to
+% conditions) -> we re-excute pop_eegthresh on all trials 
+% (we do not save .set but the report)
+%--------------------------------------------------------------
+function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high) 
+
+     % Get indices of the trials which were rejected (without messing around with the relative indices)
+    [~,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+
+    % Extract variables of interest
+    trial_index = 1:EEG.trials;
+    trial_num = [EEG.event.urevent];
+    condition = {EEG.event.type} ;
+    latency = [EEG.event.latency]/EEG.srate;  
+    rejected = ismember(trial_index,idx_rejected_all) ; 
+    
+    % Create table to store these information
+    list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
+        'VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
+
+    %  Save this table into a csv file (use function writetable)
+    writetable(list_trial_infos,fname, 'WriteVariableNames', true) ; 
 
 end
 
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [indir, rej_low, rej_high, RFE]= get_OPTIONS_ST(OPTIONS) 
+function [indir, rej_low, rej_high, RFE, bloc]= get_OPTIONS(OPTIONS) 
 
 indir = OPTIONS.indir ;
 rej_low = OPTIONS.rej_low ;
 rej_high = OPTIONS.rej_high ;
-RFE = OPTIONS.RFE; 
+RFE = OPTIONS.RFE ; 
+bloc = OPTIONS.bloc ; 
 
 end
 

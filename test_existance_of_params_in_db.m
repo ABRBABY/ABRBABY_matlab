@@ -26,6 +26,9 @@ else
     counter = max(count) ;
 end
 
+% Write readable text file containing all OPTIONS fields (set of params)
+write_txt_file_set_params(flag_sub_to_create, counter, suffix, OPTIONS) ;
+  
 end
 
 %--------------------------------------------------------------
@@ -43,24 +46,12 @@ for ff=1:length(d)
     
     EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
   
-    if isequal(suffix,'*_reref_filtered_epoched_RFE*')
-        history_name = 'RFE\d*' ;
-        history = EEG.history_rfe ;
-    elseif isequal(suffix,'*_select_trials_ST*')
-        history_name = 'ST\d*';
-        history = EEG.history_st ; 
-    elseif isequal(suffix,'*_reref_epoched_FFR_RERBT*')
-        history_name = 'RERBT\d*';
-        history = EEG.history_rerbt ;
-    elseif isequal(suffix,'*_filtered_FFR_F*')
-        history_name = 'F\d*';
-        history = EEG.history_f ;
-    end
+    history = eval(OPTIONS.varhistory); 
    
     % Check if the set of param correspond to the current file
     if isequal(history,OPTIONS)
         does_exist = 1 ; 
-        tmp = regexp(d(ff).name,history_name,'Match');
+        tmp = regexp(d(ff).name,'\d*.set','Match');
         tmp2 =  regexp(tmp,'\d*','Match');
         count = str2num(cell2mat(tmp2{:})); 
         return ; 
@@ -71,6 +62,10 @@ end
 % At this point the set of params does not exist and a new file needs to be
 % created (with a count increment)
 does_exist = 0 ; 
-count = length(d) +1;
 
+% Get maximum counter present at the end of the filename 
+tmp = regexp(d(ff).name,'\d*.set','Match');
+tmp2 =  regexp(tmp,'\d*','Match');
+count = str2num(cell2mat(tmp2{:})) +1; 
+       
 end

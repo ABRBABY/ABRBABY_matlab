@@ -25,67 +25,35 @@ OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ;
 OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
+OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
 suffix_rfe = '_reref_filtered_epoched_RFE' ; 
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe) ; 
 
-% If one element of the vector is 1 (=a subject to create)
-if sum(flag_sub_to_create_rfe) ~= 0
-    
-    fname_txt = fullfile(OPTIONS_rfe.indir,strcat('PARAM',suffix_rfe,num2str(count_rfe),'.txt')) ;
-   
-    % If txt file does not exist -> creates it 
-    if ~exist(fname_txt)
-        writetable(struct2table(OPTIONS_rfe), fname_txt, 'Delimiter',',') ;
-%         writestruct(OPTIONS_rfe, fname_txt,"FileType", 'auto') ;
-%         tabletest = struct2table(OPTIONS_rfe);
-%         table2 = rows2vars(tabletest);
-%   
-%         fileID = fopen(fname_txt,'w+');
-%         fwrite(fileID,struct2table(OPTIONS_rfe));
-%         fclose(fileID);
-    end
-    
-end
-    
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
 [preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials 
-OPTIONS_st.indir = indir ;                             % options st for 'select trials'
-OPTIONS_st.rej_low = -150 ;                            % 150 infants; 120 adults
-OPTIONS_st.rej_high = 150 ;                            % 150 infants; 120 adults
-OPTIONS_st.RFE = 1;                                    % indicates index of rfe set of parameters to use
-bloc = repelem(1:30,30) ;                              % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
-suffix_st = '_select_trials_ST' ;
+OPTIONS_rej.indir = indir ;                             % options st for 'select trials'
+OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adults
+OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults
+OPTIONS_rej.RFE = '_reref_filtered_epoched_RFE1' ;      % indicates index of rfe set of parameters to use
+OPTIONS_rej.bloc = repelem(1:30,30) ;                              % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
+suffix_rej = '_REJ' ;
+OPTIONS_rej.varhistory = 'EEG.history_rej' ; 
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_st, count_st]= test_existance_of_params_in_db(OPTIONS_st, suffix_st) ; 
-
-% % If one element of the vector is 1 (=a subject to create)
-% if sum(flag_sub_to_create_st) ~= 0
-%     
-%     fname_txt = fullfile(OPTIONS_rst.indir,strcat('PARAM',suffix,num2str(count_st),'.txt')) ;
-%    
-%     % If txt file does not exist -> creates it 
-%     if ~exist(fname_txt)
-%         writetable(struct2table(OPTIONS_rfe), fname_txt, 'Delimiter',',') ;
-%     end
-%     
-% end
+[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej) ; 
     
 % Reject bad trials and save new .set file
-[preproc_filenames_balanced] = select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'balanced', flag_sub_to_create_st, count_st, suffix_st) ; 
-[preproc_filenames_unbalanced] = select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'unbalanced', flag_sub_to_create_st, count_st, suffix_st) ; 
+[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej) ; 
+[preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej) ; 
 
-% Write csv file directly into the subject dir
-%[~] = reject_trials_produce_report(preproc_filenames_balanced, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
-[~] = reject_trials_produce_report(preproc_filenames_balanced, bloc, '') ; 
-[~] = reject_trials_produce_report(preproc_filenames_unbalanced, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
+%%%%%%%%%%% RUNS UNTIL HERE on 2023/02/16
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
