@@ -18,8 +18,7 @@ out_filenames = [] ;
 subjects = subjects(flag_sub_to_create) ; 
 
 %Loop through subjects
-%for jj=1:length(subjects) 
-for jj=1:10 
+for jj=1:length(subjects) 
 
     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
@@ -122,50 +121,4 @@ conditions = OPTIONS.conditions;
 chan_dir = OPTIONS.chan_dir;
 
 end
-
-%--------------------------------------------------------------
-% FUNCTION that check if that sets of param exist 
-%--------------------------------------------------------------
-function [does_exist, count] = check_exist_set_params(filename, subject, OPTIONS)
-
-% Reads all folders that are in indir 
-d = dir(fullfile(OPTIONS.indir,subject, strcat(filename,'_reref_filtered_epoched_RFE*')) ); 
-
-% No file exists 
-if isempty(d) ; does_exist=0 ; count =1 ; return ; end
-
-for ff=1:length(d) 
-    
-    EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
-    
-    % Check if the set of param correspond to the current file
-    if isequal(EEG.history_rfe,OPTIONS)
-        does_exist = 1 ; 
-        tmp = regexp(d(ff).name,'RFE\d*','Match');
-        tmp2 =  regexp(tmp,'\d*','Match');
-        count = cell2mat(tmp2{:}); 
-        return ; 
-    end
-    
-end
-
-% At this point the set of params does not exist and a new file needs to be
-% crated (with a count increment)
-does_exist = 0 ; 
-count = length(d) +1;
-
-end
-% 
-% % Check if that combination pthresh/nboot exist
-% tmp(1,:) = [stat.stats(:).pthresh] ;
-% tmp(2,:) = [stat.stats(:).nboot] ;
-% baselines = [stat.stats(:).baseline] ; 
-% % All beginings of baseline
-% tmp(3,:) = baselines(1:2:end) ;
-% % All ends of baseline
-% tmp(4,:) = baselines(2:2:end) ;
-% 
-% stats_exist = sum(sum(tmp==repmat([OPTIONS.alpha ;OPTIONS.nboot ; OPTIONS.baseline(1) ; OPTIONS.baseline(2) ],1,size(tmp,2)))==4);
-
-
 

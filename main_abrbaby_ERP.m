@@ -79,11 +79,13 @@ suffix_st = '_select_trials_ST' ;
 % end
     
 % Reject bad trials and save new .set file
-select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'balanced', flag_sub_to_create_st, count_st, suffix_st) ; 
-select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'unbalanced', flag_sub_to_create_st, count_st, suffix_st) ; 
+[preproc_filenames_balanced] = select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'balanced', flag_sub_to_create_st, count_st, suffix_st) ; 
+[preproc_filenames_unbalanced] = select_and_save_trials_per_condition(ALLEEG, OPTIONS_st, 'unbalanced', flag_sub_to_create_st, count_st, suffix_st) ; 
 
 % Write csv file directly into the subject dir
-[~] = reject_trials_produce_report(preproc_filenames, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
+%[~] = reject_trials_produce_report(preproc_filenames_balanced, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
+[~] = reject_trials_produce_report(preproc_filenames_balanced, bloc, '') ; 
+[~] = reject_trials_produce_report(preproc_filenames_unbalanced, eeg_elec, bloc, win_of_interest, rej_low, rej_high,'') ; 
 
 %% ------------------- Display : 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};

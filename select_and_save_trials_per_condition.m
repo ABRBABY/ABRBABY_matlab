@@ -24,15 +24,13 @@ out_filenames = [] ;
 subjects = subjects(flag_sub_to_create) ; 
 
 %Check if RFE(number).set files exist for all subjects
-%for jj=1:length(subjects)
-for jj=1:10
+for jj=1:length(subjects)
     setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_reref_filtered_epoched_RFE',num2str(RFE),'.set')));
     if isempty(setname) ; error('_reref_filtered_epoched_RFE%s file does not exist for subject %s', num2str(RFE),subjects{jj}); end
 end
 
 % Loop though subjects
-%for ii=1:length(subjects)
-for ii=1:10
+for ii=1:length(subjects)
     % Printout the id of the subject in console
     fprintf(strcat(subjects{ii}, '...\n'));
     
@@ -42,16 +40,13 @@ for ii=1:10
     %Get filepath
     filepath = file_rfe.folder ;
   
-    %Load the RFE .set file to work on
-    EEG = pop_loadset(strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'), filepath) ; 
-    
     %Creates resulting filename
     out_filenames{ii} = fullfile(indir,subjects{ii}, strcat(subjects{ii},suffix,num2str(count),'.set')) ; 
 
     %Load the RFE .set file to work on
     EEG = pop_loadset(strcat(subjects{ii},'_reref_filtered_epoched_RFE',num2str(RFE),'.set'),filepath) ;
     
-    %Get eeg_elect and win_of_interest from RFE set of parameters
+    %Get eeg_elec and win_of_interest from RFE set of parameters
     eeg_elec = EEG.history_rfe.eeg_elec ;
     win_of_interest = EEG.history_rfe.win_of_interest ;
 
