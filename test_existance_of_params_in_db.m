@@ -49,6 +49,12 @@ for ff=1:length(d)
     elseif isequal(suffix,'*_select_trials_ST*')
         history_name = 'ST\d*';
         history = EEG.history_st ; 
+    elseif isequal(suffix,'*_reref_epoched_FFR_RERBT*')
+        history_name = 'RERBT\d*';
+        history = EEG.history_rerbt ;
+    elseif isequal(suffix,'*_filtered_FFR_F*')
+        history_name = 'F\d*';
+        history = EEG.history_f ;
     end
    
     % Check if the set of param correspond to the current file
