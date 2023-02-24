@@ -65,13 +65,13 @@ for ii=1:length(subjects)
     abr_shifted = circshift(abr,nsample_delay) ;
     
     % Create a custom history variable to keep track of OPTIONS 
-    EEG.history_f = OPTIONS ;
+    EEG.history_fbt = OPTIONS ;
     
     %% SAVE DATASET
-    pop_newset(ALLEEG, EEG, 1, 'setname', strcat(subjects{ii},'_filtered_FFR'),'savenew', fullfile(filepath, strcat(subjects{ii},'_filtered_FFR','_RERBT',num2str(RERBT),'_F',num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG, 1, 'setname', strcat(subjects{ii},'_filtered_FFR'),'savenew', fullfile(filepath, strcat(subjects{ii},'_filtered_FFR','_RERBT',num2str(RERBT),suffix,num2str(count))),'gui','off');
 
     %% Export ABR data into .txt file
-    fname_out = fullfile(filepath,strcat(subjects{jj},'_RERBT', num2str(RERBT),'_F', num2str(count),'_abr_shifted_data_HF.txt')) ;
+    fname_out = fullfile(filepath,strcat(subjects{ii},'_RERBT', num2str(RERBT),suffix, num2str(count),'_abr_shifted_data_HF.txt')) ;
     fid = fopen(fname_out,'w');
     fprintf(fid,'%c\n',abr_shifted);
     fclose(fid);
