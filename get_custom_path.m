@@ -1,6 +1,6 @@
 %% Variables needed to run the code
 
-function [eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir, BT_toolbox] = script_call(name);
+function [eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir, BT_toolbox] = get_custom_path(name)
 
 %name is the initials of the user ('EH' or 'ASD')
 
@@ -12,7 +12,7 @@ if strcmp(name,'EH')
     indir = '\\Filer\home\Invites\hervé\Mes documents\These\EEG\Data\DEVLANG_data';
     %indir = '\\Filer\home\Invites\hervé\Mes documents\These\EEG\Data\DEVLANG_DATA_NEW';
     plot_dir = '\\Filer\home\Invites\hervé\Mes documents\These\EEG\Data\png_plots_eeg_data';
-    BT_toolbox = 'C:\Users\hervé\Documents\GitHub\ABRBABY\ToolBox_BrainStem\BT_2013\programFiles';
+    BT_toolbox = '\\Filer\home\Invites\hervé\Mes documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013' ;  % bt_toolbox path 
     
 elseif strcmp(name,'ASD')
    
@@ -21,5 +21,5 @@ elseif strcmp(name,'ASD')
     erplab_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY/erplab8.30';
     indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/' ;
     plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder';
-    BT_toolbox = '';
+    BT_toolbox = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY_matlab/ToolBox_BrainStem/BT_2013';
 end
