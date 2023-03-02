@@ -6,8 +6,8 @@
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
 
-name = 'EH';
-%name = 'ASD';
+% name = 'EH';
+name = 'ASD';
 
 [eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir, BT_toolbox] = get_custom_path(name);
 
@@ -42,7 +42,7 @@ suffix_rerbt = '_reref_epoched_FFR_RERBT';
 OPTIONS_fbt.indir = indir ;
 OPTIONS_fbt.hp = 80 ;                      % high-pass (Hz) (APICE)
 OPTIONS_fbt.lp = 3000 ;                    % low-pass (Hz) (APICE)
-OPTIONS_fbt.bt_toolbox = '\\Filer\home\Invites\hervé\Mes documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013' ;  % bt_toolbox path
+OPTIONS_fbt.bt_toolbox = BT_toolbox ; 
 OPTIONS_fbt.RERBT = 1 ;                    %Set of rerbt parameters to use for filtering
 OPTIONS_fbt.varhistory = 'EEG.history_fbt' ;
 tube_length = 0.27  ; 

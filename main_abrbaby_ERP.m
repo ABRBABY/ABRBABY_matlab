@@ -3,7 +3,7 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
- name = 'EH';
+name = 'EH';
 %name = 'ASD';
 
 % This function sets custom path (either for Estelle or AnneSo)
