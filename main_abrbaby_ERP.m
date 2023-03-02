@@ -3,11 +3,18 @@
 
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
-name = 'EH';
-%name = 'ASD';
+% name = 'EH';
+% name = 'ASD';
 
+% DATA directory 
+custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
+
+indir = fullfile(custom_path,'DEVLANG_data') ;
+plot_dir = fullfile(custom_path, 'png_folder');
+ 
 % This function sets custom path (either for Estelle or AnneSo)
-[eeglab_path, biosig_installer_path, erplab_path,indir,plot_dir,~] = get_custom_path(name);
+[eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
@@ -55,7 +62,16 @@ OPTIONS_rej.varhistory = 'EEG.history_rej' ;
 
 %%%%%%%%%%% RUNS UNTIL HERE on 2023/02/16
 
-%% ------------------- Display : 
+%% ------------------- Display results
+
+% Display one participant results 
+subject = 'DVL_013_T10' ; 
+params = 'RFE1_REJ3'; 
 elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-%plot_dir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/png_folder' ; 
-display_timeseries_by_condition(preproc_filenames, elec_subset, 'balanced',plot_dir) ; 
+
+% files_to_process = ;
+
+display_timeseries_by_condition(files_to_process, elec_subset, 'balanced',plot_dir) ; 
+
+
+% Display group result 
