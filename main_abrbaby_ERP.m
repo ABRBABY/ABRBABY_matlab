@@ -65,13 +65,17 @@ OPTIONS_rej.varhistory = 'EEG.history_rej' ;
 %% ------------------- Display results
 
 % Display one participant results 
-subject = 'DVL_013_T10' ; 
-params = 'RFE1_REJ3'; 
-elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
+subjects_to_process = {'DVL_013_T10','DVL_005_T18'} ;
+% subjects_to_process = get_all_subjects(indir) ;
 
-% files_to_process = ;
+OPTIONS_disp.params = 'RFE1_REJ3'; 
+OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
+OPTIONS_disp.indir = indir ; 
+OPTIONS_disp.diff_display = 1 ; 
+OPTIONS_disp.plot_dir = plot_dir ; 
+OPTIONS_disp.balance_STD = 'unbalanced'; 
+OPTIONS_disp.ylim = [-20,20] ; 
 
-display_timeseries_by_condition(files_to_process, elec_subset, 'balanced',plot_dir) ; 
-
+display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
 % Display group result 
