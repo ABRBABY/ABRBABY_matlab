@@ -1,10 +1,16 @@
 function [] = display_individual_subjects(subjects_to_process, OPTIONS)
-% ERPs sanity check script - 
+% ERPs visualization script 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
-% diff_display : diplay difference (MMN) or not
+%OPTIONS is a structure containing:
+%params = 'RFE1_REJ1';                            % option of preprocess to consider
+%elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+%indir = indir ;                                  % directory path of files to process
+%diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
+%plot_dir = plot_dir ;                            % path to save png files of plots
+%balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+%ylim = [-20,20] ;                                % limits of y axis
 
-% params, elec_subset, opt_balance, plots_dir, diff_display
 
 %Colors for plots
 STD_color = [0.4941 0.1019 0.8863]; %purple
@@ -12,7 +18,6 @@ DEV1_color = [1 0.7686 0]; %light orange
 DEV2_color = [1 0.4 0]; %dark orange
 DEV_colors = {DEV1_color, DEV2_color};
 DIFF_color = [0 0 0]; %black
-
 
 cond_sylab = {'BA','GA'} ; 
 
