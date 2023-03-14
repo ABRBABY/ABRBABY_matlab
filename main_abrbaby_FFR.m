@@ -35,7 +35,6 @@ suffix_rerbt = '_reref_epoched_FFR_RERBT';
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rerbt, count_rerbt]= test_existance_of_params_in_db(OPTIONS_rerbt, suffix_rerbt) ; 
-flag_sub_to_create_rerbt(49) = 0;
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce
 %report
@@ -56,7 +55,6 @@ RERBT_num = 1 ;                                %Set of rerbt parameters to use f
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_fbt, count_fbt]= test_existance_of_params_in_db(OPTIONS_fbt, suffix_fbt) ; 
-flag_sub_to_create_fbt(49) = 0;
 
 %Filter epoched data and prepare input for brainstem toolbox
 [preproc_filt_filenames] = filter_and_prepare_input_brainstem(ALLEEG, OPTIONS_fbt,tube_length, propag_sound,flag_sub_to_create_fbt, count_fbt,suffix_fbt, RERBT_num);
