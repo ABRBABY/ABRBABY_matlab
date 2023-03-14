@@ -1,4 +1,4 @@
-function [out_filenames] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix)
+function [out_filenames] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix, RFE)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 %INPUTS:
@@ -9,7 +9,7 @@ function [out_filenames] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_
 %after trial rejection
 
 %Get options
-[indir, rej_low, rej_high, RFE, bloc]= get_OPTIONS(OPTIONS) ;
+[indir, rej_low, rej_high, bloc]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -181,12 +181,11 @@ end
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [indir, rej_low, rej_high, RFE, bloc]= get_OPTIONS(OPTIONS) 
+function [indir, rej_low, rej_high, bloc]= get_OPTIONS(OPTIONS) 
 
 indir = OPTIONS.indir ;
 rej_low = OPTIONS.rej_low ;
 rej_high = OPTIONS.rej_high ;
-RFE = OPTIONS.RFE ; 
 bloc = OPTIONS.bloc ; 
 
 end
