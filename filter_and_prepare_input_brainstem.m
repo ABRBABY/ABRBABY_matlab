@@ -1,4 +1,4 @@
-function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix)
+function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix, RERBT)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -14,7 +14,7 @@ function [out_filenames] = filter_and_prepare_input_brainstem(ALLEEG, OPTIONS,tu
 %Export timepoints from last subject
 
 % Get OPTIONS
-[indir, hp, lp, RERBT, BT_toolbox]= get_OPTIONS(OPTIONS) ;
+[indir, hp, lp, BT_toolbox]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -77,6 +77,7 @@ for ii=1:length(subjects)
     fclose(fid);
     
     addpath(BT_toolbox);
+    %addpath(BT_toolbox,'programFiles');
     bt_txt2avg(fname_out, EEG.srate, EEG.history_rerbt.win_of_interest(1)*1000, EEG.history_rerbt.win_of_interest(2)*1000);
 end
 
@@ -109,12 +110,11 @@ end
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [indir, hp, lp, RERBT, BT_toolbox]= get_OPTIONS(OPTIONS) 
+function [indir, hp, lp, BT_toolbox]= get_OPTIONS(OPTIONS) 
 
 indir = OPTIONS.indir ;
 hp = OPTIONS.hp;
 lp = OPTIONS.lp;
-RERBT = OPTIONS.RERBT;
 BT_toolbox = OPTIONS.bt_toolbox;
 end
 
