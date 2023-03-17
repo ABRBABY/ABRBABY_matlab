@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-%custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
- custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+%  custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder');
@@ -58,15 +58,12 @@ OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 [preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
-%%%%%%%%%%% RUNS UNTIL HERE on 2023/02/16
-
-%% ------------------- Display results
-
+%% ------------------- Display results at individual level
 % Display one participant results 
 subjects_to_process = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
-OPTIONS_disp.params = 'RFE1_REJ1';                            % option of preprocess to consider
+OPTIONS_disp.params = 'RFE1_REJ2';                            % option of preprocess to consider
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
@@ -76,8 +73,31 @@ OPTIONS_disp.ylim = [-20,20] ;                                % limits of y axis
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
-% Display group result 
-%OPTIONS_group.groups_labels = {};
 
-%display_group_comparison(subjects_to_process, OPTIONS_group)
-%%%TODO !!
+%% ------------------- Display results at GROUP level
+% Display one participant results 
+% subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
+% subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
+suffix1 = {'_T3','_T6','_T8','_T10'};
+suffix2  = {'_T18','_T24'};
+
+subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
+subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
+
+OPTIONS_dispg.params = 'RFE1_REJ2';                            % option of preprocess to consider
+OPTIONS_dispg.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+OPTIONS_dispg.indir = indir ;                                  % directory path of files to process
+OPTIONS_dispg.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
+OPTIONS_dispg.plot_dir = plot_dir ;                            % path to save png files of plots
+OPTIONS_dispg.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+OPTIONS_dispg.ylim = [-20,20] ;                                % limits of y axis
+
+% Filter the subjects with trial rejection criteria for the two groups 
+% Get files path (avec les bons params)
+
+% display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
+
+% subjects = filter_subjects_based_rejection(indir,0.2); 
+
+
+%display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_group)
