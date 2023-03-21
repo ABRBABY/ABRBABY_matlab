@@ -38,7 +38,7 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg
 
 %% Display : DEV1
 %--------------------------------------------------------------------------
@@ -113,7 +113,7 @@ display_one_group(grpB,OPTIONS,'18-24 mo');
 
 % Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
 
-
+%% Function to display group DEV, STD and MMN
 function [] = display_one_group(grp,OPTIONS,grp_label)
 
 mean_STD_grp = (grp.STD1_avg + grp.STD2_avg) / 2 ; 
@@ -128,7 +128,7 @@ OPTIONS.color =     {   [147,112,219]/255,...   % Purple
                         [255,215,0]/255,...     % Yellow
                         [0,0,0]} ;              % Black
                     
-OPTIONS.legend =    {   sprintf('STD BA/GA/ %s \n %d',grp_label,size(mean_STD_grp,1)),...
+OPTIONS.legend =    {   sprintf('STD BA/GA/ %s \n n= %d',grp_label,size(mean_STD_grp,1)),...
                         sprintf('DEV BA/GA/ %s \n n= %d',grp_label,size(mean_DEV_grp,1)),...
                         sprintf('MMN BA/GA/ %s \n n= %d',grp_label,size(mean_MMN_grp,1))} ; 
                     
