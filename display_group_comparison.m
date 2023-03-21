@@ -116,8 +116,6 @@ display_one_group(grpB,OPTIONS,'18-24 mo');
 
 function [] = display_one_group(grp,OPTIONS,grp_label)
 
-%% Display : GroupA
-%--------------------------------------------------------------------------
 mean_STD_grp = (grp.STD1_avg + grp.STD2_avg) / 2 ; 
 mean_DEV_grp = (grp.DEV1_avg + grp.DEV2_avg) / 2 ; 
 mean_MMN_grp = mean_DEV_grp - mean_STD_grp ; 
