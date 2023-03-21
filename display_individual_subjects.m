@@ -2,14 +2,14 @@ function [] = display_individual_subjects(subjects_to_process, OPTIONS)
 % ERPs visualization script 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
-%OPTIONS is a structure containing:
-%params = 'RFE1_REJ1';                            % option of preprocess to consider
-%elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
-%indir = indir ;                                  % directory path of files to process
-%diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
-%plot_dir = plot_dir ;                            % path to save png files of plots
-%balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
-%ylim = [-20,20] ;                                % limits of y axis
+% OPTIONS is a structure containing:
+% params = 'RFE1_REJ1';                            % option of preprocess to consider
+% elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+% indir = indir ;                                  % directory path of files to process
+% diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
+% plot_dir = plot_dir ;                            % path to save png files of plots
+% balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+% ylim = [-20,20] ;                                % limits of y axis
 
 
 %Colors for plots
@@ -40,51 +40,26 @@ for ss=1:length(subjects_to_process)
         % Create figure for one condition (e.g. DEV1)
         figure('Name',strcat('Subject :',subjects_to_process{ss},' | Condition :',strcat('DEV',num2str(cc))),'Units','normalized','Position',[0,0,1,1]);
 
-        % Compute grand average over one electrode
-        grd_STD = mean(EEG_STD.data,3) ;
-        grd_DEV = mean(EEG_DEV.data,3) ;
-        grd_DIFF = grd_DEV - grd_STD ;
-                
-        for elec_letter=1:size(OPTIONS.elec_subset,1)
         
-            for elec_numb=1:size(OPTIONS.elec_subset,2)
-                
-                hAxes = subplot(size(OPTIONS.elec_subset,1),size(OPTIONS.elec_subset,2),nfig) ;
-                nfig = nfig +1 ;
-                
-                % Find index of electrode to display
-                idx_elec = find(ismember({EEG_DEV.chanlocs.labels},OPTIONS.elec_subset(elec_letter,elec_numb))) ;
-               
-                % Plot timeseries
-                plot(EEG_STD.times,grd_STD(idx_elec,:),'Color', STD_color,'Linewidth',1.5); hold on ;set(gca,'YDir','reverse') ;
-                plot(EEG_STD.times,grd_DEV(idx_elec,:),'Color',DEV_colors{cc},'Linewidth',1.5);  hold on; set(gca,'YDir','reverse') ;
-                plot(EEG_STD.times,grd_DIFF(idx_elec,:),'Color',DIFF_color,'Linewidth',1.5);  hold on; set(gca,'YDir','reverse') ;
-                
-                % Plot transparent halo (+-mad)
-                plotHaloPatchSEM(hAxes, EEG_STD.times, squeeze(EEG_STD.data(idx_elec,:,:)), STD_color*255) ;
-                plotHaloPatchSEM(hAxes, EEG_DEV.times, squeeze(EEG_DEV.data(idx_elec,:,:)), DEV_colors{cc}*255);
-                
-                % Adjust scales (y-axis and x-axis) (transform in milliseconds)
-                xlim([EEG_STD.xmin, EEG_STD.xmax]*1000); ylim(OPTIONS.ylim) ; grid on ;
-                
-                % Add label of electrode in title 
-                title(OPTIONS.elec_subset(elec_letter,elec_numb));
-                
-                % Display labels
-                xlabel('Times (ms)'); ylabel('uV'); set(hAxes,'Fontsize',12);
-                
-            end
-            
-            % Legend : Add one single legend for 6 plots
-            fig = gcf; fig.Position(3) = fig.Position(3) + 250;
-            Lgnd = legend('STD (/DA/)',sprintf('DEV (/%s/)',cond_sylab{cc}),sprintf('DEV-STD (/%s/)',cond_sylab{cc}),'Location','bestoutside');
-            Lgnd.Position(1) = 0.06; Lgnd.Position(2) = 0.8;
-            
-            % Title : Add a single title for 6 plots
-            sgtitle([strcat('Subject -> ',subjects_to_process{ss},' | Condition ->',strcat('DEV/STD',num2str(cc))),' (' ,OPTIONS.balance_STD,' number of STDs)'],'Interpreter', 'None', 'Fontsize', 16, 'FontWeight', 'bold');
-              
-        end
-
+        % Compute grand average over one electrode
+        signals =       {EEG_STD.data,  EEG_DEV.data,   mean(EEG_DEV.data,3)- mean(EEG_STD.data,3)};
+        OPTIONS.color = {STD_color,     DEV_colors{cc}, DIFF_color} ; 
+        
+        % Get indices of electrodes in subset
+        [sharedvals,idxA,idxB] = intersect({EEG_STD.chanlocs.labels}, OPTIONS.elec_subset(:),'stable') ; 
+        [~,id1,id2] = intersect(OPTIONS.elec_subset(:), sharedvals,'stable') ;
+        OPTIONS.elec_indices = reshape(idxA(id2),size(OPTIONS.elec_subset)) ;
+        
+        OPTIONS.vTime = EEG_STD.times; 
+        OPTIONS.xlim = [EEG_STD.xmin, EEG_STD.xmax]*1000 ;  
+        OPTIONS.legend{1} = 'STD (/DA/)' ; 
+        OPTIONS.legend{2} = sprintf('DEV (/%s/)',cond_sylab{cc}) ;
+        OPTIONS.legend{3} = sprintf('DEV-STD (/%s/)',cond_sylab{cc}) ; 
+        OPTIONS.title = [strcat('Subject -> ',subjects_to_process{ss},' | Condition ->',strcat('DEV/STD',num2str(cc))),' (' ,OPTIONS.balance_STD,' number of STDs)'] ; 
+        
+        % Call visualisation function (grids with electrode subset) 
+        plot_electrodes_subset(signals,OPTIONS) ; 
+        
         % Save data in vectoriel in subject folder
         out_fname = fullfile(OPTIONS.indir,subjects_to_process{ss},strrep(fname_DEV.name,'.set','.svg'));
         print('-dsvg', out_fname);
