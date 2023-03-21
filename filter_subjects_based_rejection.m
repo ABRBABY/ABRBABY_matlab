@@ -1,15 +1,8 @@
-function [subjects] = filter_subjects_based_rejection(indir, thresh) 
+function [subjects] = filter_subjects_based_rejection(subjects, thresh, OPTIONS) 
 % Filters subjects depending on rejection rate threshold and returns list
 % of kept subjects for group analyses.
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
-suffix =  '_low_-150_high_150infos_trials.csv';
-
-% Reads all folders that are in indir 
-d = dir(indir); 
-isub = [d(:).isdir]; % returns logical vector if is folder
-subjects = {d(isub).name}';
-subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
 %Export trial rejection information for all participants
 std_rejected = zeros(size(subjects));
@@ -17,17 +10,25 @@ dev1_rejected = zeros(size(subjects));
 dev2_rejected = zeros(size(subjects));
 
 %Loop through subjects
-for jj=1:length(subjects)
-    %Get individual .csv file with rejected trials information
-    csv_name= fullfile(indir,subjects{jj},strcat(subjects{jj}, suffix));
+for ss=1:length(subjects)
+
+     %Get the subject .csv file with rejected trials information 
+    tmp = dir(fullfile(OPTIONS.indir, subjects{ss},strcat(subjects{ss},'*',OPTIONS.params,'.csv'))) ; 
+
     %Open for reading
-    temp = readtable(csv_name);
+    temp = readtable(fullfile(tmp.folder, tmp.name));
     
-    std_rejected(jj) =  sum((temp.rejected==1)&strcmp(temp.condition,'STD'));
-    dev1_rejected(jj) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV1'));
-    dev2_rejected(jj) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV2'));
+    std_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'STD'));
+    dev1_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV1'));
+    dev2_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV2'));
 end
 
-subjects = subjects((std_rejected+dev1_rejected+dev2_rejected)/height(temp)<thresh);
+not_rejected = (std_rejected+dev1_rejected+dev2_rejected)/height(temp)<thresh ; 
+
+if sum(not_rejected ==0) 
+    fprintf(sprintf('\nSubjects rejected : %s\n',subjects{not_rejected==0}));
+end
+
+subjects = subjects(not_rejected);
 
 end
