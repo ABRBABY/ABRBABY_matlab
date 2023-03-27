@@ -7,13 +7,13 @@ for loopnum = 1:length(subjects) %for each subject
     %dimensions datasets (.set) output (average) =  subjects x channels x timepoints
     
     
-    [STD1_subj(loopnum,:,:), timepoints, labels, xlim]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD1*',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
+    [STD1_subj(loopnum,:,:), timepoints, labels, xlim]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD1*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
     
-    [STD2_subj(loopnum,:,:),~,~]   = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD2*',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
+    [STD2_subj(loopnum,:,:),~,~]   = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD2*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
 
-    [DEV1_subj(loopnum,:,:),~,~]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*DEV1*',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
+    [DEV1_subj(loopnum,:,:),~,~]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*DEV1*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
     
-    [DEV2_subj(loopnum,:,:),~,~]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*DEV2*',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
+    [DEV2_subj(loopnum,:,:),~,~]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*DEV2*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'.set'))) ; 
 
 end
 
