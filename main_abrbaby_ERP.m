@@ -23,10 +23,10 @@ OPTIONS_rfe.hp = 1;                                         % high-pass (Hz) (AP
 OPTIONS_rfe.lp = 30;                                        % low-pass (Hz) (APICE) 
 OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; 
 OPTIONS_rfe.trig = {'Erg1'};                                % Ref and trigger channels 
-OPTIONS_rfe.baseline = [-99, 0] ; 
-OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
-%OPTIONS_rfe.baseline = [-199, 0] ; 
-%OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
+%OPTIONS_rfe.baseline = [-99, 0] ; 
+%OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
+OPTIONS_rfe.baseline = [-199, 0] ; 
+OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
 OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
@@ -47,7 +47,7 @@ OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adult
 OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
 OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 suffix_rej = '_REJ' ;
-RFE_num = '_reref_filtered_epoched_RFE1' ;              % set of RFE parameters to use for this step
+RFE_num = '_reref_filtered_epoched_RFE2' ;              % set of RFE parameters to use for this step
 OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
 
 % Test if this set of params exists and returns the files to process and
@@ -65,16 +65,18 @@ end
 [preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
 %% ------------------- Display results at individual level
-OPTIONS_disp.params = 'RFE1_REJ1';                            % option of preprocess to consider
-OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+OPTIONS_disp.params = 'RFE2_REJ1';                            % option of preprocess to consider
+%OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
 OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
-OPTIONS_disp.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+OPTIONS_disp.balance_STD = 'balanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp.ylim = [-20,20] ;                                % limits of y axis
 
 % Display one participant results 
-subjects_to_process = {'DVL_005_T18'} ;
+% subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
+subjects_to_process = {'DVL_003_T10'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
