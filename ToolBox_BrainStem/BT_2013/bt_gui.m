@@ -743,7 +743,7 @@ if size(xaxis)~=size(Qsignal);
 end
 
 
-plot(h, xax is, Qsignal, 'k'), ylabel(h,'�V'), xlabel(h,'ms') % plot quiet
+plot(h, xaxis, Qsignal, 'k'), ylabel(h,'µV'), xlabel(h,'ms') % plot quiet
 MaxAmp = max(max(y.signal(:,1)),abs(min(y.signal(:,1)))); % find max voltage
 MaxAmp = ceil(MaxAmp.*10)/10; % round up nearest .1 �V
 ylim(h, [-MaxAmp MaxAmp])
