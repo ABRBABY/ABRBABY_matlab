@@ -23,8 +23,8 @@ OPTIONS.xlim = xlim ;
 %% First display : STD
 %--------------------------------------------------------------------------
 
-% Estelle : la permutation (ci-dessous) sert à visualiser la variance au travers du nb de
-% participants (on change par rapport à l'appel avec la marice des essais : les essais se trouve dans la dimension 3)
+% La permutation (ci-dessous) sert à visualiser la variance au travers du nb de
+% participants (on change par rapport à l'appel avec la matrice des essais : les essais se trouve dans la dimension 3)
 
 signals =           {   permute(cat(1,grpA.STD1_avg,grpA.STD2_avg),[2,3,1]),...
                         permute(cat(1,grpB.STD1_avg,grpB.STD2_avg),[2,3,1])} ; 
@@ -38,7 +38,9 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('group_display_STD_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_STD_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : DEV1
 %--------------------------------------------------------------------------
@@ -53,7 +55,9 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('group_display_DEV1_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_DEV1_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : DEV2
 %--------------------------------------------------------------------------
@@ -68,7 +72,9 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('group_display_DEV2_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_DEV2_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : MMN DEV1
 %--------------------------------------------------------------------------
@@ -83,8 +89,9 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
-
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('group_display_MMN1_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_MMN1_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : MMN DEV2
 %--------------------------------------------------------------------------
@@ -99,40 +106,98 @@ figure('Units','normalized','Position',[0,0,1,1]) ;
 % Call visualisation function (grids with electrode subset) 
 plot_electrodes_subset(signals,OPTIONS) ; 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('group_display_MMN2_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_MMN2_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
-%% Display : GroupA
+%% Display : GroupA - DEV1 (/BA/)
 %--------------------------------------------------------------------------
-display_one_group(grpA,OPTIONS,'6-10 mo'); 
+display_one_group(grpA,1,OPTIONS,'6-10 mo'); 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
-%% Display : GroupB
+%% Display : GroupA - DEV2 (/GA/)
 %--------------------------------------------------------------------------
-display_one_group(grpB,OPTIONS,'18-24 mo');
+display_one_group(grpA,2,OPTIONS,'6-10 mo'); 
 
-% Ici : Estelle -> todo rajouter 1 ligne pour sauver le svg 
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
-%% Function to display group DEV, STD and MMN
-function [] = display_one_group(grp,OPTIONS,grp_label)
+%% Display : GroupA - mean(DEV1+DEV2) (/BA/ and /GA/)
+%--------------------------------------------------------------------------
+display_one_group(grpA,3,OPTIONS,'6-10 mo'); 
+
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+
+%% Display : GroupB - DEV1 (/BA/)
+%--------------------------------------------------------------------------
+display_one_group(grpB,1,OPTIONS,'18-24 mo'); 
+
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+
+%% Display : GroupB - DEV2 (/GA/)
+%--------------------------------------------------------------------------
+display_one_group(grpB,2,OPTIONS,'18-24 mo'); 
+
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+
+%% Display : GroupB - mean(DEV1+DEV2) (/BA/ and /GA/)
+%--------------------------------------------------------------------------
+display_one_group(grpB,3,OPTIONS,'18-24 mo'); 
+
+% Save figure in svg + png
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+
+
+%--------------------------------------------------------------
+% FUNCTION that displays STD, DEV and MMN at group level
+%--------------------------------------------------------------
+
+function [] = display_one_group(grp,cond_num,OPTIONS,grp_label)
+
+cond.label = {'/BA/', '/GA/', '/BA/-/GA/'} ;
+cond.colors = {[255,215,0]/255,[255,130,0]/255,[255,0,255]/255} ;
 
 mean_STD_grp = (grp.STD1_avg + grp.STD2_avg) / 2 ; 
 mean_DEV_grp = (grp.DEV1_avg + grp.DEV2_avg) / 2 ; 
 mean_MMN_grp = mean_DEV_grp - mean_STD_grp ; 
 
-signals =           {   permute(mean_STD_grp,[2,3,1]),...
-                        permute(mean_DEV_grp,[2,3,1]),...
-                        permute(mean_MMN_grp,[2,3,1])};
+STD_options = {grp.STD1_avg, grp.STD2_avg,mean_STD_grp} ;
+DEV_options = {grp.DEV1_avg, grp.DEV2_avg,mean_DEV_grp} ;
+MMN_options = {grp.DEV1_avg-grp.STD1_avg, grp.DEV2_avg-grp.STD2_avg,mean_MMN_grp} ;
+
+color_dev = cond.colors{cond_num} ;
+STD = STD_options{cond_num} ;
+DEV = DEV_options{cond_num} ;
+MMN = MMN_options{cond_num} ;
+
+signals =           {   permute(STD,[2,3,1]),...
+                        permute(DEV,[2,3,1]),...
+                        permute(MMN,[2,3,1])};
                     
 OPTIONS.color =     {   [147,112,219]/255,...   % Purple
-                        [255,215,0]/255,...     % Yellow
+                        color_dev,...           % Yellow, Orange or Pink
                         [0,0,0]} ;              % Black
                     
+OPTIONS.legend =    {   sprintf('STD /DA/ %s \n %d',grp_label,size(STD,1)),...
+                        sprintf('DEV %s %s \n n= %d',cond.label{cond_num},grp_label,size(DEV,1)),...
+                        sprintf('MMN to %s %s \n n= %d',cond.label{cond_num},grp_label,size(MMN,1))} ; 
+
 OPTIONS.legend =    {   sprintf('STD BA/GA/ %s \n n= %d',grp_label,size(mean_STD_grp,1)),...
                         sprintf('DEV BA/GA/ %s \n n= %d',grp_label,size(mean_DEV_grp,1)),...
                         sprintf('MMN BA/GA/ %s \n n= %d',grp_label,size(mean_MMN_grp,1))} ; 
                     
-OPTIONS.title = 	sprintf('MMN for group %so | %s number of STD',grp_label,OPTIONS.balance_STD) ; 
+OPTIONS.title = 	sprintf('MMN %s for group %s | %s number of STD',cond.label{cond_num},grp_label,OPTIONS.balance_STD) ; 
 
 % Create figure 
 figure('Units','normalized','Position',[0,0,1,1]) ; 

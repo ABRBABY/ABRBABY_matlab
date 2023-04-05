@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-%  custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+%custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+ custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder');
@@ -53,35 +53,44 @@ OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej) ; 
-    
+
+% When current REJ set of parameter as been run on another RFE set or
+% parameters, needs to check for the existance of RFE_REJ combination
+if sum(flag_sub_to_create_rej) == 0
+    [flag_sub_to_create_rej]= test_existance_of_combination(OPTIONS_rej,flag_sub_to_create_rej, count_rej,RFE_num,suffix_rej) ; 
+end
+
 % Reject bad trials and save new .set file
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 [preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
 %% ------------------- Display results at individual level
-OPTIONS_disp.params = 'RFE1_REJ2';                            % option of preprocess to consider
-OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+OPTIONS_disp.params = 'RFE2_REJ1';                            % option of preprocess to consider
+%OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
+OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
 OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
-OPTIONS_disp.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+OPTIONS_disp.balance_STD = 'balanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp.ylim = [-20,20] ;                                % limits of y axis
 
 % Display one participant results 
-subjects_to_process = {'DVL_005_T18'} ;
+% subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
+subjects_to_process = {'DVL_003_T10'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
 
 %% ------------------- Display results at GROUP level
-OPTIONS_disp_contrast.params = 'RFE1_REJ2';                            % option of preprocess to consider
+OPTIONS_disp_contrast.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
-OPTIONS_disp_contrast.plot_dir = plot_dir ;                            % path to save png files of plots
-OPTIONS_disp_contrast.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
-OPTIONS_disp_contrast.ylim = [-10, 10] ;                                % limits of y axis
+OPTIONS_disp_contrast.balance_STD = 'balanced';                      % 'balanced' or 'unbalanced' number of STD
+OPTIONS_disp_contrast.ylim = [-10, 10] ;                               % limits of y axis
+OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
+OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;      % path to save svg files of plots
 
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
@@ -93,7 +102,7 @@ subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
 subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
 
 % Remove subjects based on number of trial rejected 
-thresh = 1;
+thresh = 0.20;
 subjects_to_process_grp1 = filter_subjects_based_rejection(subjects_to_process_grp1, thresh, OPTIONS_disp_contrast) ;
 subjects_to_process_grp2 = filter_subjects_based_rejection(subjects_to_process_grp2, thresh, OPTIONS_disp_contrast) ;
 
