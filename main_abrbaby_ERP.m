@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-%custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
- custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+%  custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder');
@@ -25,7 +25,7 @@ OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};
 OPTIONS_rfe.trig = {'Erg1'};                                % Ref and trigger channels 
 %OPTIONS_rfe.baseline = [-99, 0] ; 
 %OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
-OPTIONS_rfe.baseline = [-199, 0] ; 
+OPTIONS_rfe.baseline = [-99, 0] ; 
 OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
 OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS_rfe.eeg_elec = 1:16 ; 
@@ -35,7 +35,7 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe) ; 
+[flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
@@ -52,13 +52,7 @@ OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej) ; 
-
-% When current REJ set of parameter as been run on another RFE set or
-% parameters, needs to check for the existance of RFE_REJ combination
-if sum(flag_sub_to_create_rej) == 0
-    [flag_sub_to_create_rej]= test_existance_of_combination(OPTIONS_rej,flag_sub_to_create_rej, count_rej,RFE_num,suffix_rej) ; 
-end
+[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, '_RFE2') ; 
 
 % Reject bad trials and save new .set file
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
