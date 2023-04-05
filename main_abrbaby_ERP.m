@@ -70,8 +70,8 @@ OPTIONS_disp.ylim = [-20,20] ;                                % limits of y axis
 
 % Display one participant results 
 % subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
-subjects_to_process = {'DVL_003_T10'} ;
-% subjects_to_process = get_all_subjects(indir) ;
+% subjects_to_process = {'DVL_003_T10'} ;
+subjects_to_process = get_all_subjects(indir) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
