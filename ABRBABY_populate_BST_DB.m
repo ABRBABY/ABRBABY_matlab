@@ -108,10 +108,10 @@ for cc=1:length(Conditions)
 end
 
 % Subtract DEV1-STD1
-% Process: Difference: A-B
-% sFiles = bst_process('CallProcess', 'process_diff_ab', sFiles, sFiles2);A
+sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV1')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD1')));
 
 % Subtract DEV2-STD2
+sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV2')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD2')));
 
 % Save and display report
 ReportFile = bst_report('Save', sFiles);
@@ -119,4 +119,15 @@ bst_report('Open', ReportFile);
 % bst_report('Export', ReportFile, ExportDir);
 
 end
+
+cond1= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     'DEV1-STD1') ; 
+cond2= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     'DEV2-STD2') ; 
+
+% Process: Average: By folder (grand average)
+sFiles = bst_process('CallProcess', 'process_average', [cond1,cond2], [], ...
+    'avgtype',       4, ...  % By folder (grand average)
+    'avg_func',      1, ...  % Arithmetic average:  mean(x)
+    'weighted',      0, ...
+    'keepevents',    0);
+    
 end
