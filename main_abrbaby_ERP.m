@@ -47,7 +47,7 @@ OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adult
 OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
 OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 suffix_rej = '_REJ' ;
-RFE_num = '_reref_filtered_epoched_RFE2' ;              % set of RFE parameters to use for this step
+RFE_num = '_reref_filtered_epoched_RFE1' ;              % set of RFE parameters to use for this step
 OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
 
 % Test if this set of params exists and returns the files to process and
