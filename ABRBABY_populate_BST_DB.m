@@ -107,6 +107,12 @@ for cc=1:length(Conditions)
 
 end
 
+% Subtract DEV1-STD1
+% Process: Difference: A-B
+% sFiles = bst_process('CallProcess', 'process_diff_ab', sFiles, sFiles2);A
+
+% Subtract DEV2-STD2
+
 % Save and display report
 ReportFile = bst_report('Save', sFiles);
 bst_report('Open', ReportFile);

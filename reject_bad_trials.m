@@ -100,29 +100,19 @@ for ii=1:length(subjects)
         
         % If nubmber of STD1 > number of DEV1 : delete random STD preceding missing DEV1
         if length(EEG_DEV1_thresh.event)<length(EEG_STD1_thresh.event)
-            %Find indices of rejected DEV1 in the 900 trials referential
-            list_of_rej_dev1 = target_indices1(idx_dev1_rej);
-            %Select random indices amont the rejected DEV1
-            random_std1_to_remove = randsample(list_of_rej_dev1-1,size(idx_dev1_rej,2)-size(idx_std1_rej,2));
-            %Remove STD corresponding to rejected DEV1
-            idx_std_already_included = setdiff(target_indices_std1, target_indices_std1(idx_std1_rej)) ;
-            new_list_of_std1 = setdiff(idx_std_already_included,random_std1_to_remove);
+            % Removes randomly the number of STD exceeding the number of DEV
+            idx_to_keep = randperm(length(EEG_STD1_thresh.event), length(EEG_DEV1_thresh.event)) ; 
             %Modify EEG struct
-            [EEG_STD1_thresh,~] = pop_selectevent(EEG,'event',[new_list_of_std1]);
+            [EEG_STD1_thresh,~] = pop_selectevent(EEG,'event',[target_indices1(idx_to_keep)]);
         end
         
         % If nubmber of STD2 > number of DEV2 : delete random STD preceding
         % missing DEV2
         if length(EEG_DEV2_thresh.event)<length(EEG_STD2_thresh.event)
-            %Find indices of rejected DEV1 in the 900 trials referential
-            list_of_rej_dev2 = target_indices2(idx_dev2_rej);
-            %Select random indices amont the rejected DEV1
-            random_std2_to_remove = randsample(list_of_rej_dev2-1,size(idx_dev2_rej,2)-size(idx_std2_rej,2));
-            %Remove STD corresponding to rejected DEV1
-            idx_std_already_included = setdiff(target_indices_std2, target_indices_std2(idx_std2_rej)) ;
-            new_list_of_std2 = setdiff(idx_std_already_included,random_std2_to_remove);
+            % Removes randomly the number of STD exceeding the number of DEV
+            idx_to_keep = randperm(length(EEG_STD2_thresh.event), length(EEG_DEV2_thresh.event)) ;            
             %Modify EEG struct
-            [EEG_STD2_thresh,~] = pop_selectevent(EEG,'event',[new_list_of_std2]);
+            [EEG_STD2_thresh,~] = pop_selectevent(EEG,'event',[target_indices2(idx_to_keep)]);   
         end
       
     end
