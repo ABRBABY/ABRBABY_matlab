@@ -1,14 +1,14 @@
 function [] = FFR_analysis(subjects, OPTIONS) 
 % ERPs analysis script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
+% 
+% OPTIONS.param = '_RERBT1_FBT1';
+% grpA.suffix = {'_T3','_T6','_T8','_T10'};
+% grpB.suffix = {'_T18','_T24'};
+% OPTIONS.groups = {grpA, grpB} ;
 
-<<<<<<< Updated upstream
-=======
-%OPTIONS.param = '_RERBT1_FBT1';
->>>>>>> Stashed changes
-grpA.suffix = {'_T3','_T6','_T8','_T10'};
-grpB.suffix = {'_T18','_T24'};
-%OPTIONS.groups = {grpA, grpB} ;
+grpA = OPTIONS.groups{1} ;
+grpB = OPTIONS.groups{2} ;
 
 %Color for plot
 FFR_color = [0 0 0]; %black
@@ -99,11 +99,7 @@ xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 18-24mo');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpB.svg'));
 
-<<<<<<< Updated upstream
 %% Export mean FFRs into .txt files and convert into .avg files
-=======
-% %% Export mean FFRs into .txt files and convert into .avg files
->>>>>>> Stashed changes
 fname_out_grpA = fullfile(OPTIONS.indir,'mean_FFR_grpA.txt') ;
 fid = fopen(fname_out_grpA,'w');
 fprintf(fid,'%c\n',FFR_avg_grpA);
@@ -119,10 +115,11 @@ fid = fopen(fname_out_all,'w');
 fprintf(fid,'%c\n',grd_FFR);
 fclose(fid);
 
-addpath '\\Filer\home\Invites\hervé\Mes documents\These\EEG\Data\ToolBox_BrainStem_ASD_24052022\BT_2013\programFiles';
-bt_txt2avg(fname_out_grpA, 16384, -40, 199);
-bt_txt2avg(fname_out_grpB, 16384, -40, 199);
-bt_txt2avg(fname_out_all, 16384, -40, 199);
+BT_toolbox_path = fullfile(pwd, strcat('ToolBox_Brainstem\BT_2013\programFiles')) ;
+addpath(BT_toolbox_path) ;
+bt_txt2avg(fname_out_grpA, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIONS.win_of_interest(2)*1000);
+bt_txt2avg(fname_out_grpB, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIONS.win_of_interest(2)*1000);
+bt_txt2avg(fname_out_all, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIONS.win_of_interest(2)*1000);
 
 %% Root mean square and SNR on averaged FFRs
 
@@ -146,26 +143,26 @@ startVowel = 95;
 endVowel = 210;
 
 % Prestim period
-Segment_A = FFR_avg_grpA(round(startPrestim*16384/1000):round(endPrestim*16384/1000));
-Segment_B = FFR_avg_grpB(round(startPrestim*16384/1000):round(endPrestim*16384/1000));
+Segment_A = FFR_avg_grpA(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000));
+Segment_B = FFR_avg_grpB(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000));
 RMSprestimA = std(Segment_A,1);
 RMSprestimB = std(Segment_B,1);
-%RMSprestimA = std(FFR_avg_grpA(round(startPrestim*16384/1000):round(endPrestim*16384/1000)),1);
-%RMSprestimB = std(FFR_avg_grpB(round(startPrestim*16384/1000):round(endPrestim*16384/1000)),1);
+%RMSprestimA = std(FFR_avg_grpA(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000)),1);
+%RMSprestimB = std(FFR_avg_grpB(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000)),1);
 
 % Whole response period
-RMS_whole_grpA = std(FFR_avg_grpA(round(endPrestim*16384/1000):round(endVowel*16384/1000)),1);
-RMS_whole_grpB = std(FFR_avg_grpB(round(endPrestim*16384/1000):round(endVowel*16384/1000)),1);
+RMS_whole_grpA = std(FFR_avg_grpA(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000)),1);
+RMS_whole_grpB = std(FFR_avg_grpB(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000)),1);
 %RMS_grpA = std(FFR_avg_grpA,1); 
 %RMS_grpB = std(FFR_avg_grpB,1); 
 
 %CV transition period
-RMS_CV_grpA = std(FFR_avg_grpA(round(startCVtransition*16384/1000):round(endCVtransition*16384/1000)),1);
-RMS_CV_grpB = std(FFR_avg_grpB(round(startCVtransition*16384/1000):round(endCVtransition*16384/1000)),1);
+RMS_CV_grpA = std(FFR_avg_grpA(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000)),1);
+RMS_CV_grpB = std(FFR_avg_grpB(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000)),1);
 
 %Vowel period
-RMS_vowel_grpA = std(FFR_avg_grpA(round(startVowel*16384/1000):round(endVowel*16384/1000)),1);
-RMS_vowel_grpB = std(FFR_avg_grpB(round(startVowel*16384/1000):round(endVowel*16384/1000)),1);
+RMS_vowel_grpA = std(FFR_avg_grpA(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000)),1);
+RMS_vowel_grpB = std(FFR_avg_grpB(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000)),1);
 
 % Signal-to-noise on whole response
 %SNR is obtained by dividing the RMS of a specific time window of the
@@ -201,6 +198,11 @@ SNR_Vowel = [SNR_vowel_grpA;SNR_vowel_grpB];
 RMS_and_SNR = table(Group,RMS_Prestim,RMS_Total,RMS_CV,RMS_Vowel,SNR_Total,SNR_CV,SNR_Vowel);
 RMS_and_SNR
 
+% Save table in a .csv file
+fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_group_comparison.csv');
+writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
+
+
 % %% Root mean square and SNR on indivudual FFRs
 % 
 % Subj = [subjects(:)];
@@ -214,10 +216,10 @@ RMS_and_SNR
 % SNR_Vowel_all = zeros(1,length(subjects));
 % 
 % for s =1:length(subjects)
-%     RMS_Prestim_all(s) = std(all_subj(round(startPrestim*16384/1000):round(endPrestim*16384/1000),s),1);
-%     RMS_Total_all(s) = std(all_subj(round(endPrestim*16384/1000):round(endVowel*16384/1000),s),1);
-%     RMS_CV_all(s) = std(all_subj(round(startCVtransition*16384/1000):round(endCVtransition*16384/1000),s),1);
-%     RMS_Vowel_all(s) = std(all_subj(round(startVowel*16384/1000):round(endVowel*16384/1000),s),1);
+%     RMS_Prestim_all(s) = std(all_subj(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000),s),1);
+%     RMS_Total_all(s) = std(all_subj(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
+%     RMS_CV_all(s) = std(all_subj(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000),s),1);
+%     RMS_Vowel_all(s) = std(all_subj(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
 %     SNR_Total_all(s) = RMS_Total_all(s)/RMS_Prestim_all(s);
 %     SNR_CV_all(s) = RMS_CV_all(s)/RMS_Prestim_all(s);
 %     SNR_Vowel_all(s) = RMS_Vowel_all(s)/RMS_Prestim_all(s);
@@ -406,302 +408,210 @@ RMS_and_SNR
 % 
 % %compare 2 subaverages of the same FFR (use all subjects from eacg group)
 % 
-%% Frequency domain
-
-% Adaptation of Skoe function (bt_fftsc)
- %function [Freq1 Freq2 Freq3 fftFFR HzScale]=bt_fftsc(FILENAME,start,stop,F0_Lo,F0_Hi,F1_Lo,F1_Hi,HF_Lo,HF_Hi, chan)
-% bt_fftsc computes frequency-domain amplitudes of three user-defined 
-% frequency bins of Brainstem response.  Results are scaled to peak �V.
-%
-% Usage: [F0 F1 HF] = bt_fftsc('filename.avg',10,40,100,150,300,350,600,800);
-%    over the range of 10 to 40 ms, finds average frequency amplitude of
-%    100-150 Hz, 300-350 Hz and 600-800 Hz.
+% %% Frequency domain
 % 
-% Three variables are returned the workspace:
-% (1) Freq1: mean amplitude over F0_Lo-F0_Hi Hz
-% (2) Freq2: mean amplitude over F1_Lo-F1_Hi Hz
-% (3) Freq3: mean amplitude over HF_Lo to HF_Hi Hz 
-
-% % Dependancies: ms2row, openavg
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Originally developed by E.E. Skoe.  
-% Toolbox version by E.E. Skoe & T.G. Nicol
-% eeskoe@northwestern.edu tgn@northwestern.edu
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-F0_Lo = 100;
-F0_Hi = 110;
-F1_Lo = 455;
-F1_Hi = 740;
-HF_Lo = 1060;
-HF_Hi = 2750;
-
-%%%  OPEN UP AVG FILE
-%avg = openavg(FILENAME);
-%data = grd_FFR;
-FS = 16384;
-%FFR = grd_FFR;
-FFR_list = {grd_FFR,FFR_avg_grpA,FFR_avg_grpB};
-FFR_name = {'All_data','6-10mo','18-24mo'};
-filename_list = {'FFR_frequential_domain_all_subj.svg','FFR_frequential_domain_groupA.svg','FFR_frequential_domain_groupB.svg'};
-color_list = {FFR_color;grpA_color;grpB_color};
-%******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD 
-for list_num = 1:3
-    FFR = FFR_list{list_num};
-    filename_export = filename_list{list_num};
-    color = color_list{list_num};
-%startPoint = ms2row(avg, start);
-%endPoint = ms2row(avg, stop);
-
-%FFR = data(startPoint:endPoint);
-numPoints = length(FFR);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-%**** STEP 2. FFT OF FFR
-%******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
-rampMS = 4/1000; % length of ramp (on and off) in seconds
-% hanPoints = 26;  %hard coded to be the same as Biologic's settings (December 7, 2005);
-hanPoints = rampMS.*FS; % length of ramp in points
-hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
-hanHalfPoints = round(hanPoints./2);
-numberOfOnes_A = numPoints - hanPoints;
-FFRhan_A = hann(hanPoints);  
-FFRhan_A = [FFRhan_A(1:hanHalfPoints); ones(numberOfOnes_A,1); FFRhan_A(hanHalfPoints+1:hanPoints)];
-
-% baseline, window, then baseline again
-FFR = detrend(FFR, 'constant');
-FFR = detrend(FFR.*FFRhan_A, 'constant');
-
-%******** STEP 2b. Perform FFT
-fftFFR = abs(fft(FFR, round(FS)));
-fftFFR = fftFFR(1:round(round(FS)/2));
-fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
-HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
-HzScale = HzScale(1:length(fftFFR));
-
-% Plot FFT
-figure('Name',FFR_name{list_num}) ;
-
-subplot(2,2,1);
-plot(HzScale,fftFFR, 'Color', color);
-xlim([0 3000]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,2); 
-plot(HzScale,fftFFR, 'Color', color);
-xlim([90 110]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,3); 
-plot(HzScale,fftFFR, 'Color', color);
-xlim([300 500]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,4); 
-plot(HzScale,fftFFR, 'Color', color);
-xlim([1100 1300]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-print('-dsvg',fullfile(OPTIONS.indir, filename_export));
-
-end
-
-%Display and save group comparison in frequency domain
-
-FFR_A = FFR_avg_grpA;
-FFR_B = FFR_avg_grpB ;
-
-%******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD
-numPoints_A = length(FFR_A);
-numPoints_B = length(FFR_B);
-
-%**** STEP 2. FFT OF FFR
-%******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
-rampMS = 4/1000; % length of ramp (on and off) in seconds
-hanPoints = rampMS.*FS; % length of ramp in points
-hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
-hanHalfPoints = round(hanPoints./2);
-numberOfOnes_A = numPoints_A - hanPoints;
-numberOfOnes_B = numPoints_B - hanPoints;
-FFRhan_A = hann(hanPoints);
-FFRhan_B = hann(hanPoints);
-FFRhan_A = [FFRhan_A(1:hanHalfPoints); ones(numberOfOnes_A,1); FFRhan_A(hanHalfPoints+1:hanPoints)];
-FFRhan_B = [FFRhan_B(1:hanHalfPoints); ones(numberOfOnes_B,1); FFRhan_B(hanHalfPoints+1:hanPoints)];
-
-
-% baseline, window, then baseline again
-FFR_A = detrend(FFR_A, 'constant');
-FFR_A = detrend(FFR_A.*FFRhan_A, 'constant');
-FFR_B = detrend(FFR_B, 'constant');
-FFR_B = detrend(FFR_B.*FFRhan_B, 'constant');
-
-%******** STEP 2b. Perform FFT
-fftFFR_A = abs(fft(FFR_A, round(FS)));
-fftFFR_A = fftFFR_A(1:round(round(FS)/2));
-fftFFR_A = fftFFR_A.*(2./numPoints_A); % scale to peak �V
-HzScale_A = [0:1:round(FS/2)]'; % frequency 'axis'
-HzScale_A = HzScale_A(1:length(fftFFR_A));
-
-fftFFR_B = abs(fft(FFR_B, round(FS)));
-fftFFR_B = fftFFR_B(1:round(round(FS)/2));
-fftFFR_B = fftFFR_B.*(2./numPoints_A); % scale to peak �V
-HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
-HzScale_B = HzScale_B(1:length(fftFFR_B));
-
-% Plot FFT
-figure('Name', 'Group_comparison_FFR_frequential') ;
-
-subplot(2,2,1);
-plot(HzScale_A,fftFFR_A, 'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([0 3000]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,2); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([90 110]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,3); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([300 500]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,4); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([1100 1300]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-%Add a single legend for 4 plots
-fig = gcf;
-fig.Position(3) = fig.Position(3) + 250;
-Lgnd = legend('6-10 mo', '18-24 mo','Location','bestoutside');
-Lgnd.Position(1) = 0.01;
-Lgnd.Position(2) = 0.9;
-
-%Add a single title for 4 plots
-sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight', 'bold');
-
-print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison.svg'));
-
-
-%Display and save group comparison in frequency domain
-
-FFR_A = FFR_avg_grpA;
-FFR_B = FFR_avg_grpB ;
-
-%******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD
-numPoints_A = length(FFR_A);
-numPoints_B = length(FFR_B);
-
-%**** STEP 2. FFT OF FFR
-%******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
-rampMS = 4/1000; % length of ramp (on and off) in seconds
-hanPoints = rampMS.*FS; % length of ramp in points
-hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
-hanHalfPoints = round(hanPoints./2);
-numberOfOnes_A = numPoints_A - hanPoints;
-numberOfOnes_B = numPoints_B - hanPoints;
-FFRhan_A = hann(hanPoints);
-FFRhan_B = hann(hanPoints);
-FFRhan_A = [FFRhan_A(1:hanHalfPoints); ones(numberOfOnes_A,1); FFRhan_A(hanHalfPoints+1:hanPoints)];
-FFRhan_B = [FFRhan_B(1:hanHalfPoints); ones(numberOfOnes_B,1); FFRhan_B(hanHalfPoints+1:hanPoints)];
-
-
-% baseline, window, then baseline again
-FFR_A = detrend(FFR_A, 'constant');
-FFR_A = detrend(FFR_A.*FFRhan_A, 'constant');
-FFR_B = detrend(FFR_B, 'constant');
-FFR_B = detrend(FFR_B.*FFRhan_B, 'constant');
-
-%******** STEP 2b. Perform FFT
-fftFFR_A = abs(fft(FFR_A, round(FS)));
-fftFFR_A = fftFFR_A(1:round(round(FS)/2));
-fftFFR_A = fftFFR_A.*(2./numPoints_A); % scale to peak �V
-HzScale_A = [0:1:round(FS/2)]'; % frequency 'axis'
-HzScale_A = HzScale_A(1:length(fftFFR_A));
-
-fftFFR_B = abs(fft(FFR_B, round(FS)));
-fftFFR_B = fftFFR_B(1:round(round(FS)/2));
-fftFFR_B = fftFFR_B.*(2./numPoints_A); % scale to peak �V
-HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
-HzScale_B = HzScale_B(1:length(fftFFR_B));
-
-% Plot FFT
-figure('Name', 'Group_comparison_FFR_frequential') ;
-
-subplot(2,2,1);
-plot(HzScale_A,fftFFR_A, 'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([0 2000]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,2); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([95 105]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,3); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([300 500]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-subplot(2,2,4); 
-plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
-plot(HzScale_B,fftFFR_B,'Color', grpB_color);
-xlim([1100 1300]);
-grid on;
-title("Single-Sided Amplitude Spectrum of X(t)");
-xlabel("Frequency (Hz)");
-ylabel("Amplitude (µV)");
-
-%Add a single legend for 4 plots
-fig = gcf;
-fig.Position(3) = fig.Position(3) + 250;
-Lgnd = legend('6-10 mo', '18-24 mo','Location','bestoutside');
-Lgnd.Position(1) = 0.01;
-Lgnd.Position(2) = 0.9;
-
-%Add a single title for 4 plots
-sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight', 'bold');
-
-print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.svg'));
-
+% % Adaptation of Skoe function (bt_fftsc)
+%  %function [Freq1 Freq2 Freq3 fftFFR HzScale]=bt_fftsc(FILENAME,start,stop,F0_Lo,F0_Hi,F1_Lo,F1_Hi,HF_Lo,HF_Hi, chan)
+% % bt_fftsc computes frequency-domain amplitudes of three user-defined 
+% % frequency bins of Brainstem response.  Results are scaled to peak �V.
+% %
+% % Usage: [F0 F1 HF] = bt_fftsc('filename.avg',10,40,100,150,300,350,600,800);
+% %    over the range of 10 to 40 ms, finds average frequency amplitude of
+% %    100-150 Hz, 300-350 Hz and 600-800 Hz.
+% % 
+% % Three variables are returned the workspace:
+% % (1) Freq1: mean amplitude over F0_Lo-F0_Hi Hz
+% % (2) Freq2: mean amplitude over F1_Lo-F1_Hi Hz
+% % (3) Freq3: mean amplitude over HF_Lo to HF_Hi Hz 
+% 
+% % % Dependancies: ms2row, openavg
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Originally developed by E.E. Skoe.  
+% % Toolbox version by E.E. Skoe & T.G. Nicol
+% % eeskoe@northwestern.edu tgn@northwestern.edu
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% F0_Lo = 100;
+% F0_Hi = 110;
+% F1_Lo = 455;
+% F1_Hi = 740;
+% HF_Lo = 1060;
+% HF_Hi = 2750;
+% 
+% %%%  OPEN UP AVG FILE
+% %avg = openavg(FILENAME);
+% %data = grd_FFR;
+% FS = 16384;
+% %FFR = grd_FFR;
+% FFR_list = {grd_FFR,FFR_avg_grpA,FFR_avg_grpB};
+% FFR_name = {'All_data','6-10mo','18-24mo'};
+% filename_list = {'FFR_frequential_domain_all_subj.svg','FFR_frequential_domain_groupA.svg','FFR_frequential_domain_groupB.svg'};
+% color_list = {FFR_color;grpA_color;grpB_color};
+% %******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD 
+% for list_num = 1:3
+%     FFR = FFR_list{list_num};
+%     filename_export = filename_list{list_num};
+%     color = color_list{list_num};
+% %startPoint = ms2row(avg, start);
+% %endPoint = ms2row(avg, stop);
+% 
+% %FFR = data(startPoint:endPoint);
+% numPoints = length(FFR);
+%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+% %**** STEP 2. FFT OF FFR
+% %******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
+% rampMS = 4/1000; % length of ramp (on and off) in seconds
+% % hanPoints = 26;  %hard coded to be the same as Biologic's settings (December 7, 2005);
+% hanPoints = rampMS.*FS; % length of ramp in points
+% hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
+% hanHalfPoints = round(hanPoints./2);
+% numberOfOnes_A = numPoints - hanPoints;
+% FFRhan_A = hann(hanPoints);  
+% FFRhan_A = [FFRhan_A(1:hanHalfPoints); ones(numberOfOnes_A,1); FFRhan_A(hanHalfPoints+1:hanPoints)];
+% 
+% % baseline, window, then baseline again
+% FFR = detrend(FFR, 'constant');
+% FFR = detrend(FFR.*FFRhan_A, 'constant');
+% 
+% %******** STEP 2b. Perform FFT
+% fftFFR = abs(fft(FFR, round(FS)));
+% fftFFR = fftFFR(1:round(round(FS)/2));
+% fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
+% HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
+% HzScale = HzScale(1:length(fftFFR));
+% 
+% % Plot FFT
+% figure('Name',FFR_name{list_num}) ;
+% 
+% subplot(2,2,1);
+% plot(HzScale,fftFFR, 'Color', color);
+% xlim([0 3000]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,2); 
+% plot(HzScale,fftFFR, 'Color', color);
+% xlim([90 110]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,3); 
+% plot(HzScale,fftFFR, 'Color', color);
+% xlim([300 500]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,4); 
+% plot(HzScale,fftFFR, 'Color', color);
+% xlim([1100 1300]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% print('-dsvg',fullfile(OPTIONS.indir, filename_export));
+% 
+% end
+% 
+% %Display and save group comparison in frequency domain
+% 
+% FFR_A = FFR_avg_grpA;
+% FFR_B = FFR_avg_grpB ;
+% 
+% %******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD
+% numPoints_A = length(FFR_A);
+% numPoints_B = length(FFR_B);
+% 
+% %**** STEP 2. FFT OF FFR
+% %******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
+% rampMS = 4/1000; % length of ramp (on and off) in seconds
+% hanPoints = rampMS.*FS; % length of ramp in points
+% hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
+% hanHalfPoints = round(hanPoints./2);
+% numberOfOnes_A = numPoints_A - hanPoints;
+% numberOfOnes_B = numPoints_B - hanPoints;
+% FFRhan_A = hann(hanPoints);
+% FFRhan_B = hann(hanPoints);
+% FFRhan_A = [FFRhan_A(1:hanHalfPoints); ones(numberOfOnes_A,1); FFRhan_A(hanHalfPoints+1:hanPoints)];
+% FFRhan_B = [FFRhan_B(1:hanHalfPoints); ones(numberOfOnes_B,1); FFRhan_B(hanHalfPoints+1:hanPoints)];
+% 
+% 
+% % baseline, window, then baseline again
+% FFR_A = detrend(FFR_A, 'constant');
+% FFR_A = detrend(FFR_A.*FFRhan_A, 'constant');
+% FFR_B = detrend(FFR_B, 'constant');
+% FFR_B = detrend(FFR_B.*FFRhan_B, 'constant');
+% 
+% %******** STEP 2b. Perform FFT
+% fftFFR_A = abs(fft(FFR_A, round(FS)));
+% fftFFR_A = fftFFR_A(1:round(round(FS)/2));
+% fftFFR_A = fftFFR_A.*(2./numPoints_A); % scale to peak �V
+% HzScale_A = [0:1:round(FS/2)]'; % frequency 'axis'
+% HzScale_A = HzScale_A(1:length(fftFFR_A));
+% 
+% fftFFR_B = abs(fft(FFR_B, round(FS)));
+% fftFFR_B = fftFFR_B(1:round(round(FS)/2));
+% fftFFR_B = fftFFR_B.*(2./numPoints_A); % scale to peak �V
+% HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
+% HzScale_B = HzScale_B(1:length(fftFFR_B));
+% 
+% % Plot FFT
+% figure('Name', 'Group_comparison_FFR_frequential') ;
+% 
+% subplot(2,2,1);
+% plot(HzScale_A,fftFFR_A, 'Color', grpA_color); hold on;
+% plot(HzScale_B,fftFFR_B,'Color', grpB_color);
+% xlim([0 3000]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,2); 
+% plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
+% plot(HzScale_B,fftFFR_B,'Color', grpB_color);
+% %xlim([90 110]);
+% xlim([95 105]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,3); 
+% plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
+% plot(HzScale_B,fftFFR_B,'Color', grpB_color);
+% xlim([300 500]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% subplot(2,2,4); 
+% plot(HzScale_A,fftFFR_A,'Color', grpA_color); hold on;
+% plot(HzScale_B,fftFFR_B,'Color', grpB_color);
+% xlim([1100 1300]);
+% grid on;
+% title("Single-Sided Amplitude Spectrum of X(t)");
+% xlabel("Frequency (Hz)");
+% ylabel("Amplitude (µV)");
+% 
+% %Add a single legend for 4 plots
+% fig = gcf;
+% fig.Position(3) = fig.Position(3) + 250;
+% Lgnd = legend('6-10 mo', '18-24 mo','Location','bestoutside');
+% Lgnd.Position(1) = 0.01;
+% Lgnd.Position(2) = 0.9;
+% 
+% %Add a single title for 4 plots
+% sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight', 'bold');
+% 
+% print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.svg'));
+% 
+% %%
