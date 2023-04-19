@@ -26,7 +26,7 @@ OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline
 OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
 OPTIONS_stepA.eeg_elec = 1:16 ;                             %Cortical electrodes (to get cortical FFRs)
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
-OPTIONS_stepA.hp = 30 ;                          % high-pass (Hz) initial value = 80
+OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value = 80
 OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
@@ -45,8 +45,8 @@ end
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
 OPTIONS_stepB.indir = indir ;
-OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
-OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
+OPTIONS_stepB.rej_low = -45 ;                         %initial value = -45                               
+OPTIONS_stepB.rej_high = 45 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
@@ -102,11 +102,7 @@ all_subjects = get_all_subjects(indir) ;
 % OPTIONS_rej.visu = 0 ;                                         % 1 to display rejection rates, otherwise 0
 % 
 % [subjects_to_analyse] = reject_participants_FFR(subjects_to_analyse, OPTIONS_rej) ;
-<<<<<<< Updated upstream
 
-=======
-%%
->>>>>>> Stashed changes
 OPTIONS_analysis.indir = indir ;
 OPTIONS_analysis.param = '_stepA1_stepB1';
 grpA.suffix = {'_T3','_T6','_T8','_T10'};
