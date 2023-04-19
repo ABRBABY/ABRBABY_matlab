@@ -2,9 +2,13 @@ function [] = FFR_analysis(subjects, OPTIONS)
 % ERPs analysis script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
+<<<<<<< Updated upstream
+=======
+%OPTIONS.param = '_RERBT1_FBT1';
+>>>>>>> Stashed changes
 grpA.suffix = {'_T3','_T6','_T8','_T10'};
 grpB.suffix = {'_T18','_T24'};
-OPTIONS.groups = {grpA, grpB} ;
+%OPTIONS.groups = {grpA, grpB} ;
 
 %Color for plot
 FFR_color = [0 0 0]; %black
@@ -95,7 +99,11 @@ xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 18-24mo');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpB.svg'));
 
+<<<<<<< Updated upstream
 %% Export mean FFRs into .txt files and convert into .avg files
+=======
+% %% Export mean FFRs into .txt files and convert into .avg files
+>>>>>>> Stashed changes
 fname_out_grpA = fullfile(OPTIONS.indir,'mean_FFR_grpA.txt') ;
 fid = fopen(fname_out_grpA,'w');
 fprintf(fid,'%c\n',FFR_avg_grpA);

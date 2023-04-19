@@ -102,7 +102,11 @@ all_subjects = get_all_subjects(indir) ;
 % OPTIONS_rej.visu = 0 ;                                         % 1 to display rejection rates, otherwise 0
 % 
 % [subjects_to_analyse] = reject_participants_FFR(subjects_to_analyse, OPTIONS_rej) ;
+<<<<<<< Updated upstream
 
+=======
+%%
+>>>>>>> Stashed changes
 OPTIONS_analysis.indir = indir ;
 OPTIONS_analysis.param = '_stepA1_stepB1';
 grpA.suffix = {'_T3','_T6','_T8','_T10'};
