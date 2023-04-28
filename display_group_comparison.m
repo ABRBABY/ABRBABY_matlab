@@ -6,7 +6,8 @@ function [] = display_group_comparison(subjects_grp1,subjects_grp2, OPTIONS)
 [grpB.DEV1_avg, grpB.DEV2_avg, grpB.STD1_avg, grpB.STD2_avg, timepoints, labels, xlim] = extract_averages_DEV_STD(subjects_grp2,OPTIONS);
 
 grpA_color = [0.2 0.2 1]; %blue
-grpB_color = [0.2 0.7765 0.2]; %green
+%grpB_color = [0.2 0.7765 0.2]; %green
+grpB_color = [0.8902 0 0]; %red
 
 % Get number of prticipants in both group to display in legend 
 nb_young = size(grpA.DEV1_avg,1);
@@ -193,9 +194,9 @@ OPTIONS.legend =    {   sprintf('STD /DA/ %s \n %d',grp_label,size(STD,1)),...
                         sprintf('DEV %s %s \n n= %d',cond.label{cond_num},grp_label,size(DEV,1)),...
                         sprintf('MMN to %s %s \n n= %d',cond.label{cond_num},grp_label,size(MMN,1))} ; 
 
-OPTIONS.legend =    {   sprintf('STD BA/GA/ %s \n n= %d',grp_label,size(mean_STD_grp,1)),...
-                        sprintf('DEV BA/GA/ %s \n n= %d',grp_label,size(mean_DEV_grp,1)),...
-                        sprintf('MMN BA/GA/ %s \n n= %d',grp_label,size(mean_MMN_grp,1))} ; 
+% OPTIONS.legend =    {   sprintf('STD /DA/ %s \n n= %d',grp_label,size(mean_STD_grp,1)),...
+%                         sprintf('DEV BA/GA/ %s \n n= %d',grp_label,size(mean_DEV_grp,1)),...
+%                         sprintf('MMN BA/GA/ %s \n n= %d',grp_label,size(mean_MMN_grp,1))} ;
                     
 OPTIONS.title = 	sprintf('MMN %s for group %s | %s number of STD',cond.label{cond_num},grp_label,OPTIONS.balance_STD) ; 
 
