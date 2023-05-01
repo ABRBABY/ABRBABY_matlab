@@ -1,4 +1,4 @@
-function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, flag_sub_to_create, count, suffix)
+function [out_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS, flag_sub_to_create, count, suffix, interpol)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -41,6 +41,27 @@ for jj=1:length(subjects)
     % Save a first dataset in EEGLAB 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
+   %% Interpolate bad channels if needed
+   
+   % Add channels information
+   EEG = pop_chanedit(EEG, 'lookup',chan_dir) ;
+
+    % Run interpolation
+    if contains(subjects{jj},interpol.subj)
+        % Find index of interpol that refers to the current subject
+        ind = find(contains(interpol.subj,subjects{jj})) ;
+        % Find electrode(s) to interpolate with index
+        interp_elec = find(ismember({EEG.chanlocs.labels},interpol.chan{ind})) ;
+        % Interpolate channel(s)
+        EEG = pop_interp(EEG, interp_elec, 'spherical') ;
+        % Add interpolation information in EEG structure
+        EEG.interpolation = interpol.chan{ind} ;
+    else 
+        EEG.interpolation = 'none' ;
+    end
+
+   
+    
     %% RE-REF (excluding trig channel)
     % Find TRIG electrodes indices by labels 
     trigg_elec = find(ismember({EEG.chanlocs.labels},trig)); 
@@ -53,8 +74,12 @@ for jj=1:length(subjects)
     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
 
     % Identifies outliers events (e.g. boundaries) or too close events 
-    idx_to_remove = [   find(diff([EEG.event.latency])<0.1*EEG.srate),... % minimum intretrial duration = 220 ms
-                        find(diff([EEG.event.latency])>2*EEG.srate) ];  
+%     idx_to_remove = [   find(diff([EEG.event.latency])<0.1*EEG.srate),... % minimum intretrial duration = 220 ms
+%                         find(diff([EEG.event.latency])>2*EEG.srate) ];  
+%   % Identifies outliers events (e.g. boundaries) or too close events 
+    idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
+                        find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 ms
+                            
     % Removes outliers events
     EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ; 
 
@@ -73,8 +98,8 @@ for jj=1:length(subjects)
     % Remove baseline
     EEG = pop_rmbase( EEG, baseline,[] );
 
-    % Add channels information
-    EEG=pop_chanedit(EEG, 'lookup',chan_dir);
+%     % Add channels information
+%     EEG=pop_chanedit(EEG, 'lookup',chan_dir);
 
     % Create a custom history variable to keep trakc of OPTIONS 
     EEG.history_rfe = OPTIONS ;
