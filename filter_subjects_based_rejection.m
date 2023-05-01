@@ -18,17 +18,27 @@ for ss=1:length(subjects)
     %Open for reading
     temp = readtable(fullfile(tmp.folder, tmp.name));
     
+    % Get and store rejection rates per condition
     std_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'STD'));
     dev1_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV1'));
     dev2_rejected(ss) =  sum((temp.rejected==1)&strcmp(temp.condition,'DEV2'));
 end
 
+%Create table with rejection information at group level
+rej_info_all = table(subjects,std_rejected,dev1_rejected,dev2_rejected);
+
+% Save this table into a csv file (use function writetable)
+writetable(rej_info_all,fullfile(OPTIONS.indir, strcat('trial_rejected_ERPs_summary', OPTIONS.param, '.csv')));
+
+% Get list of kept subjects as a function of the threshold
 not_rejected = (std_rejected+dev1_rejected+dev2_rejected)/height(temp)<thresh ; 
 
+% Display list of rejected subjects in command window
 if sum(not_rejected ==0) 
     fprintf(sprintf('\nSubjects rejected : %s\n',subjects{not_rejected==0}));
 end
 
+% Output = kept subjects
 subjects = subjects(not_rejected);
 
 end
