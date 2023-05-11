@@ -9,9 +9,9 @@ indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
-%subject_of_interest = {'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
-% subject_of_interest = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
-subject_of_interest = {'DVL_045_T8'} ;
+%subject_of_interest = {'DVL_013_T10', 'DVL_013_T8', 'DVL_014_T24', 'DVL_015_T18', 'DVL_015_T24', 'DVL_016_T18', 'DVL_016_T24', 'DVL_017_T18', 'DVL_018_T10', 'DVL_018_T6', 'DVL_018_T8'} ;
+% subject_of_interest = {'DVL_012_T10', 'DVL_013_T10', 'DVL_013_T8', 'DVL_018_T10', 'DVL_018_T6', 'DVL_024_T6', 'DVL_030_T10', 'DVL_037_T6', 'DVL_037_T8'} ;
+subject_of_interest = {'DVL_031_T24'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 

@@ -78,8 +78,8 @@ for jj=1:length(subjects)
 %                         find(diff([EEG.event.latency])>2*EEG.srate) ];  
 %   % Identifies outliers events (e.g. boundaries) or too close events 
     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
-                        find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 ms
-                            
+                        find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 m
+    
     % Removes outliers events
     EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ; 
 

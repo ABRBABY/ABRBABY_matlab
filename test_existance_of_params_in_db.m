@@ -1,4 +1,4 @@
-function [flag_sub_to_create, counter] = test_existance_of_params_in_db(OPTIONS, suffix)
+function [flag_sub_to_create, counter] = test_existance_of_params_in_db(OPTIONS, suffix, RFE_num)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2023 - %80PRIME Project
 
@@ -14,7 +14,12 @@ for jj=1:length(subjects)
     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
 
-    [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat('*',suffix,'*'), OPTIONS) ; 
+    if isempty(RFE_num)
+        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat('*', suffix,'*'), OPTIONS) ; 
+    else
+        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat('*', RFE_num, '*',suffix,'*'), OPTIONS) ; 
+    end
+    
     flag_sub_to_create(jj) = ~does_exist ; 
       
 end
