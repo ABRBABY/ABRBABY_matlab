@@ -34,7 +34,7 @@ suffix_stepA = '_FFR_stepA';
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA) ; 
+[flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA,'') ; 
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce
 %report
@@ -58,7 +58,7 @@ stepA_num = 1 ;                                      %Set of stepA parameters to
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB) ; 
+[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
 
 %Filter epoched data and prepare input for brainstem toolbox
 if sum(flag_sub_to_create_stepB)~=0
@@ -68,14 +68,14 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_037_T6'} ;
+subjects_to_process = {'DVL_046_T18'} ;
 %subjects_to_process = get_all_subjects(indir) ;
 
-OPTIONS_disp.params = 'stepA1_stepB2'; 
+OPTIONS_disp.params = 'stepA1_stepB1'; 
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_disp.indir = indir ; 
 OPTIONS_disp.plot_dir = plot_dir ; 
-OPTIONS_disp.ylim = [-1, 1] ;      % [-0.5, 0.5]
+OPTIONS_disp.ylim = [-0.3, 0.3] ;      % [-0.5, 0.5]
 OPTIONS_disp.fs = 16384 ; 
 
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
