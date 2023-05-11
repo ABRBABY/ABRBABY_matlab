@@ -41,15 +41,13 @@ for jj=1:length(subjects)
     % Save a first dataset in EEGLAB 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
-   %% Interpolate bad channels if needed
-   
-   % Add channels information
-   EEG = pop_chanedit(EEG, 'lookup',chan_dir) ;
+    % Add channels information
+    EEG = pop_chanedit(EEG, 'lookup',chan_dir) ;
 
-   InterpolChannels = fullfile(indir,subjects{jj},strcat(subjects{jj},'_interp.txt')); 
+    %% Interpolate bad channels if needed
+    InterpolChannels = fullfile(indir,subjects{jj},strcat(subjects{jj},'_interp.txt')); 
 
-   if exist(InterpolChannels,'file') 
-    
+    if exist(InterpolChannels,'file') 
         % Get the electrode(s) to re-reference
         interp_chans = cellstr(strrep(fileread(InterpolChannels),' ','')) ; 
         % Find electrode(s) to interpolate with index
@@ -61,9 +59,7 @@ for jj=1:length(subjects)
     else 
         EEG.interpolation = 'none' ;
     end
-
-   
-    
+ 
     %% RE-REF (excluding trig channel)
     % Find TRIG electrodes indices by labels 
     trigg_elec = find(ismember({EEG.chanlocs.labels},trig)); 
@@ -96,9 +92,6 @@ for jj=1:length(subjects)
 
     % Remove baseline
     EEG = pop_rmbase( EEG, baseline,[] );
-
-%     % Add channels information
-%     EEG=pop_chanedit(EEG, 'lookup',chan_dir);
 
     % Create a custom history variable to keep trakc of OPTIONS 
     EEG.history_rfe = OPTIONS ;
