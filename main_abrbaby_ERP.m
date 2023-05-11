@@ -90,6 +90,7 @@ OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 subjects_to_process = {'DVL_031_T24'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
+
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
 
