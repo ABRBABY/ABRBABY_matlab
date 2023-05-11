@@ -1,0 +1,177 @@
+April 2023
+- NIRS: Project channel files between subjects
+- 3DViewer: Overlay any type of surfaces
+--------------------------------------------------------------
+March 2023
+- Parallel computing: Handle temporary files per process, to avoid conflicts
+- Recordings: Optional storage of events channels and notes
+- Anatomy: New template ICBM152 2023b: New BEM and cortex for OpenMEEG
+- Anatomy: Contralateral projection of volume scouts
+--------------------------------------------------------------
+February 2023
+- Stat: Added FieldTrip threshold-free cluster enhancement (TFCE)
+- Anatomy: Compute FEM mesh statistics
+- Anatomy: FEM mesh generation with SimNIBS4/CHARM
+- Anatomy: Menu to merge/rename/delete FEM layers
+- Anatomy: Fixes in template ICBM152 2023 (T1 contrast & tissue labels)
+- Bugfix: Error in data covariance computation: Baseline not removed
+| when baseline time window was not included in data time window
+--------------------------------------------------------------
+January 2023
+- Anatomy: New template ICBM152 2023
+- Anatomy: Remove selection of fiducials when setting anatomy template
+- Anatomy: Project scouts between hemispheres using the anatomy template
+- Distrib: Enable compilation on Linux and MacOS
+- IO: Export matrix files as EDF+
+- Inverse: Display scouts on source-level PSD as PSD figures
+- Clusters: Save clusters in channel file, load automatically
+- Clusters: Import from process
+- Distrib: Brainstorm compiled with Matlab 2022b
+--------------------------------------------------------------
+November 2022
+- Forward: Display leadfield sensitivity (surface, MRI, isosurface)
+- BIDS import: Added support for ACPC and CapTrak coordinate systems
+- BIDS import: Added support for NIRS
+- Database: References to .bst files without full path, for portability
+- Anatomy: New template ICBM152 2022
+--------------------------------------------------------------
+October 2022
+- EEG: Project channel files between subjects
+- Inverse: Project dipoles files between subjects
+- BIDS import: Added support for AssociatedEmptyRoom + compute noise covariance
+--------------------------------------------------------------
+September 2022
+- Registration: Color-coding of digitized head points based on distance to scalp
+- IO: Updated Nicolet EEG reader
+- IO: Support for BIOPAC AcqKnowledge .acq recordings
+- IO: Support for XDF EEG recordings
+- ICA: Integration of Picard algorithm
+- ICA: Integration of FastICA algorithm
+- EEG templates: Convert MNI to subject space (menu "Add EEG positions")
+--------------------------------------------------------------
+August 2022
+- Anatomy: Project scouts between hemispheres (FreeSurfer option contrasurfreg)
+- IO: Support for BCI2000 .dat recordings
+--------------------------------------------------------------
+July 2022
+- Doc: Updated SEEG/epileptogenicity tutorial (new BIDS dataset)
+--------------------------------------------------------------
+June 2022
+- Connectivity: New slider to threshold by percentile in Display tab
+- Connectivity: Deprecation of older AEC processes, replaced with HENV
+- GUI: Keep file selection when navigating between tabs
+- MRI Viewer: Setting fiducials on the head surface
+- BIDS import: Added support for IntendedFor in _coordsystem.json
+- BIDS import: Added support for anatomical landmarks (_t1w.json and _coordsystem.json)
+- Distrib: Compilation with Matlab 2022b
+- Anatomy: Create surfaces from MRI volume atlas
+- IO: Export BIDS _electrodes.tsv, with the choice of the reference MRI
+--------------------------------------------------------------
+May 2022
+- IO: Fixed export to Plotly
+- New process: Threshold by percentile
+--------------------------------------------------------------
+April 2022
+- 2D Layout: Added option "Flip Y axis"
+- Distrib: Compilation with Matlab 2022a
+- IO: Import channel from ASCII files now expect mm instead of cm
+- IO: Add export events in AnyWave .mrk format
+- Ephys: Updated electrophysiology functions and tutorial
+--------------------------------------------------------------
+March 2022
+- Connectivity: Corticomuscular coherence tutorial
+- Web server: New SMTP server on neuroimage.usc.edu
+--------------------------------------------------------------
+February 2022
+- Anatomy: Extract head with FSL/BET
+- Connectivity: Added wPLI and ciPLV
+- FOOOF/SPRiNT: New display options for 3D figures and MRI viewer
+--------------------------------------------------------------
+January 2022
+- Doc: Connectivity tutorial
+- Connectivity: Updated "Simulate AR signals"
+- Connectivity: Removed the p-values thresholding from all connectivity metrics
+- Plugins: Archive software environment (brainstorm + plugins + defaults)
+- IO: Added support for Neuroelectrics EEG with EEGLAB plugin (.easy, .nedf)
+- IO: Updated Plexon reader
+- Statistics: Add process "Conjunction inference"
+- SPRiNT: Spectral Parameterization Resolved in Time
+--------------------------------------------------------------
+December 2021
+- IO: Added support for Tobii Pro Glasses export .tsv
+- IO: Added support for FieldTrip trialinfo field
+- IO: Updated York Instrument MEGSCAN reader (.meghdf5)
+- Anatomy: Add support for InfantFS / infant_recon_all
+- SimMEEG: Video tutorials
+- Distrib: Removed JAVA3D/JOGL support + older connectivity graph display
+- Plugins: Save GitHub commit SHA and installation date
+--------------------------------------------------------------
+November 2021
+- Anatomy: MRI segmentation with FastSurfer (T1 only)
+- Anatomy: MRI segmentation with FreeSurfer (T1+T2)
+- Ephys: DeriveLFP now available as a plugin and in the compiled distribution
+- Automatic registration: Add a tolerance parameter for excluding outliers
+- GUI: 3D MRI display: Moving slice by clicking on it
+- GUI: Automatic registration reports the distance headpoints/scalp
+- Plugins: Display usage statistics
+- Reports: Send HTML report by email
+--------------------------------------------------------------
+October 2021
+- Anatomy: Run MRI segmentation with BrainSuite
+- Connectivity: Updated simulation of AR signals
+- OpenMEEG: Updated download URLs
+- Import BIDS: Add support for CAT12, BrainSuite and BrainVISA
+--------------------------------------------------------------
+September 2021
+- SEEG/ECOG contact labelling from volume and surface atlases
+- Distrib: Compilation with Matlab 2021a/2021b
+- Distrib: Updated deployment and compilation scripts
+- Anatomy: Connectivity display with fibers in subject space
+- New plugin: MIA
+- Bugfix: Restoring mean after the PCA (scouts or unconstrained>flat)
+--------------------------------------------------------------
+August 2021
+- Doc: New FEM tutorials
+---------------------------------------------------------------
+July 2021
+- Inverse: FieldTrip DICS
+- Anatomy: Fixed O'Reilly infant templates
+- IO: Added support for Axion AxIS recordings (.raw)
+- Connectivity: New coherence processes 2021
+---------------------------------------------------------------
+June 2021
+- New connectivity graphs
+- CAT12: Added support for thalamus atlas
+- Anatomy: Tissues tesselation with tess_meshlayer
+- IO: Added Blackrock NPMK libary as plugin
+- Doc: Updated introduction tutorial dataset to FreeSurfer 7.1
+---------------------------------------------------------------
+May 2021
+- Anatomy: Use imported volume parcellations as volume scouts
+- Anatomy: Updated CAT12 to version 12.8 (r1825)
+- IO: Support for Micromed .EVT
+---------------------------------------------------------------
+April 2021
+- Plugins: NIRSTORM included as a plugin (available as compiled)
+- Plugins: BrainEntropy included as a plugin (available as compiled)
+- Doc: Updated all the tutorials with the new anatomy tools
+- Events: Marking a trial as good removes the tag "bad" from all the events
+- Anatomy: Import BrainSuite multiple parcellations
+---------------------------------------------------------------
+March 2021
+- New plugins manager: first release
+- Distrib: Reorganized compilation system to include plugins
+- IO: Bugfix export .nii qform/sform, especially after resampling
+- Anatomy: Mindboggle atlas renamed DKT atlas
+---------------------------------------------------------------
+February 2021
+- SimMEEG: Simulate MEG/EEG signals with SimMEEG
+- Distrib: Continued development of the plugin manager
+---------------------------------------------------------------
+January 2021
+- Anatomy: MNI normalization with SPM12 Segment
+- Anatomy: Prepared a list of standard MNI atlases: AAL2, AAL3, AICHA, 
+| Brainnetome, Hammers, Neuromorphometrics, Julich-Brain, Schaefer2018
+- Distrib: New plugin manager bst_plugin
+- IO: Added support for ADInstruments LabChart EEG (.adicht)
+- IO: Added again NWB support
