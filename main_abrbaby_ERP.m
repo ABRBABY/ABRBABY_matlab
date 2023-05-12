@@ -101,6 +101,7 @@ OPTIONS_disp_contrast.balance_STD = 'balanced';                      % 'balanced
 OPTIONS_disp_contrast.ylim = [-10, 10] ;                               % limits of y axis
 OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
 OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;      % path to save svg files of plots
+OPTIONS_disp_contrast.writecsv = 1 ;
 
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
