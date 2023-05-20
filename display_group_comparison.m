@@ -48,7 +48,7 @@ print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_STD_',OPTIONS.ba
 signals =           {permute(grpA.DEV1_avg,[2,3,1]),                permute(grpB.DEV1_avg,[2,3,1])} ; % Permute allow to plot variability across participants 
 OPTIONS.color =     {grpA_color,                                    grpB_color} ; 
 OPTIONS.legend =    {sprintf('Dev /BA/ 6-10mo \n %d',nb_young),     sprintf('Dev /BA/ 18-24m \n n= %d',nb_old)} ; 
-OPTIONS.title = 	sprintf('Response to standard /DA/ group comparison %s number of STD',OPTIONS.balance_STD) ; 
+OPTIONS.title = 	sprintf('Response to deviant /BA/ group comparison %s number of STD',OPTIONS.balance_STD) ; 
 
 % Create figure 
 figure('Units','normalized','Position',[0,0,1,1]) ; 
@@ -65,7 +65,7 @@ print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_DEV1_',OPTIONS.b
 signals =           {permute(grpA.DEV2_avg,[2,3,1]),                permute(grpB.DEV2_avg,[2,3,1])} ; % Permute allow to plot variability across participants 
 OPTIONS.color =     {grpA_color,                                    grpB_color} ; 
 OPTIONS.legend =    {sprintf('Dev /GA/ 6-10mo \n %d',nb_young),     sprintf('Dev /GA/ 18-24m \n n= %d',nb_old)} ; 
-OPTIONS.title = 	sprintf('Response to standard /GA/ group comparison %s number of STD',OPTIONS.balance_STD) ; 
+OPTIONS.title = 	sprintf('Response to deviant /GA/ group comparison %s number of STD',OPTIONS.balance_STD) ; 
 
 % Create figure 
 figure('Units','normalized','Position',[0,0,1,1]) ; 
