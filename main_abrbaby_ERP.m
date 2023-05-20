@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder');
@@ -85,7 +85,7 @@ OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 % Display one participant results 
 % subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
 %subjects_to_process = {'DVL_004_T10','DVL_004_T8','DVL_006_T10','DVL_007_T10','DVL_011_T10','DVL_012_T10','DVL_013_T10','DVL_013_T8','DVL_018_T10','DVL_018_T6','DVL_024_T6','DVL_030_T10','DVL_037_T6','DVL_037_T8'} ;
-subjects_to_process = {'DVL_031_T24'} ;
+subjects_to_process = {'DVL_013_T8'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 
@@ -113,7 +113,7 @@ subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
 subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
 
 % Remove subjects based on number of trial rejected 
-thresh = 0.20;
+thresh = 0.33; %(20 DEV kept in each condtion)
 subjects_to_process_grp1 = filter_subjects_based_rejection(subjects_to_process_grp1, thresh, OPTIONS_disp_contrast) ;
 subjects_to_process_grp2 = filter_subjects_based_rejection(subjects_to_process_grp2, thresh, OPTIONS_disp_contrast) ;
 
