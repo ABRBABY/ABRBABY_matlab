@@ -203,6 +203,13 @@ fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_group_comparison.csv');
 writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 
 
+
+
+% Get lag 
+
+% Wrtie to a table 
+
+
 % %% Root mean square and SNR on indivudual FFRs
 % 
 % Subj = [subjects(:)];
