@@ -93,6 +93,10 @@ OPTIONS_rej.visu = 1 ;                                         % 1 to display re
 all_subjects = get_all_subjects(indir) ;
 [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
 
+%% -------------------- Automatically extrcat FFR indices : neural lag
+
+
+
 % %%TO DO !!!
 % % Reject bad participants based neural lag
 % OPTIONS_rej.indir = indir ;
