@@ -27,8 +27,10 @@ end
 %Create table with rejection information at group level
 rej_info_all = table(subjects,std_rejected,dev1_rejected,dev2_rejected);
 
-% Save this table into a csv file (use function writetable)
-writetable(rej_info_all,fullfile(OPTIONS.indir, strcat('trial_rejected_ERPs_summary', OPTIONS.param, '.csv')));
+if OPTIONS.writecsv == 1
+    % Save this table into a csv file (use function writetable)
+    writetable(rej_info_all,fullfile(OPTIONS.indir, strcat('trial_rejected_ERPs_summary', OPTIONS.params, '.csv')));
+end
 
 % Get list of kept subjects as a function of the threshold
 not_rejected = (std_rejected+dev1_rejected+dev2_rejected)/height(temp)<thresh ; 
