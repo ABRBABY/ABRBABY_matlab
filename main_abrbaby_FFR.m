@@ -68,10 +68,10 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_046_T18'} ;
-%subjects_to_process = get_all_subjects(indir) ;
+% subjects_to_process = {'DVL_046_T18'} ;
+subjects_to_process = get_all_subjects(indir) ;
 
-OPTIONS_disp.params = 'stepA1_stepB1'; 
+OPTIONS_disp.params = 'stepA1_stepB3'; 
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_disp.indir = indir ; 
 OPTIONS_disp.plot_dir = plot_dir ; 
@@ -81,8 +81,15 @@ OPTIONS_disp.fs = 16384 ;
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 %to do : display number of trials kept
 
-%% -------------------Reject bad participants and compute group analyses
 
+%% -------------------Compute neural lag for all subject and write a table
+OPTIONS_neural.params = 'stepA1_stepB3'; 
+OPTIONS_neural.indir= indir; 
+compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
+
+
+
+%% -------------------Reject bad participants and compute group analyses
 % Reject bad participants based on number of trials rejected
 OPTIONS_rej.indir = indir ;
 OPTIONS_rej.threshold = 1500 ;                                  % minimum number of artifact-free trials to keep a participant
