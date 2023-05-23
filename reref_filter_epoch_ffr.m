@@ -12,7 +12,6 @@ function [out_filenames] = reref_filter_epoch_ffr(ALLEEG, OPTIONS,flag_sub_to_cr
 % Reject bad trials and produce report
 
 % Get OPTIONS
-%[indir, mastos, trig, abr, eeg_elec, baseline, win_of_interest, chan_dir,rej_low,rej_high, bloc]= get_OPTIONS(OPTIONS) ;
 [indir, mastos, trig, abr, eeg_elec, chan_dir, hp, lp, win_of_interest, baseline]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir
@@ -41,9 +40,6 @@ for jj=1:length(subjects)
     % Creates resulting filename
     %stepA = Reref, Epoch, Reject Bad Trial
     out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,suffix,num2str(count),'.set')) ;
-
-    % Select bdf file in the folder
-    EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
 
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
