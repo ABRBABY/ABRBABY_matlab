@@ -44,9 +44,6 @@ for jj=1:length(subjects)
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
 
-    % Select bdf file in the folder
-    EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
-
     % Find REF electrodes indices by labels 
     ref_elec = find(ismember({EEG.chanlocs.labels},mastos)); 
 
