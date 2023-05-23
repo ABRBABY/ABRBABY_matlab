@@ -85,7 +85,7 @@ OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 % Display one participant results 
 % subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
 %subjects_to_process = {'DVL_004_T10','DVL_004_T8','DVL_006_T10','DVL_007_T10','DVL_011_T10','DVL_012_T10','DVL_013_T10','DVL_013_T8','DVL_018_T10','DVL_018_T6','DVL_024_T6','DVL_030_T10','DVL_037_T6','DVL_037_T8'} ;
-subjects_to_process = {'DVL_013_T8'} ;
+subjects_to_process = {'DVL_007_T10'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 
@@ -98,10 +98,10 @@ OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electro
 OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp_contrast.balance_STD = 'balanced';                      % 'balanced' or 'unbalanced' number of STD
-OPTIONS_disp_contrast.ylim = [-10, 10] ;                               % limits of y axis
+OPTIONS_disp_contrast.ylim = [-5, 5] ;                               % limits of y axis
 OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
 OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;      % path to save svg files of plots
-OPTIONS_disp_contrast.writecsv = 1 ;
+OPTIONS_disp_contrast.writecsv = 0 ;
 
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
