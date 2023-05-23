@@ -32,13 +32,21 @@ function [] = ABRBABY_populate_BST_DB(set_params)
 
 %% Main 
 % Input directory 
-INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
+%INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
+INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
+OPTIONS.indir = INDIR ;
+OPTIONS.params = set_params ;
+OPTIONS.writecsv = 0 ;
 
 % Reads all folders that are in INDIR 
 d = dir(INDIR); 
 isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
+
+% Remove subjects based on number of trial rejected 
+thresh = 0.33;
+subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 
 % Loop through all subjects
 for jj=1:length(subjects) 
