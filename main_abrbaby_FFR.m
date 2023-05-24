@@ -68,7 +68,7 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_046_T18'} ;
+subjects_to_process = {'DVL_047_T8'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 OPTIONS_disp.params = 'stepA1_stepB1'; 
@@ -86,7 +86,6 @@ display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 OPTIONS_neural.params = 'stepA1_stepB1'; 
 OPTIONS_neural.indir= indir; 
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
-%'/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/dev/signal_processing/ABRBABY_matlab/ToolBox_BrainStem/BT_2013/da_170_kraus_16384_LP3000_HP80.avg' ; 
 OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 0 ;
@@ -95,9 +94,10 @@ OPTIONS_neural.polarity = 'POSITIVE' ;
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
 OPTIONS_neural.BT_toolbox = BT_toolbox ;
+OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
+OPTIONS_neural.grpB = {'_T18','_T24'};
 
-% subjects_to_process = get_all_subjects(indir) ;
-subjects_to_process = {'DVL_003_T10','DVL_004_T10','DVL_004_T18','DVL_004_T8','DVL_005_T18','DVL_006_T10','DVL_006_T18','DVL_007_T18','DVL_008_T10','DVL_008_T18','DVL_010_T18','DVL_010_T24','DVL_011_T10','DVL_011_T18','DVL_012_T10'} ;
+subjects_to_process = get_all_subjects(indir) ;
 
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
