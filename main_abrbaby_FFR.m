@@ -5,11 +5,11 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-%  custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
-plot_dir = fullfile(custom_path, 'png_folder');
+plot_dir = fullfile(custom_path, 'png_folder') ;
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
@@ -51,7 +51,7 @@ OPTIONS_stepB.bt_toolbox = BT_toolbox ;
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.bloc = repelem(1:30,170) ;             % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
-tube_length = 0.27  ; 
+tube_length = 0.27 ; 
 propag_sound = 340 ; 
 suffix_stepB = '_stepB' ;
 stepA_num = 1 ;                                      %Set of stepA parameters to use for filtering
@@ -68,10 +68,10 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-% subjects_to_process = {'DVL_046_T18'} ;
-subjects_to_process = get_all_subjects(indir) ;
+subjects_to_process = {'DVL_047_T8'} ;
+% subjects_to_process = get_all_subjects(indir) ;
 
-OPTIONS_disp.params = 'stepA1_stepB3'; 
+OPTIONS_disp.params = 'stepA1_stepB1'; 
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_disp.indir = indir ; 
 OPTIONS_disp.plot_dir = plot_dir ; 
@@ -83,36 +83,35 @@ display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 
 
 %% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA1_stepB3'; 
+OPTIONS_neural.params = 'stepA1_stepB1'; 
 OPTIONS_neural.indir= indir; 
+OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+OPTIONS_neural.start = 0 ;
+OPTIONS_neural.stop = 169 ;
+OPTIONS_neural.lagstart = 0 ;
+OPTIONS_neural.lagstop = 10 ;
+OPTIONS_neural.polarity = 'POSITIVE' ; 
+OPTIONS_neural.chan =1 ;
+OPTIONS_neural.chancomp =1 ;
+OPTIONS_neural.BT_toolbox = BT_toolbox ;
+OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
+OPTIONS_neural.grpB = {'_T18','_T24'};
+
+subjects_to_process = get_all_subjects(indir) ;
+
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
-
-
 %% -------------------Reject bad participants and compute group analyses
-% Reject bad participants based on number of trials rejected
+% Reject bad participants based on number of trials rejected and neural lag
 OPTIONS_rej.indir = indir ;
-OPTIONS_rej.threshold = 1500 ;                                  % minimum number of artifact-free trials to keep a participant
+OPTIONS_rej.threshold = 1500 ;                                 % minimum number of artifact-free trials to keep a participant
 OPTIONS_rej.suffix_csv = '_infos_trials_low_-45_high_45' ;     % suffix for CVS file containing trial rejection info
 OPTIONS_rej.param = '_stepB1';                                 % suffix for set of parameters to process
 OPTIONS_rej.visu = 1 ;                                         % 1 to display rejection rates, otherwise 0
+OPTIONS_rej.neural_lag = 3 ;                                   % neural lag threshold : under this value, subjects are rejected
 
 all_subjects = get_all_subjects(indir) ;
 [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
-
-%% -------------------- Automatically extrcat FFR indices : neural lag
-
-
-
-% %%TO DO !!!
-% % Reject bad participants based neural lag
-% OPTIONS_rej.indir = indir ;
-% OPTIONS_rej.threshold = 3 ;                                    % minimum value of neural lag
-% %OPTIONS_rej.suffix_csv = '_infos_trials_low_-45_high_45' ;     % suffix for CVS file containing trial rejection info
-% OPTIONS_rej.param = '_stepA1';                                 % suffix for set of parameters to process
-% OPTIONS_rej.visu = 0 ;                                         % 1 to display rejection rates, otherwise 0
-% 
-% [subjects_to_analyse] = reject_participants_FFR(subjects_to_analyse, OPTIONS_rej) ;
 
 OPTIONS_analysis.indir = indir ;
 OPTIONS_analysis.param = '_stepA1_stepB1';
@@ -122,15 +121,11 @@ OPTIONS_analysis.groups = {grpA, grpB} ;
 OPTIONS_analysis.srate = 16384 ;
 OPTIONS_analysis.win_of_interest = [-0.04, 0.2] ;
 
-
-%OPTIONS_analysis.
-%OPTIONS_analysis.
-
 % Reject participants based on visualization
-participants_to_reject = {'DVL_003_T6','DVL_007_T10','DVL_010_T24','DVL_032_T10','DVL_034_T18','DVL_011_T18','DVL_029_T10'} ;
-% subjects_to_analyse = contains(subjects_to_analyse,participants_to_reject) ;
-temp = find(ismember(subjects_to_analyse,participants_to_reject)) ;
-subjects_to_analyse(temp) = '' ;
+%participants_to_reject = {'DVL_003_T6','DVL_007_T10','DVL_010_T24','DVL_032_T10','DVL_034_T18'} ;
+%subjects_to_analyse = contains(subjects_to_analyse,participants_to_reject) ;
+%temp = find(ismember(subjects_to_analyse,participants_to_reject)) ;
+%subjects_to_analyse(temp) = '' ;
 
 %Run FFR analysis only on kept subjects
 FFR_analysis(subjects_to_analyse,OPTIONS_analysis);

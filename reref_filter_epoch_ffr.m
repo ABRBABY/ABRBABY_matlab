@@ -78,10 +78,7 @@ for jj=1:length(subjects)
     % Extract event from trigger channel (Erg1)
     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
 
-%     % Identifies outliers events (e.g. boundaries) or too close events
-%     idx_to_remove = [   find(diff([EEG.event.latency])<0.1*EEG.srate),... % minimum intretrial duration = 220 ms
-%         find(diff([EEG.event.latency])>2*EEG.srate) ];
-%     % Identifies outliers events (e.g. boundaries) or too close events 
+    % Identifies outliers events (e.g. boundaries) or too close events 
     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
                         find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 ms
    
