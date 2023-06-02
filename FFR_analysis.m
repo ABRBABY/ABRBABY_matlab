@@ -1,11 +1,6 @@
 function [] = FFR_analysis(subjects, OPTIONS) 
 % ERPs analysis script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
-% 
-% OPTIONS.param = '_RERBT1_FBT1';
-% grpA.suffix = {'_T3','_T6','_T8','_T10'};
-% grpB.suffix = {'_T18','_T24'};
-% OPTIONS.groups = {grpA, grpB} ;
 
 grpA = OPTIONS.groups{1} ;
 grpB = OPTIONS.groups{2} ;
@@ -38,15 +33,14 @@ end
 
   
 %% Time domain : FFR visualization
+
 % Compute grand average and plot
 grd_FFR = mean(all_subj,2);
-%grd_FFR = mean(new_all_subj,2);
 figure ; 
 plot(timepoints,grd_FFR,'Color',FFR_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
 legend('Grand average FFR');
 xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR, 6-24 mo');
-
 
 % Compute grand average by group
 grpA.subj = subjects(contains(subjects,grpA.suffix));
@@ -198,17 +192,13 @@ SNR_Vowel = [SNR_vowel_grpA;SNR_vowel_grpB];
 RMS_and_SNR = table(Group,RMS_Prestim,RMS_Total,RMS_CV,RMS_Vowel,SNR_Total,SNR_CV,SNR_Vowel);
 RMS_and_SNR
 
+% Display distribution of RMS and SNR
+figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
+figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
+
 % Save table in a .csv file
 fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_group_comparison.csv');
 writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
-
-
-
-
-% Get lag 
-
-% Wrtie to a table 
-
 
 % %% Root mean square and SNR on indivudual FFRs
 % 
@@ -245,30 +235,37 @@ writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 % 
 % %todo : organiser data par groupe d'âge
 % 
-% %% Neural lag
-% 
-% %estimation of the transmission delay between stimulus and response.
-% %calculated from the time lag that produces the maximum stimulus-to-response
-% %cross-correlation magnitude
-% % !!need the stimulus-to-response correlation code for that !!
-% 
-% 
-% %% Stimulus-to-response correlation
-% file = FFR_avg_grpA ;%FFR to compare to stimulus
-% comparison = '\\Filer\home\Invites\hervé\Mes documents\These\EEG\Data\ToolBox_BrainStem_ASD_24052022\BT_2013\da_170_kraus_16384_LP3000_HP80.wav'; %stimulus file for comparison
-% start = 0;
-% stop = 169;
-% lagstart = 6.9;
-% lagstop = 9.6;
-% polarity = 'POSITIVE'; 
-% chan = 1; 
-% chancomp = 1;
-% 
-% [LAG_atmaxmin, maxmincor, all_corrs, all_lags] = stim_to_resp_corr(file, comparison, start, stop, lagstart, lagstop, polarity, chan, chancomp);
-%  
-% p =2;
-% %% Pitch tracking
-% %function [time autocorr LAG FFT freqAxis preFFT blocks]= pitchtrack(avgname, block, step, startAnalysis,channel,exportData)
+
+%% Neural lag
+
+% Estimation of the transmission delay between stimulus and response. 
+% Calculated from the time lag that produces the maximum stimulus-to-response cross-correlation magnitude
+
+% Read files that contains neural lag and age information
+neural_lags = readtable(fullfile(OPTIONS.indir, 'all_neural_lags.csv')) ;
+age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
+
+% Keep only subjects of interest (not rejected)
+neural_lags = neural_lags(contains(neural_lags.suject_ID, subjects),:) ;
+age_in_days = age_in_days(contains(age_in_days.subjects, subjects),:) ;
+
+%Get variables of interest: neural lags and ages 
+IDlist_grA = neural_lags.suject_ID(contains(neural_lags.group,'A')) ;
+IDlist_grB = neural_lags.suject_ID(contains(neural_lags.group,'B')) ;
+neural_lags_grA = neural_lags.neural_lag(contains(neural_lags.group,'A')) ;
+neural_lags_grB = neural_lags.neural_lag(contains(neural_lags.group,'B')) ;
+age_grA = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grA)) ;
+age_grB = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grB)) ;
+
+all_info = table(neural_lags.suject_ID, neural_lags.neural_lag, neural_lags.group, age_in_days.age_in_days) ;
+
+ % Display neural lag distribution as a function of age
+figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
+figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
+
+ %% Pitch tracking
+
+ %function [time autocorr LAG FFT freqAxis preFFT blocks]= pitchtrack(avgname, block, step, startAnalysis,channel,exportData)
 % 
 % % block = 1;
 % % step = 1;
