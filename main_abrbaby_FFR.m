@@ -68,7 +68,7 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_010_T24'} ;
+subjects_to_process = {'DVL_006_T24', 'DVL_037_T10', 'DVL_048_T10'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 OPTIONS_disp.params = 'stepA1_stepB1'; 
@@ -90,7 +90,7 @@ OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 0 ;
 OPTIONS_neural.lagstop = 10 ;
-OPTIONS_neural.polarity = 'NEGATIVE' ; 
+OPTIONS_neural.polarity = 'POSITIVE' ; 
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
 OPTIONS_neural.BT_toolbox = BT_toolbox ;
@@ -122,7 +122,7 @@ OPTIONS_analysis.srate = 16384 ;
 OPTIONS_analysis.win_of_interest = [-0.04, 0.2] ;
 
 % Reject participants based on visualization
-participants_to_reject = {'DVL_003_T6','DVL_007_T10','DVL_010_T24','DVL_032_T10','DVL_034_T18'} ;
+participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
 subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 
 %Run FFR analysis only on kept subjects
