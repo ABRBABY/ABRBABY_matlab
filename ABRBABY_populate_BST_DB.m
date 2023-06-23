@@ -39,6 +39,8 @@ OPTIONS.params = set_params ;
 OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
 
+sRate = 256 ; % New sampling rate 
+
 % Reads all folders that are in INDIR 
 d = dir(INDIR); 
 isub = [d(:).isdir]; % returns logical vector if is folder
@@ -53,12 +55,12 @@ subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 for jj=1:length(subjects) 
 
     % Call BST functions
-    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance)
+    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate)
 
 end
  
 %% Function the link data file to BST (Review Raw)
-function [] = process_pipeline(INDIR, SubjectName, set_params,opt_balance)
+function [] = process_pipeline(INDIR, SubjectName, set_params,opt_balance, sRate)
 
 Conditions = {'DEV1', 'DEV2', 'STD1', 'STD2'};
 
@@ -95,7 +97,7 @@ for cc=1:length(Conditions)
         'channelalign',  0, ...
         'usectfcomp',    0, ...
         'usessp',        0, ...
-        'freq',          256, ...
+        'freq',          sRate, ...
         'baseline',      [], ...
         'blsensortypes', 'MEG, EEG');
     
