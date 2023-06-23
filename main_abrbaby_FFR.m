@@ -68,14 +68,14 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_047_T8'} ;
+subjects_to_process = {'DVL_006_T24', 'DVL_037_T10', 'DVL_048_T10'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 OPTIONS_disp.params = 'stepA1_stepB1'; 
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_disp.indir = indir ; 
 OPTIONS_disp.plot_dir = plot_dir ; 
-OPTIONS_disp.ylim = [-0.3, 0.3] ;      % [-0.5, 0.5]
+OPTIONS_disp.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
 OPTIONS_disp.fs = 16384 ; 
 
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
@@ -122,10 +122,8 @@ OPTIONS_analysis.srate = 16384 ;
 OPTIONS_analysis.win_of_interest = [-0.04, 0.2] ;
 
 % Reject participants based on visualization
-%participants_to_reject = {'DVL_003_T6','DVL_007_T10','DVL_010_T24','DVL_032_T10','DVL_034_T18'} ;
-%subjects_to_analyse = contains(subjects_to_analyse,participants_to_reject) ;
-%temp = find(ismember(subjects_to_analyse,participants_to_reject)) ;
-%subjects_to_analyse(temp) = '' ;
+participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
+subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 
 %Run FFR analysis only on kept subjects
 FFR_analysis(subjects_to_analyse,OPTIONS_analysis);

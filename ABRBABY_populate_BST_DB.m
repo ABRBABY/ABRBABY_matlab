@@ -1,4 +1,4 @@
-function [] = ABRBABY_populate_BST_DB(set_params)
+function [] = ABRBABY_populate_BST_DB(set_params, opt_balance)
 % ========================================================================
 % This file is part of ABRBABY project
 % 
@@ -36,6 +36,7 @@ function [] = ABRBABY_populate_BST_DB(set_params)
 INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
 OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
+OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
 
 % Reads all folders that are in INDIR 
@@ -52,12 +53,12 @@ subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 for jj=1:length(subjects) 
 
     % Call BST functions
-    process_pipeline(INDIR, subjects{jj}, set_params)
+    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance)
 
 end
  
 %% Function the link data file to BST (Review Raw)
-function [] = process_pipeline(INDIR, SubjectName, set_params)
+function [] = process_pipeline(INDIR, SubjectName, set_params,opt_balance)
 
 Conditions = {'DEV1', 'DEV2', 'STD1', 'STD2'};
 
@@ -70,18 +71,22 @@ bst_report('Start', sFiles);
 
 % Creates a subject in database using the dfault anatomy and default
 % channels
-[~, ~] = db_add_subject(strcat(set_params,'_',SubjectName) , [], 1, 1);
+[~, ~] = db_add_subject(strcat(set_params,'_',opt_balance, '_',SubjectName) , [], 1, 1);
 panel_protocols('UpdateTree'); % Update the Protocol in GUI
 
 % Loop through conditions 
 for cc=1:length(Conditions)
     
-   RawFile = dir(fullfile(INDIR,SubjectName,strcat(SubjectName,'_',Conditions{cc},'*_balanced_',set_params,'*.set'))) ; 
+   RawFile = dir(fullfile(INDIR,SubjectName,strcat(SubjectName,'_',Conditions{cc},'*_', opt_balance, '_*',set_params,'*.set'))) ; 
+   if size(RawFile,1) > 1
+        rman = find(contains({RawFile.name}, 'rman')) ;
+        RawFile = RawFile(rman,1) ;
+    end
    RawFile = fullfile(RawFile.folder, RawFile.name);
    
     % Process: Import MEG/EEG: Existing epochs
     sFiles = bst_process('CallProcess', 'process_import_data_epoch', [], [], ...
-        'subjectname',   strcat(set_params,'_',SubjectName) , ...
+        'subjectname',   strcat(set_params,'_',opt_balance, '_', SubjectName) , ...
         'condition',     Conditions{cc}, ...
         'datafile',      {RawFile, 'EEG-EEGLAB'}, ...
         'iepochs',       [], ...
@@ -90,7 +95,7 @@ for cc=1:length(Conditions)
         'channelalign',  0, ...
         'usectfcomp',    0, ...
         'usessp',        0, ...
-        'freq',          [], ...
+        'freq',          256, ...
         'baseline',      [], ...
         'blsensortypes', 'MEG, EEG');
     
@@ -137,5 +142,58 @@ sFiles = bst_process('CallProcess', 'process_average', [cond1,cond2], [], ...
     'avg_func',      1, ...  % Arithmetic average:  mean(x)
     'weighted',      0, ...
     'keepevents',    0);
+
+conditionsMMN = { 'DEV1-STD1', 'DEV2-STD2'} ; 
+
+for ccMMN=1:length(conditionsMMN)
+
+    % Process: Select data files in: */DEV1-STD1/_T8
+    sFiles = bst_process('CallProcess', 'process_select_files_data', [], [], ...
+        'subjectname',   [], ...
+        'condition',    conditionsMMN(ccMMN), ...
+        'tag',           '', ...
+        'includebad',    0, ...
+        'includeintra',  0, ...
+        'includecommon', 0);
     
+    sFilesG1 = sFiles(contains({sFiles.FileName},["_T6","_T8","_T10"])); 
+    sFilesG2 = sFiles(contains({sFiles.FileName},["_T18","_T24"])); 
+    
+    % Process: t-test equal [-200ms,500ms]          H0:(A=B), H1:(A<>B)
+    sFiles = bst_process('CallProcess', 'process_test_parametric2', sFilesG1, sFilesG2, ...
+        'timewindow',    [-0.200012207, 0.4999389648], ...
+        'sensortypes',   '', ...
+        'isabs',         0, ...
+        'avgtime',       0, ...
+        'avgrow',        0, ...
+        'Comment',       '', ...
+        'test_type',     'ttest_equal', ...  % Student's t-test   (equal variance)        A,B~N(m,v)t = (mean(A)-mean(B)) / (Sx * sqrt(1/nA + 1/nB))Sx = sqrt(((nA-1)*var(A) + (nB-1)*var(B)) / (nA+nB-2)) df = nA + nB - 2
+        'tail',          'two');  % Two-tailed
+    
+    % Process: Average: Everything
+    sFilesAvgG1 = bst_process('CallProcess', 'process_average', sFilesG1, [], ...
+        'avgtype',       1, ...  % Everything
+        'avg_func',      1, ...  % Arithmetic average:  mean(x)
+        'weighted',      0, ...
+        'keepevents',    0);
+    
+    % Process: Add tag: toto
+    bst_process('CallProcess', 'process_add_tag', sFilesAvgG1, [], ...
+        'tag',           'Group1', ...
+        'output',        1);  % Add to file name
+    
+    % Process: Average: Everything
+    sFilesAvgG2 = bst_process('CallProcess', 'process_average', sFilesG2, [], ...
+        'avgtype',       1, ...  % Everything
+        'avg_func',      1, ...  % Arithmetic average:  mean(x)
+        'weighted',      0, ...
+        'keepevents',    0);
+    
+    % Process: Add tag: Group2
+    bst_process('CallProcess', 'process_add_tag', sFilesAvgG2, [], ...
+        'tag',           'Group2', ...
+        'output',        1);  % Add to file name
+
+end
+
 end
