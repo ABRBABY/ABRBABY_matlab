@@ -32,16 +32,19 @@ function [] = ABRBABY_populate_BST_DB(set_params, opt_balance)
 
 %% Main 
 % Input directory 
-INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
+% INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
 % INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
+INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\BABYLANG_WILLIAM' ;
 OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
 OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
 conditionsMMN = { 'DEV1-STD1', 'DEV2-STD2'} ; 
 vTime = [-0.200012207, 0.4999389648] ; 
-sGroups{1} = ["_T6","_T8","_T10"] ; 
-sGroups{2} = ["_T18","_T24"] ; 
+% sGroups{1} = ["_T6","_T8","_T10"] ; 
+% sGroups{2} = ["_T18","_T24"] ; 
+sGroups{1} = ["CINC_C"] ; 
+sGroups{2} = ["CINC_H"] ; 
 
 sRate = 256 ; % New sampling rate 
 
@@ -59,7 +62,7 @@ subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 for jj=1:length(subjects) 
 
     % Process individual analysis : Feed the BST database with subjects data 
-    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate);
+    %process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate);
 
     % Process contrast by groups : t-test 
     process_group_analysis(conditionsMMN, vTime, sGroups) ; 
