@@ -64,9 +64,10 @@ for jj=1:length(subjects)
     % Process individual analysis : Feed the BST database with subjects data 
     %process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate);
 
-    % Process contrast by groups : t-test 
-    process_group_analysis(conditionsMMN, vTime, sGroups) ; 
 end
+
+% Process contrast by groups : t-test
+process_group_analysis(conditionsMMN, vTime, sGroups) ; 
  
 %-----------------------------------------------------------------------------
 % Process individual analysis (import, rej bad trials, average)
