@@ -39,7 +39,7 @@ if size(rej_trials,1)>0
 end
 
 % Get list of participants rejected based on neural lag
-neural_table = readtable(fullfile(OPTIONS.indir, "all_neural_lags.csv")) ;
+neural_table = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv')),  'Delimiter', ',') ;
 rej_neural = subjects(neural_table.neural_lag<OPTIONS.neural_lag) ;
 % Display list of subjects rejected based on neural lag value
 if size(rej_neural,1)>0

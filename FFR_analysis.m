@@ -22,7 +22,7 @@ mat = 1;
 all_subj = zeros(size(timepoints,1),1);
 for loopnum = 1:length(subjects) %for each subject
 %for loopnum=find(ismember(subjects,'DVL_003_T10')) ; 
-    FFR_file = fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},OPTIONS.param,'_abr_shifted_data_HF.txt')) ; 
+    FFR_file = fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},OPTIONS.param,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.txt')) ; 
     if exist(FFR_file,'file')==0 ; error(['File does not exist, please run FFR preprocessing steps on ',subjects{loopnum}]); end
     fileID = fopen(FFR_file,'r');
     formatSpec = '%f';
@@ -66,32 +66,38 @@ FFR_avg_grpB = mean(data_groups{1,2},2);
 % Visualization by group
 
 % Temporal
-figure ; 
+fig = figure ; 
 plot(timepoints,FFR_avg_grpA,'Color', grpA_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 plot(timepoints,FFR_avg_grpB,'Color', grpB_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
 legend('Grand average FFR 6-10 mo', 'Grand average FFR 18-24 mo');
 xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR group comparison');
 
-%Print plot into .svg pictures
+%Print plot into .svg, png and fig files
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grp_comparison.svg'));
+print('-dpng',fullfile(OPTIONS.plot_dir,strcat('mean_FFR_grp_comparison_', OPTIONS.polarity,'_FFR_temporal.png')));
+saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat('mean_FFR_grp_comparison_', OPTIONS.polarity,'_FFR_temporal.fig')));
 
 % Visualization of each group
-figure ; 
+fig = figure ; 
 plot(timepoints,FFR_avg_grpA,'Color', grpA_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
 legend('Grand average FFR 6-10 mo');
 xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 6-10mo');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpA.svg'));
+print('-dpng',fullfile(OPTIONS.plot_dir,strcat('mean_FFR_grpA_', OPTIONS.polarity,'.png')));
+saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat('mean_FFR_grpA_', OPTIONS.polarity,'.fig')));
 
-figure ; 
+fig = figure ; 
 plot(timepoints,FFR_avg_grpB,'Color', grpB_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
 legend('Grand average FFR 18-24 mo');
 xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 18-24mo');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpB.svg'));
+print('-dpng',fullfile(OPTIONS.plot_dir,strcat('mean_FFR_grpB_', OPTIONS.polarity,'.png')));
+saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat('mean_FFR_grpB_', OPTIONS.polarity,'.fig')));
 
 %% Export mean FFRs into .txt files and convert into .avg files
 fname_out_grpA = fullfile(OPTIONS.indir,'mean_FFR_grpA.txt') ;
@@ -242,7 +248,7 @@ writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 % Calculated from the time lag that produces the maximum stimulus-to-response cross-correlation magnitude
 
 % Read files that contains neural lag and age information
-neural_lags = readtable(fullfile(OPTIONS.indir, 'all_neural_lags.csv')) ;
+neural_lags = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv'))) ;
 age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
 
 % Keep only subjects of interest (not rejected)

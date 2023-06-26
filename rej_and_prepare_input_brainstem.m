@@ -54,14 +54,6 @@ for ii=1:length(subjects)
     
     % Reject bad trials and write a report
      
-      % Extract epochs for HF
-%     EEG = pop_epoch( EEG, {  'HF'  }, win_of_interest, 'newname', 'epochs', 'epochinfo', 'yes');
-%     
-%     %Remove baseline
-%     EEG = pop_rmbase( EEG, baseline,[]);
-
-    % Get indices of the trials which were rejected (without messing around with the relative indices)
-    %[EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
     [EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,1,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
     
     % Name of the file report 
@@ -73,29 +65,91 @@ for ii=1:length(subjects)
     produce_report(fname{1}, EEG, 1, bloc, win_of_interest, rej_low, rej_high) ; 
     
     %Extract mean activity (erp) and replace data
-    abr = mean(EEG.data(1,:,:),3);
-    EEG.data = abr;
+%     abr = mean(EEG.data(1,:,:),3);   %EEG.data = elec x samples x trials
+%     EEG.data = abr;
+
+    %Extract mean activity (ERP) by polarity: averaged, positive only and
+    %negative only
+   
+    % Averaged polarities
+    abr_average = mean(EEG.data(1,:,:),3);   %EEG.data = elec x samples x trials     ones_vector = ones(1,size(EEG.data, 3)/2);
+    
+    % Positive and negative polarities
+    zeros_vector = zeros(1,size(EEG.data, 3)/2);
+    ones_vector = ones(1,size(EEG.data, 3)/2);
+    negative_altern = [zeros_vector(:) ones_vector(:)]';
+    negative_altern = negative_altern(:);
+    negative_altern_log = logical(negative_altern);
+
+    positive_altern = [ones_vector(:) zeros_vector(:)]';
+    positive_altern = positive_altern(:);
+    positive_altern_log = logical(positive_altern);
+
+    abr_positive = mean(EEG.data(1,:,positive_altern_log),3);
+    abr_negative = mean(EEG.data(1,:,negative_altern_log),3);
 
     % Add tube delay (27 cm x 340 m/s ) 
     nsample_delay = fix(EEG.srate * (tube_length / propag_sound) ) ; 
+    %abr_shifted = circshift(abr,nsample_delay) ;
+    abr_averaged_shifted = circshift(abr_average,nsample_delay) ;
+    abr_averaged_shifted(1:nsample_delay) = 0.00001;
+    abr_positive_shifted = circshift(abr_positive,nsample_delay) ;
+    abr_positive_shifted(1:nsample_delay) = 0.00001;
+    abr_negative_shifted = circshift(abr_negative,nsample_delay) ;
+    abr_negative_shifted(1:nsample_delay) = 0.00001;
 
-    abr_shifted = circshift(abr,nsample_delay) ;
+% figure ;
+% plot(timepoints,abr_average,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(timepoints,abr_averaged_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
+% grid on ;
+% legend('FFR : AVG polarity', 'FFR : Negative polarity, shifted');
+% 
+% figure ;
+% plot(timepoints,abr_positive,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(timepoints,abr_positive_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
+% grid on ;
+% legend('FFR : Positive polarity', 'FFR : Positive polarity, shifted');
+% 
+% figure ;
+% plot(timepoints,abr_negative,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(timepoints,abr_negative_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
+% grid on ;
+% legend('FFR : Negative polarity', 'FFR : Negative polarity, shifted');
     
     % Create a custom history variable to keep track of OPTIONS 
     EEG.history_stepB = OPTIONS ;
     
-    %% SAVE DATASET
+    %% SAVE DATASETS
+    EEG.data = abr_averaged_shifted ;
+    EEG.positive_pol = abr_positive_shifted;
+    EEG.negative_pol = abr_negative_shifted;
     pop_newset(ALLEEG, EEG, 1, 'setname', strcat(subjects{ii},'_filtered_FFR'),'savenew', fullfile(filepath, strcat(subjects{ii},'_stepA',num2str(stepA),suffix,num2str(count))),'gui','off');
 
     %% Export ABR data into .txt file
-    fname_out = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_shifted_data_HF.txt')) ;
-    fid = fopen(fname_out,'w');
-    fprintf(fid,'%c\n',abr_shifted);
+%     fname_out = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_shifted_data_HF.txt')) ;
+%     fid = fopen(fname_out,'w');
+%     fprintf(fid,'%c\n',abr_shifted);
+%     fclose(fid);
+
+    fname_out_avg = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_avg_shifted_data_HF.txt')) ;
+    fid = fopen(fname_out_avg,'w');
+    fprintf(fid,'%c\n',abr_averaged_shifted);
+    fclose(fid);
+
+    fname_out_pos = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_pos_shifted_data_HF.txt')) ;
+    fid = fopen(fname_out_pos,'w');
+    fprintf(fid,'%c\n',abr_positive_shifted);
     fclose(fid);
     
+    fname_out_neg = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_neg_shifted_data_HF.txt')) ;
+    fid = fopen(fname_out_neg,'w');
+    fprintf(fid,'%c\n',abr_negative_shifted);
+    fclose(fid);
     addpath(BT_toolbox);
+
     %addpath(BT_toolbox,'programFiles');
-    bt_txt2avg(fname_out, EEG.srate, EEG.history_stepA.win_of_interest(1)*1000, EEG.history_stepA.win_of_interest(2)*1000);
+    %bt_txt2avg(fname_out, EEG.srate, EEG.history_stepA.win_of_interest(1)*1000, EEG.history_stepA.win_of_interest(2)*1000);
+    bt_txt2avg(fname_out_avg, EEG.srate, EEG.history_stepA.win_of_interest(1)*1000, EEG.history_stepA.win_of_interest(2)*1000);
+    bt_txt2avg(fname_out_pos, EEG.srate, EEG.history_stepA.win_of_interest(1)*1000, EEG.history_stepA.win_of_interest(2)*1000);
+    bt_txt2avg(fname_out_neg, EEG.srate, EEG.history_stepA.win_of_interest(1)*1000, EEG.history_stepA.win_of_interest(2)*1000);
+
 end
 
 %% Export times (from any subject : just timepoints)
@@ -105,24 +159,6 @@ fprintf(fid,'%f\n',EEG.times);
 fclose(fid);
 end
 
-
-%--------------------------------------------------------------
-% FUNCTION that reads events from text file and output 
-% an EEGLAB events structure 
-%--------------------------------------------------------------
-function out_event = read_custom_events(fname, in_event) 
-
-% Read .txt 
-my_events = readtable(fname, 'ReadVariableNames', 0);
-
-% Insert info from .txt into EEG.event
-my_events = table2array(my_events);
-
-out_event = struct('latency', {in_event(:).latency}, ...
-                'type', (my_events(:))',...
-                'urevent', {in_event(:).urevent});
-
-end
 
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
@@ -136,38 +172,6 @@ rej_high = OPTIONS.rej_high ;
 bloc = OPTIONS.bloc ;
 BT_toolbox = OPTIONS.bt_toolbox;
 win_of_interest = OPTIONS.win_of_interest ;
-end
-
-%--------------------------------------------------------------
-% FUNCTION that check if that sets of param exist 
-%--------------------------------------------------------------
-function [does_exist, count] = check_exist_set_params(filename, subject, OPTIONS)
-
-% Reads all folders that are in indir 
-d = dir(fullfile(OPTIONS.indir,subject, strcat(subject,'stepA',num2str(OPTIONS.stepA),'_filtered_FFR_F*')));
-% No file exists 
-if isempty(d) ; does_exist=0 ; count =1 ; return ; end
-
-for ff=1:length(d) 
-    
-    EEG = pop_loadset('filepath',fullfile(OPTIONS.indir,subject, d(ff).name),'loadmode','info') ;  
-    
-    % Check if the set of param correspond to the current file
-    if isequal(EEG.history_f,OPTIONS)
-        does_exist = 1 ; 
-        tmp = regexp(d(ff).name,'F\d*','Match');
-        tmp2 =  regexp(tmp,'\d*','Match');
-        count = cell2mat(tmp2{:}); 
-        return ; 
-    end
-    
-end
-
-% At this point the set of params does not exist and a new file needs to be
-% crated (with a count increment)
-does_exist = 0 ; 
-count = length(d) +1;
-
 end
 
 %--------------------------------------------------------------
