@@ -32,12 +32,16 @@ function [] = ABRBABY_populate_BST_DB(set_params, opt_balance)
 
 %% Main 
 % Input directory 
-%INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
-INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
+INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
+% INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
 OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
 OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
+conditionsMMN = { 'DEV1-STD1', 'DEV2-STD2'} ; 
+vTime = [-0.200012207, 0.4999389648] ; 
+sGroups{1} = ["_T6","_T8","_T10"] ; 
+sGroups{2} = ["_T18","_T24"] ; 
 
 sRate = 256 ; % New sampling rate 
 
@@ -54,12 +58,16 @@ subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 % Loop through all subjects
 for jj=1:length(subjects) 
 
-    % Call BST functions
-    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate)
+    % Process individual analysis : Feed the BST database with subjects data 
+    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance, sRate);
 
+    % Process contrast by groups : t-test 
+    process_group_analysis(conditionsMMN, vTime, sGroups) ; 
 end
  
-%% Function the link data file to BST (Review Raw)
+%-----------------------------------------------------------------------------
+% Process individual analysis (import, rej bad trials, average)
+%-----------------------------------------------------------------------------
 function [] = process_pipeline(INDIR, SubjectName, set_params,opt_balance, sRate)
 
 Conditions = {'DEV1', 'DEV2', 'STD1', 'STD2'};
@@ -135,35 +143,31 @@ bst_report('Open', ReportFile);
 
 end
 
-cond1= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     'DEV1-STD1') ; 
-cond2= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     'DEV2-STD2') ; 
+%-----------------------------------------------------------------------------
+% Process Group contrast 
+%-----------------------------------------------------------------------------
+function [] = process_group_analysis(conditionsMMN, vTime, sGroups)
+
+cond{1}= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     conditionsMMN{1}) ; 
+cond{2}= bst_process('CallProcess', 'process_select_files_data', [], [], 'condition',     conditionsMMN{2}) ; 
 
 % Process: Average: By folder (grand average)
-sFiles = bst_process('CallProcess', 'process_average', [cond1,cond2], [], ...
+sFiles = bst_process('CallProcess', 'process_average', [cond{1},cond{2}], [], ...
     'avgtype',       4, ...  % By folder (grand average)
     'avg_func',      1, ...  % Arithmetic average:  mean(x)
     'weighted',      0, ...
     'keepevents',    0);
 
-conditionsMMN = { 'DEV1-STD1', 'DEV2-STD2'} ; 
-
 for ccMMN=1:length(conditionsMMN)
-
-    % Process: Select data files in: */DEV1-STD1/_T8
-    sFiles = bst_process('CallProcess', 'process_select_files_data', [], [], ...
-        'subjectname',   [], ...
-        'condition',    conditionsMMN(ccMMN), ...
-        'tag',           '', ...
-        'includebad',    0, ...
-        'includeintra',  0, ...
-        'includecommon', 0);
+   
+    sFiles = cond{ccMMN} ; 
     
-    sFilesG1 = sFiles(contains({sFiles.FileName},["_T6","_T8","_T10"])); 
-    sFilesG2 = sFiles(contains({sFiles.FileName},["_T18","_T24"])); 
+    sFilesG1 = sFiles(contains({sFiles.FileName},sGroups{1})); 
+    sFilesG2 = sFiles(contains({sFiles.FileName},sGroups{2})); 
     
     % Process: t-test equal [-200ms,500ms]          H0:(A=B), H1:(A<>B)
     sFiles = bst_process('CallProcess', 'process_test_parametric2', sFilesG1, sFilesG2, ...
-        'timewindow',    [-0.200012207, 0.4999389648], ...
+        'timewindow',    vTime, ...
         'sensortypes',   '', ...
         'isabs',         0, ...
         'avgtime',       0, ...
@@ -179,7 +183,7 @@ for ccMMN=1:length(conditionsMMN)
         'weighted',      0, ...
         'keepevents',    0);
     
-    % Process: Add tag: toto
+    % Process: Add tag: Group1
     bst_process('CallProcess', 'process_add_tag', sFilesAvgG1, [], ...
         'tag',           'Group1', ...
         'output',        1);  % Add to file name
@@ -197,5 +201,8 @@ for ccMMN=1:length(conditionsMMN)
         'output',        1);  % Add to file name
 
 end
+
+end
+
 
 end
