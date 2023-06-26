@@ -8,7 +8,8 @@
 % custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_data') ;
+% indir = fullfile(custom_path,'DEVLANG_data') ;
+indir = fullfile(custom_path,'BABYLANG_WILLIAM') ;
 plot_dir = fullfile(custom_path, 'png_folder');
  
 % This function sets custom path (either for Estelle or AnneSo)
@@ -56,13 +57,13 @@ RFE_test_existance = RFE_num(24:28);
 [flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
 
 % Reject bad trials and save new .set file
-%[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 [preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
 %% ------------------- Manual rejection of bad trials
 OPTIONS_rman.indir = indir ;                             % directory path
 OPTIONS_rman.suffix_rman = '_rman' ;
-OPTIONS_rman.RFE_num = '_RFE2' ;              % set of RFE parameters to use for this step
+OPTIONS_rman.RFE_num = '_RFE1' ;              % set of RFE parameters to use for this step
 OPTIONS_rman.REJ_num = '_REJ1' ;
 
 %Get all subjects
@@ -74,19 +75,19 @@ subj_to_rman = get_all_subjects(indir) ;
 
 
 %% ------------------- Display results at individual level
-OPTIONS_disp.params = 'RFE2_REJ1';                            % option of preprocess to consider
+OPTIONS_disp.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
 OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
-OPTIONS_disp.balance_STD = 'balanced';                        % 'balanced' or 'unbalanced' number of STD
+OPTIONS_disp.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 
 % Display one participant results 
 % subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
-%subjects_to_process = {'DVL_004_T10','DVL_004_T8','DVL_006_T10','DVL_007_T10','DVL_011_T10','DVL_012_T10','DVL_013_T10','DVL_013_T8','DVL_018_T10','DVL_018_T6','DVL_024_T6','DVL_030_T10','DVL_037_T6','DVL_037_T8'} ;
-subjects_to_process = {'DVL_037_T10'} ;
+subjects_to_process = {'CINC_C_004_T0'} ;
+% subjects_to_process = {'DVL_008_T24'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
 
@@ -99,16 +100,20 @@ OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electro
 OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp_contrast.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
-OPTIONS_disp_contrast.ylim = [-5, 5] ;                               % limits of y axis
+OPTIONS_disp_contrast.ylim = [-5, 5] ;                                 % limits of y axis
 OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
-OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;      % path to save svg files of plots
+OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;
+OPTIONS_disp_contrast.fig_folder = strrep(plot_dir,'png','fig') ;      % path to save fig files of plots
 OPTIONS_disp_contrast.writecsv = 0 ;
 
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
 
-suffix1 = {'_T6','_T8','_T10'} ;
-suffix2  = {'_T18','_T24'} ;
+% suffix1 = {'_T6','_T8','_T10'} ;
+% suffix2  = {'_T18','_T24'} ;
+
+suffix1 = {'CINC_C'} ;
+suffix2  = {'CINC_H'} ;
 
 subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
 subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
@@ -119,4 +124,5 @@ subjects_to_process_grp1 = filter_subjects_based_rejection(subjects_to_process_g
 subjects_to_process_grp2 = filter_subjects_based_rejection(subjects_to_process_grp2, thresh, OPTIONS_disp_contrast) ;
 
 % Display results
-display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
+% display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
+display_group_comparison_cinc(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
