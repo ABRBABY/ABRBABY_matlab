@@ -8,8 +8,9 @@ for ss = 1:length(subjects_to_process) %for each subject
     
     FFR_file = fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_', OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
     
-    [LAG_atmaxmin, maxmincor, all_corrs, all_lags] = bt_xcorrelation2(FFR_file, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, OPTIONS.chan, OPTIONS.chancomp) ; 
-    
+    %[LAG_atmaxmin, maxmincor, all_corrs, all_lags] = bt_xcorrelation2(FFR_file, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, OPTIONS.chan, OPTIONS.chancomp) ; 
+    [LAG_atmaxmin, maxmincor, all_corrs, all_lags] = bt_xcorrelation2_abrbaby(FFR_file, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, OPTIONS.chan, OPTIONS.chancomp) ; 
+
     subject_lag(ss) =  LAG_atmaxmin ;
 
     % Classify subjects into groups
