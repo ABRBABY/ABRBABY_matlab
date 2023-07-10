@@ -76,7 +76,7 @@ for jj=1:length(subjects)
                         find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 m
     
     % Removes outliers events
-    EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ; 
+    EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;  
 
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;

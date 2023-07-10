@@ -8,8 +8,7 @@
 % custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-% indir = fullfile(custom_path,'DEVLANG_data') ;
-indir = fullfile(custom_path,'BABYLANG_WILLIAM') ;
+indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder');
  
 % This function sets custom path (either for Estelle or AnneSo)
@@ -24,10 +23,10 @@ OPTIONS_rfe.hp = 1;                                         % high-pass (Hz) (AP
 OPTIONS_rfe.lp = 30;                                        % low-pass (Hz) (APICE) 
 OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; 
 OPTIONS_rfe.trig = {'Erg1'};                                % Ref and trigger channels 
-% OPTIONS_rfe.baseline = [-99, 0] ; 
-% OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
-OPTIONS_rfe.baseline = [-199, 0] ; 
-OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
+OPTIONS_rfe.baseline = [-99, 0] ; 
+OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
+% OPTIONS_rfe.baseline = [-199, 0] ; 
+% OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
 OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
@@ -44,13 +43,23 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials 
 OPTIONS_rej.indir = indir ;                             % directory path
-OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adults
-OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
+OPTIONS_rej.rej_low = -120 ;                            % 150 infants; 120 adults
+OPTIONS_rej.rej_high = 120 ;                            % 150 infants; 120 adults     
 OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
 suffix_rej = '_REJ' ;
 RFE_num = '_reref_filtered_epoched_RFE1' ;              % set of RFE parameters to use for this step
 RFE_test_existance = RFE_num(24:28);
+
+% Test if this set of params exists and returns the files to process and
+% counter to use to name the saved files
+[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
+
+% Reject bad trials and save new .set file
+[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+[preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+
+RFE_num = '_reref_filtered_epoched_RFE2' ;              % set of RFE parameters to use for this step
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
