@@ -206,39 +206,44 @@ RMS_and_SNR
 fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_group_comparison.csv');
 writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 
-% %% Root mean square and SNR on indivudual FFRs
-% 
-% Subj = [subjects(:)];
-% 
-% RMS_Prestim_all = zeros(1,length(subjects));
-% RMS_Total_all = zeros(1,length(subjects));
-% RMS_CV_all = zeros(1,length(subjects));
-% RMS_Vowel_all = zeros(1,length(subjects));
-% SNR_Total_all = zeros(1,length(subjects));
-% SNR_CV_all = zeros(1,length(subjects));
-% SNR_Vowel_all = zeros(1,length(subjects));
-% 
-% for s =1:length(subjects)
-%     RMS_Prestim_all(s) = std(all_subj(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000),s),1);
-%     RMS_Total_all(s) = std(all_subj(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
-%     RMS_CV_all(s) = std(all_subj(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000),s),1);
-%     RMS_Vowel_all(s) = std(all_subj(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
-%     SNR_Total_all(s) = RMS_Total_all(s)/RMS_Prestim_all(s);
-%     SNR_CV_all(s) = RMS_CV_all(s)/RMS_Prestim_all(s);
-%     SNR_Vowel_all(s) = RMS_Vowel_all(s)/RMS_Prestim_all(s);
-% end
-% 
-% RMS_Prestim_all = RMS_Prestim_all';
-% RMS_Total_all = RMS_Total_all';
-% RMS_CV_all = RMS_CV_all';
-% RMS_Vowel_all = RMS_Vowel_all';
-% SNR_Total_all = SNR_Total_all';
-% SNR_CV_all = SNR_CV_all';
-% SNR_Vowel_all = SNR_Vowel_all';
-% 
-% RMS_and_SNR_all = table(Subj,RMS_Prestim_all,RMS_Total_all,RMS_CV_all,RMS_Vowel_all,SNR_Total_all,SNR_CV_all,SNR_Vowel_all);
-% RMS_and_SNR_all
-% 
+%% Root mean square and SNR on indivudual FFRs
+
+Subj = [subjects(:)];
+
+RMS_Prestim_all = zeros(1,length(subjects));
+RMS_Total_all = zeros(1,length(subjects));
+RMS_CV_all = zeros(1,length(subjects));
+RMS_Vowel_all = zeros(1,length(subjects));
+SNR_Total_all = zeros(1,length(subjects));
+SNR_CV_all = zeros(1,length(subjects));
+SNR_Vowel_all = zeros(1,length(subjects));
+
+for s =1:length(subjects)
+    RMS_Prestim_all(s) = std(all_subj(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000),s),1);
+    RMS_Total_all(s) = std(all_subj(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
+    RMS_CV_all(s) = std(all_subj(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000),s),1);
+    RMS_Vowel_all(s) = std(all_subj(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
+    SNR_Total_all(s) = RMS_Total_all(s)/RMS_Prestim_all(s);
+    SNR_CV_all(s) = RMS_CV_all(s)/RMS_Prestim_all(s);
+    SNR_Vowel_all(s) = RMS_Vowel_all(s)/RMS_Prestim_all(s);
+end
+
+RMS_Prestim_all = RMS_Prestim_all';
+RMS_Total_all = RMS_Total_all';
+RMS_CV_all = RMS_CV_all';
+RMS_Vowel_all = RMS_Vowel_all';
+SNR_Total_all = SNR_Total_all';
+SNR_CV_all = SNR_CV_all';
+SNR_Vowel_all = SNR_Vowel_all';
+
+RMS_and_SNR_all = table(Subj,RMS_Prestim_all,RMS_Total_all,RMS_CV_all,RMS_Vowel_all,SNR_Total_all,SNR_CV_all,SNR_Vowel_all);
+RMS_and_SNR_all
+
+% Save table in a .csv file
+fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_all_participants.csv');
+writetable(RMS_and_SNR_all,fname, 'WriteVariableNames', true) ;
+
+
 % %todo : organiser data par groupe d'âge
 % 
 

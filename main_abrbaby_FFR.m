@@ -92,7 +92,7 @@ OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 6 ;
 OPTIONS_neural.lagstop = 9 ;
-OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
+OPTIONS_neural.polarity = 'POSITIVE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
 OPTIONS_neural.BT_toolbox = BT_toolbox ;
@@ -131,10 +131,10 @@ OPTIONS_analysis.plot_dir = plot_dir ;
 
 % Reject participants based on visualization
 % participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
-participants_to_reject = {'CINC_C_004_T0','CINC_C_006_T0', 'CINC_C_008_T0'} ;
+% participants_to_reject = {'CINC_C_004_T0','CINC_C_006_T0', 'CINC_C_008_T0'} ;
 % subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 subjects_to_analyse = get_all_subjects(indir);
-subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
+% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 
 %Run FFR analysis only on kept subjects
 FFR_analysis(subjects_to_analyse,OPTIONS_analysis);

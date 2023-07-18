@@ -23,10 +23,10 @@ OPTIONS_rfe.hp = 1;                                         % high-pass (Hz) (AP
 OPTIONS_rfe.lp = 30;                                        % low-pass (Hz) (APICE) 
 OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; 
 OPTIONS_rfe.trig = {'Erg1'};                                % Ref and trigger channels 
-OPTIONS_rfe.baseline = [-99, 0] ; 
-OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
-% OPTIONS_rfe.baseline = [-199, 0] ; 
-% OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
+% OPTIONS_rfe.baseline = [-99, 0] ; 
+% OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
+OPTIONS_rfe.baseline = [-199, 0] ; 
+OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
 OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
@@ -43,23 +43,13 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials 
 OPTIONS_rej.indir = indir ;                             % directory path
-OPTIONS_rej.rej_low = -120 ;                            % 150 infants; 120 adults
-OPTIONS_rej.rej_high = 120 ;                            % 150 infants; 120 adults     
+OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adults
+OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
 OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
 suffix_rej = '_REJ' ;
-RFE_num = '_reref_filtered_epoched_RFE1' ;              % set of RFE parameters to use for this step
-RFE_test_existance = RFE_num(24:28);
-
-% Test if this set of params exists and returns the files to process and
-% counter to use to name the saved files
-[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
-
-% Reject bad trials and save new .set file
-[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
-[preproc_filenames_unbalanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
-
 RFE_num = '_reref_filtered_epoched_RFE2' ;              % set of RFE parameters to use for this step
+RFE_test_existance = RFE_num(24:28);
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -95,9 +85,8 @@ OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 
 % Display one participant results 
 % subjects_to_process = {'DVL_003_T10', 'DVL_003_T6', 'DVL_007_T8', 'DVL_008_T10', 'DVL_018_T8', 'DVL_029_T10', 'DVL_032_T10', 'DVL_021_T18'} ;
-subjects_to_process = {'CINC_C_004_T0'} ;
 % subjects_to_process = {'DVL_008_T24'} ;
-% subjects_to_process = get_all_subjects(indir) ;
+subjects_to_process = get_all_subjects(indir) ;
 
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
@@ -108,7 +97,7 @@ OPTIONS_disp_contrast.params = 'RFE1_REJ1';                            % option 
 OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
-OPTIONS_disp_contrast.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
+OPTIONS_disp_contrast.balance_STD = 'balanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp_contrast.ylim = [-5, 5] ;                                 % limits of y axis
 OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
 OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;
@@ -118,11 +107,8 @@ OPTIONS_disp_contrast.writecsv = 0 ;
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
 
-% suffix1 = {'_T6','_T8','_T10'} ;
-% suffix2  = {'_T18','_T24'} ;
-
-suffix1 = {'CINC_C'} ;
-suffix2  = {'CINC_H'} ;
+suffix1 = {'_T6','_T8','_T10'} ;
+suffix2  = {'_T18','_T24'} ;
 
 subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
 subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
@@ -133,5 +119,4 @@ subjects_to_process_grp1 = filter_subjects_based_rejection(subjects_to_process_g
 subjects_to_process_grp2 = filter_subjects_based_rejection(subjects_to_process_grp2, thresh, OPTIONS_disp_contrast) ;
 
 % Display results
-% display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
-display_group_comparison_cinc(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
+display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
