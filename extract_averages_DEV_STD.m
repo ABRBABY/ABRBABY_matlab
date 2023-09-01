@@ -9,7 +9,9 @@ for loopnum = 1:length(subjects) %for each subject
     
     [STD1_subj(loopnum,:,:), timepoints, labels, xlim]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD1*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'*.set'))) ; 
     
-    [STD2_subj(loopnum,:,:),~,~,~]   = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD2*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'*.set'))) ; 
+%     [STD2_subj(loopnum,:,:),~,~,~]   = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD2*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'*.set'))) ; 
+
+    [STD2_subj(loopnum,:,:),~,~,~]   = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*STD1*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'*.set'))) ; 
 
     [DEV1_subj(loopnum,:,:),~,~,~]  = get_data(fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'*DEV1*','_',OPTIONS.balance_STD,'*',OPTIONS.params,'*.set'))) ; 
     
@@ -23,6 +25,10 @@ end
 function [data, timepoints, labels, xlim] = get_data(datafile) 
 
     FileToLoad = dir(datafile) ; 
+    if size(FileToLoad,1) > 1
+        rman = find(contains({FileToLoad.name}, '_gd_avg')) ;
+        FileToLoad = FileToLoad(rman,1) ;
+    end
     if size(FileToLoad,1) > 1
         rman = find(contains({FileToLoad.name}, 'rman')) ;
         FileToLoad = FileToLoad(rman,1) ;

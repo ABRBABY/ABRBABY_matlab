@@ -23,7 +23,8 @@ for ii = 1:length(subjects)
         gd_avg = mean(EEG.data,3) ;
         EEG.data = gd_avg ;
         % Resample data to 256 Hz
-        EEG = pop_resample(EEG, 256);
+        EEG = eeg_checkset( EEG );
+        EEG = pop_resample( EEG, 256);
         pop_newset(ALLEEG, EEG, 1, 'setname',strrep(fname,'thresh','gd_avg'),'savenew', fullfile(filepath, strrep(fname,'thresh','gd_avg')),'gui','off');
     end
 end
