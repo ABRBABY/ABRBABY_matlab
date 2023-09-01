@@ -129,9 +129,13 @@ for ii=1:length(subjects)
     % Save datasets 
     pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
     pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+     if strcmp(opt_balance,'balanced')
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+     elseif strcmp(opt_balance,'unbalanced')
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STDD_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STDD_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
 
+     end
     % Name of the file report 
     fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
     
@@ -163,7 +167,7 @@ function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low
     list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
         'VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
 
-    %  Save this table into a csv file (use function writetable)
+    % Save this table into a csv file (use function writetable)
     writetable(list_trial_infos,fname, 'WriteVariableNames', true) ; 
 
 end
