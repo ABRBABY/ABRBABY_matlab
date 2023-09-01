@@ -116,48 +116,48 @@ print('-dpng',fullfile(OPTIONS.png_folder,strcat('group_display_MMN2_',OPTIONS.b
 display_one_group(grpA,1,OPTIONS,'6-10 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6_10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6_10mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : GroupA - DEV2 (/GA/)
 %--------------------------------------------------------------------------
 display_one_group(grpA,2,OPTIONS,'6-10 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6_10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6_10mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : GroupA - mean(DEV1+DEV2) (/BA/ and /GA/)
 %--------------------------------------------------------------------------
-display_one_group(grpA,3,OPTIONS,'6-10 mo'); 
+display_one_group(grpA,3,OPTIONS,'6_10 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6-10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('6-10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('6_10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('6_10mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : GroupB - DEV1 (/BA/)
 %--------------------------------------------------------------------------
 display_one_group(grpB,1,OPTIONS,'18-24 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18_24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18_24mo_display_STD_DEV_MMN_BA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : GroupB - DEV2 (/GA/)
 %--------------------------------------------------------------------------
 display_one_group(grpB,2,OPTIONS,'18-24 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18_24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18_24mo_display_STD_DEV_MMN_GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 %% Display : GroupB - mean(DEV1+DEV2) (/BA/ and /GA/)
 %--------------------------------------------------------------------------
 display_one_group(grpB,3,OPTIONS,'18-24 mo'); 
 
 % Save figure in svg + png
-print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18-24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
-print('-dpng',fullfile(OPTIONS.png_folder,strcat('18-24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
+print('-dsvg',fullfile(OPTIONS.svg_folder,strcat('18_24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.svg')));
+print('-dpng',fullfile(OPTIONS.png_folder,strcat('18_24mo_display_STD_DEV_MMN_BA-GA_',OPTIONS.balance_STD,'_',OPTIONS.params,'.png')));
 
 
 %--------------------------------------------------------------

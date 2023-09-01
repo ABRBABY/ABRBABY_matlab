@@ -194,6 +194,7 @@ function [argout1, argout2, argout3, argout4, argout5] = bst_get( varargin )
 %    - bst_get('CustomColormaps')         : Gets the list of user defined colormaps
 %    - bst_get('MriOptions')              : Configuration for MRI display
 %    - bst_get('DigitizeOptions')         : Digitizer options
+%    - bst_get('PcaOptions')              : Options for PCA dimension reduction (xyz flattening or scout function) 
 %    - bst_get('ReadOnly')                : Read only interface
 %    - bst_get('NodelistOptions')         : Structure with the options for file selection in the Process1 and Process2 panels
 %    - bst_get('ResizeFunction')          : Get the appropriate resize function
@@ -1244,7 +1245,7 @@ switch contextName
         end
         % Get study in database
         [sStudy, iStudy] = bst_get('Study', StudyFile);
-        % If data file instead on Study file
+        % If data file instead of Study file
         if isempty(sStudy)
             [sStudy, iStudy] = bst_get('AnyFile', StudyFile);
         end
@@ -3219,7 +3220,7 @@ switch contextName
             argout1.FreqBands = defPref.FreqBands;
         end
         
-    case 'TimefreqOptions_plv'
+    case 'TimefreqOptions_plv' % not used
         defPref.isTimeBands     = 0;
         defPref.isFreqBands     = 1;
         defPref.isFreqLog       = 0;
@@ -3277,6 +3278,28 @@ switch contextName
             argout1.FreqBands = defPref.FreqBands;
         end
     
+    case 'TimefreqOptions_stft'
+        defPref.isTimeBands     = 0;
+        defPref.isFreqBands     = 0;
+        defPref.isFreqLog       = 0;
+        defPref.TimeBands       = {};
+        defPref.Freqs           = [];
+        defPref.FreqsLog        = [];
+        defPref.FreqBands       = bst_get('DefaultFreqBands');
+        defPref.Measure         = 'power';
+        defPref.Output          = 'all';
+        defPref.ClusterFuncTime = 'after';
+        defPref.StftWinLen      = 1;
+        defPref.StftWinOvr      = 0;
+        defPref.StftFrqMax      = 0;
+        argout1 = FillMissingFields(contextName, defPref);
+        if isempty(argout1.Freqs)
+            argout1.Freqs = defPref.Freqs;
+        end
+        if ~isempty(argout1.FreqBands) && ~ischar(argout1.FreqBands{1,2})
+            argout1.FreqBands = defPref.FreqBands;
+        end
+
     case 'ExportBidsOptions'
         defPref.ProjName    = [];
         defPref.ProjID      = [];
@@ -3352,6 +3375,13 @@ switch contextName
             'iMontage',     1);
         argout1 = FillMissingFields(contextName, defPref);
     
+    case 'PcaOptions'
+        defPref.Method         = 'pca';    % deprecated legacy per-file with sign inconsistencies, but kept as default for reproducibility
+        defPref.Baseline       = [-.1, 0]; % not used for 'pca': full window instead
+        defPref.DataTimeWindow = [0, 1];   % not used for 'pca': full window instead
+        defPref.RemoveDcOffset = 'file';
+        argout1 = FillMissingFields(contextName, defPref);
+        
     case 'ConnectGraphOptions'
         % Get interface scaling factor
         InterfaceScaling = bst_get('InterfaceScaling');
@@ -3785,16 +3815,19 @@ switch contextName
                     {'.res'}, 'EEG: Curry (*.res)',                  'CURRY-RES'; ...
                     {'.xyz'}, 'EEG: EEGLAB (*.xyz)',                 'EEGLAB-XYZ'; ...
                     {'.sfp'}, 'EEG: EGI (*.sfp)',                    'EGI'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ (*.txt)',             'ASCII_XYZ-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ_MNI (*.txt)',         'ASCII_XYZ_MNI-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ_World (*.txt)',       'ASCII_XYZ_WORLD-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: Name,XYZ (*.txt)',        'ASCII_NXYZ-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: Name,XYZ_MNI (*.txt)',    'ASCII_NXYZ_MNI-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: Name,XYZ_World (*.txt)',  'ASCII_NXYZ_WORLD-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ,Name (*.txt)',        'ASCII_XYZN-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ_MNI,Name (*.txt)',    'ASCII_XYZN_MNI-EEG'; ...
-                    {'.txt'}, 'EEG: ASCII: XYZ_World,Name (*.txt)',  'ASCII_XYZN_WORLD-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ (*.txt)',             'ASCII_XYZ-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ_MNI (*.txt)',         'ASCII_XYZ_MNI-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ_World (*.txt)',       'ASCII_XYZ_WORLD-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: Name,XYZ (*.txt)',        'ASCII_NXYZ-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: Name,XYZ_MNI (*.txt)',    'ASCII_NXYZ_MNI-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: Name,XYZ_World (*.txt)',  'ASCII_NXYZ_WORLD-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ,Name (*.txt)',        'ASCII_XYZN-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ_MNI,Name (*.txt)',    'ASCII_XYZN_MNI-EEG'; ...
+                    {'.txt'}, 'EEG/NIRS: ASCII: XYZ_World,Name (*.txt)',  'ASCII_XYZN_WORLD-EEG'; ...
                     {'.txt'}, 'NIRS: Brainsight (*.txt)',            'BRAINSIGHT-TXT'; ...
+                    {'.tsv'}, 'NIRS: BIDS optrodes.tsv, subject space mm (*.tsv)',     'BIDS-NIRS-SCANRAS-MM'; ...
+                    {'.tsv'}, 'NIRS: BIDS optrodes.tsv, MNI space mm (*.tsv)',         'BIDS-NIRS-MNI-MM'; ...
+                    {'.tsv'}, 'NIRS: BIDS optrodes.tsv, ALS/SCS/CTF space mm (*.tsv)', 'BIDS-NIRS-ALS-MM'; ...
                     };
             case 'labelin'
                 argout1 = {...
@@ -3909,11 +3942,15 @@ switch contextName
         % Font types
         fontTypes = {};
         if (nargin >= 3)
-            fontTypes{end + 1} = varargin{3};
+            if ischar(varargin{3})
+                fontTypes = varargin(3);
+            else
+                fontTypes = varargin{3};
+            end
+        else
+            fontTypes{end + 1} = 'Arial';            % Default font
+            fontTypes{end + 1} = 'Liberation Sans';  % Free Arial substitute
         end
-        fontTypes{end + 1} = 'Arial';  % Default font
-        fontTypes{end + 1} = 'Liberation Sans';  % Free Arial substitute
-        
         % Check for cached font
         foundFont = 0;
         for iFont = 1 : length(fontTypes)

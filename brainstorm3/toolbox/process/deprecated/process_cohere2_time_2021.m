@@ -107,13 +107,14 @@ function OutputFiles = Run(sProcess, sInputA, sInputB) %#ok<DEFNU>
     if isempty(OPTIONS)
         return
     end
+     
     CommentTag = sProcess.options.commenttag.Value;
     % Metric options
     OPTIONS.Method = 'cohere';
     OPTIONS.RemoveEvoked  = sProcess.options.removeevoked.Value;
     OPTIONS.WinLen        = sProcess.options.win_length.Value{1};
     OPTIONS.MaxFreq       = sProcess.options.maxfreq.Value{1};
-    OPTIONS.CohOverlap    = 0.50;
+    OPTIONS.WinOverlap    = 0.50;
     OPTIONS.pThresh       = 0.05;
     OPTIONS.isSave        = 0;
     OPTIONS.CohMeasure    = sProcess.options.cohmeasure.Value;
@@ -162,9 +163,9 @@ function OutputFiles = Run(sProcess, sInputA, sInputB) %#ok<DEFNU>
         OPTIONS.TimeWindow = TimeVectorA(iTimes([1,end]));
         % Compute metric
         if ~isempty(sInputB)
-            ConnectMat = bst_connectivity({sInputA.FileName}, {sInputB.FileName}, OPTIONS);
+            ConnectMat = bst_connectivity(sInputA, sInputB, OPTIONS);
         else
-            ConnectMat = bst_connectivity({sInputA.FileName}, [], OPTIONS);
+            ConnectMat = bst_connectivity(sInputA, [], OPTIONS);
         end
         % Processing errors
         if isempty(ConnectMat) || ~iscell(ConnectMat) || ~isstruct(ConnectMat{1}) || isempty(ConnectMat{1}.TF)

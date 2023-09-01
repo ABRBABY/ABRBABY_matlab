@@ -6,13 +6,12 @@
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_NEW';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_excluded';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data_issues';
-indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\BABYLANG_WILLIAM';
-
+indir = 'E:\sauvegarde_data\DEVLANG_DATA_excluded' ;
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 %subject_of_interest = {'DVL_013_T10', 'DVL_013_T8', 'DVL_014_T24', 'DVL_015_T18', 'DVL_015_T24', 'DVL_016_T18', 'DVL_016_T24', 'DVL_017_T18', 'DVL_018_T10', 'DVL_018_T6', 'DVL_018_T8'} ;
-% subject_of_interest = {'DVL_012_T10', 'DVL_013_T10', 'DVL_013_T8', 'DVL_018_T10', 'DVL_018_T6', 'DVL_024_T6', 'DVL_030_T10', 'DVL_037_T6', 'DVL_037_T8'} ;
-subject_of_interest = {['CINC_H_006_T0']} ;
+% subject_of_interest = {'DVL_035_T18','DVL_045_T10','DVL_027_T24','DVL_043_T6'} ;
+subject_of_interest = {'DVL_042_T18'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 

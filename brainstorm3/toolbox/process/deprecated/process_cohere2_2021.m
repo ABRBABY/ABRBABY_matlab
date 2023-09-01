@@ -1,7 +1,7 @@
-function varargout = process_cohere2( varargin )
-% PROCESS_COHERE2: Compute the coherence between one signal in one file, and all the signals in another file.
+function varargout = process_cohere2_2021( varargin )
+% PROCESS_COHERE2_2021: Compute the coherence between one signal in one file, and all the signals in another file.
 %
-% USAGE:  OutputFiles = process_cohere2('Run', sProcess, sInputA, sInputB)
+% USAGE:  OutputFiles = process_cohere2_2021('Run', sProcess, sInputA, sInputB)
 
 % @=============================================================================
 % This function is part of the Brainstorm software:
@@ -21,7 +21,8 @@ function varargout = process_cohere2( varargin )
 % For more information type "brainstorm license" at command prompt.
 % =============================================================================@
 %
-% Authors: Francois Tadel, 2012-2020; Hossein Shahabi, 2019-2020
+% Authors: Francois Tadel, 2012-2021
+%          Hossein Shahabi, 2019-2020
 
 eval(macro_method);
 end
@@ -30,7 +31,7 @@ end
 %% ===== GET DESCRIPTION =====
 function sProcess = GetDescription() %#ok<DEFNU>
     % Description the process
-    sProcess.Comment     = 'Coherence AxB [Deprecated]';
+    sProcess.Comment     = 'Coherence AxB [2021]';
     sProcess.Category    = 'Custom';
     sProcess.SubGroup    = 'Connectivity';
     sProcess.Index       = 652;
@@ -52,7 +53,7 @@ function sProcess = GetDescription() %#ok<DEFNU>
     % === COHERENCE METHOD
     sProcess.options.cohmeasure.Comment = {...
         ['<B>Magnitude-squared Coherence</B><BR>' ...
-        '|C|^2 = |Gxy|^2/(Gxx*Gyy)'], ...
+        '|C|^2 = |Cxy|^2/(Cxx*Cyy)'], ...
         ['<B>Imaginary Coherence (2019)</B><BR>' ...
         'IC    = |imag(C)|'], ...
         ['<B>Lagged Coherence (2019)</B><BR>' ...
@@ -62,22 +63,23 @@ function sProcess = GetDescription() %#ok<DEFNU>
         'mscohere', 'icohere2019','lcohere2019', 'icohere'};
     sProcess.options.cohmeasure.Type    = 'radio_label';
     sProcess.options.cohmeasure.Value   = 'mscohere';
-    % === Overlap
+    % === WINDOW LENGTH
+    sProcess.options.win_length.Comment = 'Window length for PSD estimation:';
+    sProcess.options.win_length.Type    = 'value';
+    sProcess.options.win_length.Value   = {1, 's', []};
+    % === OVERLAP
     sProcess.options.overlap.Comment = 'Overlap for PSD estimation:' ;
     sProcess.options.overlap.Type    = 'value';
     sProcess.options.overlap.Value   = {50, '%', []};
-    % === MAX FREQUENCY RESOLUTION
-    sProcess.options.maxfreqres.Comment = 'Maximum frequency resolution:';
-    sProcess.options.maxfreqres.Type    = 'value';
-    sProcess.options.maxfreqres.Value   = {2,'Hz',2};
     % === HIGHEST FREQUENCY OF INTEREST
     sProcess.options.maxfreq.Comment = 'Highest frequency of interest:';
     sProcess.options.maxfreq.Type    = 'value';
     sProcess.options.maxfreq.Value   = {60,'Hz',2};
-    % === OUTPUT MODE
-    sProcess.options.outputmode.Comment = {'Save individual results (one file per input file)', 'Concatenate input files before processing (one file)', 'Save average connectivity matrix (one file)'};
-    sProcess.options.outputmode.Type    = 'radio';
-    sProcess.options.outputmode.Value   = 1;
+    % === OUTPUT MODE 2021
+    sProcess.options.outputmode.Comment = {'Save individual results (one output file per input file)', 'Average cross-spectra of input files (one output file)'; ...
+                                           'input', 'avgcoh'};
+    sProcess.options.outputmode.Type    = 'radio_label';
+    sProcess.options.outputmode.Value   = 'input';
     sProcess.options.outputmode.Group   = 'output';
 end
 
@@ -100,20 +102,19 @@ function OutputFiles = Run(sProcess, sInputA, sInputB) %#ok<DEFNU>
     % Metric options
     OPTIONS.Method = 'cohere';
     OPTIONS.RemoveEvoked  = sProcess.options.removeevoked.Value;
-    OPTIONS.MaxFreqRes    = sProcess.options.maxfreqres.Value{1};
+    OPTIONS.WinLen        = sProcess.options.win_length.Value{1};
     OPTIONS.MaxFreq       = sProcess.options.maxfreq.Value{1};
-    OPTIONS.CohOverlap    = 0.50;  % First pre-define the overlap
-    OPTIONS.pThresh       = 0.05;
+    OPTIONS.WinOverlap    = 0.50;  % First pre-define the overlap
     OPTIONS.CohMeasure    = sProcess.options.cohmeasure.Value; 
 
     % Change the overlap if it is specified
     if isfield(sProcess.options, 'overlap') && isfield(sProcess.options.overlap, 'Value') && ...
        iscell(sProcess.options.overlap.Value) && ~isempty(sProcess.options.overlap.Value) && ~isempty(sProcess.options.overlap.Value{1})
-       OPTIONS.CohOverlap = sProcess.options.overlap.Value{1}/100 ; 
+       OPTIONS.WinOverlap = sProcess.options.overlap.Value{1}/100 ; 
     end
 
     % Compute metric
-    OutputFiles = bst_connectivity({sInputA.FileName}, {sInputB.FileName}, OPTIONS);
+    OutputFiles = bst_connectivity(sInputA, sInputB, OPTIONS);
 end
 
 
