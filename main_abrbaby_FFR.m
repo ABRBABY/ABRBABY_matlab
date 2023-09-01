@@ -11,6 +11,8 @@ custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder') ;
 
+list_subjects = get_subj(fullfile(indir, 'participants_included.xlsx')) ;
+
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
 
@@ -68,8 +70,9 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'CINC_C_004_T0'} ;
+subjects_to_process = {'DVL_032_T18', 'DVL_027_T24', 'DVL_035_T18' 'DVL_045_T10', 'DVL_043_T6'} ;
 % subjects_to_process = get_all_subjects(indir) ;
+subjects_to_process = list_subjects ;
 
 OPTIONS_disp.params = 'stepA1_stepB1';
 OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
@@ -99,7 +102,8 @@ OPTIONS_neural.BT_toolbox = BT_toolbox ;
 OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
 OPTIONS_neural.grpB = {'_T18','_T24'};
 
-subjects_to_process = get_all_subjects(indir) ;
+% subjects_to_process = get_all_subjects(indir) ;
+subjects_to_process = list_subjects ;
 
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
@@ -114,7 +118,7 @@ OPTIONS_rej.neural_lag = 3 ;                                   % neural lag thre
 OPTIONS_rej.ffr_polarity = 'avg' ; 
 OPTIONS_rej.polarity = 'POSITIVE' ;
 
-% all_subjects = get_all_subjects(indir) ;
+all_subjects = get_all_subjects(indir) ;
 % [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
 
 OPTIONS_analysis.indir = indir ;
@@ -133,8 +137,14 @@ OPTIONS_analysis.plot_dir = plot_dir ;
 % participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
 % participants_to_reject = {'CINC_C_004_T0','CINC_C_006_T0', 'CINC_C_008_T0'} ;
 % subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
-subjects_to_analyse = get_all_subjects(indir);
+% subjects_to_analyse = get_all_subjects(indir);
 % subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
+% participants_to_reject = {'DVL_032_T10', 'DVL_010_T24', 'DVL_029_T10'} ;
+% subjects_to_process = list_subjects ;
+% subjects_to_process(contains(subjects_to_process,participants_to_reject)) = [] ;
+subjects_to_analyse = get_subj(fullfile(indir,'participants_included.xlsx')) ;
 
-%Run FFR analysis only on kept subjects
-FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+% Run FFR analysis only on kept subjects
+% FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
+
