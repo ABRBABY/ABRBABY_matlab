@@ -70,7 +70,7 @@ fig = figure ;
 plot(timepoints,FFR_avg_grpA,'Color', grpA_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 plot(timepoints,FFR_avg_grpB,'Color', grpB_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
-legend('Grand average FFR 6-10 mo', 'Grand average FFR 18-24 mo');
+legend('Grand average FFR control', 'Grand average FFR cardiopath');
 xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR group comparison');
 
 %Print plot into .svg, png and fig files
@@ -82,8 +82,8 @@ saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat('mean_FFR_grp_c
 fig = figure ; 
 plot(timepoints,FFR_avg_grpA,'Color', grpA_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
-legend('Grand average FFR 6-10 mo');
-xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 6-10mo');
+legend('Grand average FFR control');
+xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR control');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpA.svg'));
 print('-dpng',fullfile(OPTIONS.plot_dir,strcat('mean_FFR_grpA_', OPTIONS.polarity,'.png')));
@@ -92,8 +92,8 @@ saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat('mean_FFR_grpA_
 fig = figure ; 
 plot(timepoints,FFR_avg_grpB,'Color', grpB_color,'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
 grid on ; 
-legend('Grand average FFR 18-24 mo');
-xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR 18-24mo');
+legend('Grand average FFR cardiopath');
+xlabel('Times (ms)'); ylabel('uV'); title ('Grand average FFR cardiopath');
 
 print('-dsvg',fullfile(OPTIONS.indir,'mean_FFR_grpB.svg'));
 print('-dpng',fullfile(OPTIONS.plot_dir,strcat('mean_FFR_grpB_', OPTIONS.polarity,'.png')));
@@ -186,7 +186,7 @@ SNR_vowel_grpB = RMS_vowel_grpB./RMSprestimB;
 %disp(["Group A: RMS total = ",RMS_grpA, "RMS prestim = ", RMSprestimA, "SNR = ", SNR_grpA]);
 %disp(["Group B: RMS total = ",RMS_grpB, "RMS prestim = ", RMSprestimB, "SNR = ", SNR_grpB]);
 
-Group = ["6-10 mo";"18-24 mo"];
+Group = ["control";"cardiopath"];
 RMS_Prestim = [RMSprestimA;RMSprestimB];
 RMS_Total = [RMS_whole_grpA;RMS_whole_grpB];
 RMS_CV = [RMS_CV_grpA;RMS_CV_grpB];
@@ -199,48 +199,52 @@ RMS_and_SNR = table(Group,RMS_Prestim,RMS_Total,RMS_CV,RMS_Vowel,SNR_Total,SNR_C
 RMS_and_SNR
 
 % Display distribution of RMS and SNR
-%figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
-%figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
+%figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'control', 'cardiopath'}) ;
+%figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'control', 'cardiopath'}) ;
 
 % Save table in a .csv file
 fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_group_comparison.csv');
 writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 
-% %% Root mean square and SNR on indivudual FFRs
-% 
-% Subj = [subjects(:)];
-% 
-% RMS_Prestim_all = zeros(1,length(subjects));
-% RMS_Total_all = zeros(1,length(subjects));
-% RMS_CV_all = zeros(1,length(subjects));
-% RMS_Vowel_all = zeros(1,length(subjects));
-% SNR_Total_all = zeros(1,length(subjects));
-% SNR_CV_all = zeros(1,length(subjects));
-% SNR_Vowel_all = zeros(1,length(subjects));
-% 
-% for s =1:length(subjects)
-%     RMS_Prestim_all(s) = std(all_subj(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000),s),1);
-%     RMS_Total_all(s) = std(all_subj(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
-%     RMS_CV_all(s) = std(all_subj(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000),s),1);
-%     RMS_Vowel_all(s) = std(all_subj(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
-%     SNR_Total_all(s) = RMS_Total_all(s)/RMS_Prestim_all(s);
-%     SNR_CV_all(s) = RMS_CV_all(s)/RMS_Prestim_all(s);
-%     SNR_Vowel_all(s) = RMS_Vowel_all(s)/RMS_Prestim_all(s);
-% end
-% 
-% RMS_Prestim_all = RMS_Prestim_all';
-% RMS_Total_all = RMS_Total_all';
-% RMS_CV_all = RMS_CV_all';
-% RMS_Vowel_all = RMS_Vowel_all';
-% SNR_Total_all = SNR_Total_all';
-% SNR_CV_all = SNR_CV_all';
-% SNR_Vowel_all = SNR_Vowel_all';
-% 
-% RMS_and_SNR_all = table(Subj,RMS_Prestim_all,RMS_Total_all,RMS_CV_all,RMS_Vowel_all,SNR_Total_all,SNR_CV_all,SNR_Vowel_all);
-% RMS_and_SNR_all
-% 
-% %todo : organiser data par groupe d'âge
-% 
+%% Root mean square and SNR on indivudual FFRs
+
+Subj = [subjects(:)];
+
+RMS_Prestim_all = zeros(1,length(subjects));
+RMS_Total_all = zeros(1,length(subjects));
+RMS_CV_all = zeros(1,length(subjects));
+RMS_Vowel_all = zeros(1,length(subjects));
+SNR_Total_all = zeros(1,length(subjects));
+SNR_CV_all = zeros(1,length(subjects));
+SNR_Vowel_all = zeros(1,length(subjects));
+
+for s =1:length(subjects)
+    RMS_Prestim_all(s) = std(all_subj(round(startPrestim*OPTIONS.srate/1000):round(endPrestim*OPTIONS.srate/1000),s),1);
+    RMS_Total_all(s) = std(all_subj(round(endPrestim*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
+    RMS_CV_all(s) = std(all_subj(round(startCVtransition*OPTIONS.srate/1000):round(endCVtransition*OPTIONS.srate/1000),s),1);
+    RMS_Vowel_all(s) = std(all_subj(round(startVowel*OPTIONS.srate/1000):round(endVowel*OPTIONS.srate/1000),s),1);
+    SNR_Total_all(s) = RMS_Total_all(s)/RMS_Prestim_all(s);
+    SNR_CV_all(s) = RMS_CV_all(s)/RMS_Prestim_all(s);
+    SNR_Vowel_all(s) = RMS_Vowel_all(s)/RMS_Prestim_all(s);
+end
+
+RMS_Prestim_all = RMS_Prestim_all';
+RMS_Total_all = RMS_Total_all';
+RMS_CV_all = RMS_CV_all';
+RMS_Vowel_all = RMS_Vowel_all';
+SNR_Total_all = SNR_Total_all';
+SNR_CV_all = SNR_CV_all';
+SNR_Vowel_all = SNR_Vowel_all';
+
+RMS_and_SNR_all = table(Subj,RMS_Prestim_all,RMS_Total_all,RMS_CV_all,RMS_Vowel_all,SNR_Total_all,SNR_CV_all,SNR_Vowel_all);
+RMS_and_SNR_all
+
+% Save table in a .csv file
+fname = fullfile(OPTIONS.indir, 'RMS_and_SNR_all_participants.csv');
+writetable(RMS_and_SNR_all,fname, 'WriteVariableNames', true) ;
+
+%todo : organiser data par groupe d'âge
+
 
 %% Neural lag
 
@@ -248,27 +252,27 @@ writetable(RMS_and_SNR,fname, 'WriteVariableNames', true) ;
 % Calculated from the time lag that produces the maximum stimulus-to-response cross-correlation magnitude
 
 % Read files that contains neural lag and age information
-neural_lags = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv'))) ;
-age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
-
-% Keep only subjects of interest (not rejected)
-neural_lags = neural_lags(contains(neural_lags.suject_ID, subjects),:) ;
-age_in_days = age_in_days(contains(age_in_days.subjects, subjects),:) ;
-
-%Get variables of interest: neural lags and ages 
-IDlist_grA = neural_lags.suject_ID(contains(neural_lags.group,'A')) ;
-IDlist_grB = neural_lags.suject_ID(contains(neural_lags.group,'B')) ;
-neural_lags_grA = neural_lags.neural_lag(contains(neural_lags.group,'A')) ;
-neural_lags_grB = neural_lags.neural_lag(contains(neural_lags.group,'B')) ;
-age_grA = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grA)) ;
-age_grB = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grB)) ;
-
-all_info = table(neural_lags.suject_ID, neural_lags.neural_lag, neural_lags.group, age_in_days.age_in_days) ;
-
- % Display neural lag distribution as a function of age
-figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
-figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
-
+% neural_lags = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv'))) ;
+% age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
+% 
+% % Keep only subjects of interest (not rejected)
+% neural_lags = neural_lags(contains(neural_lags.suject_ID, subjects),:) ;
+% age_in_days = age_in_days(contains(age_in_days.subjects, subjects),:) ;
+% 
+% %Get variables of interest: neural lags and ages 
+% IDlist_grA = neural_lags.suject_ID(contains(neural_lags.group,'A')) ;
+% IDlist_grB = neural_lags.suject_ID(contains(neural_lags.group,'B')) ;
+% neural_lags_grA = neural_lags.neural_lag(contains(neural_lags.group,'A')) ;
+% neural_lags_grB = neural_lags.neural_lag(contains(neural_lags.group,'B')) ;
+% age_grA = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grA)) ;
+% age_grB = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grB)) ;
+% 
+% all_info = table(neural_lags.suject_ID, neural_lags.neural_lag, neural_lags.group, age_in_days.age_in_days) ;
+% 
+%  % Display neural lag distribution as a function of age
+% figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'control', 'cardiopath'}) ;
+% figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'control', 'cardiopath'}) ;
+% 
  %% Pitch tracking
 
  %function [time autocorr LAG FFT freqAxis preFFT blocks]= pitchtrack(avgname, block, step, startAnalysis,channel,exportData)
@@ -455,7 +459,7 @@ HF_Hi = 2750;
 FS = 16384;
 %FFR = grd_FFR;
 FFR_list = {grd_FFR,FFR_avg_grpA,FFR_avg_grpB};
-FFR_name = {'All_data','6-10mo','18-24mo'};
+FFR_name = {'All_data','control','cardiopath'};
 filename_list = {'FFR_frequential_domain_all_subj.svg','FFR_frequential_domain_groupA.svg','FFR_frequential_domain_groupB.svg'};
 color_list = {FFR_color;grpA_color;grpB_color};
 %******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD 
@@ -492,7 +496,7 @@ HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
 HzScale = HzScale(1:length(fftFFR));
 
 % Plot FFT
-figure('Name',FFR_name{list_num}) ;
+fig = figure('Name',FFR_name{list_num}) ;
 
 subplot(2,2,1);
 plot(HzScale,fftFFR, 'Color', color);
@@ -527,7 +531,7 @@ xlabel("Frequency (Hz)");
 ylabel("Amplitude (µV)");
 
 print('-dsvg',fullfile(OPTIONS.indir, filename_export));
-
+saveas(fig, fullfile(OPTIONS.indir, strrep(filename_export, 'svg','fig'))) ;
 end
 
 %Display and save group comparison in frequency domain
@@ -573,7 +577,7 @@ HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
 HzScale_B = HzScale_B(1:length(fftFFR_B));
 
 % Plot FFT
-figure('Name', 'Group_comparison_FFR_frequential') ;
+fig = figure('Name', 'Group_comparison_FFR_frequential') ;
 
 subplot(2,2,1);
 plot(HzScale_A,fftFFR_A, 'Color', grpA_color); hold on;
@@ -615,7 +619,7 @@ ylabel("Amplitude (µV)");
 %Add a single legend for 4 plots
 fig = gcf;
 fig.Position(3) = fig.Position(3) + 250;
-Lgnd = legend('6-10 mo', '18-24 mo','Location','bestoutside');
+Lgnd = legend('control', 'cardiopath','Location','bestoutside');
 Lgnd.Position(1) = 0.01;
 Lgnd.Position(2) = 0.9;
 
@@ -623,5 +627,6 @@ Lgnd.Position(2) = 0.9;
 sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight', 'bold');
 
 print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.svg'));
+saveas(fig, fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.fig'))
 
 %%

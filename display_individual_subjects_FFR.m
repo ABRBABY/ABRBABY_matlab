@@ -26,7 +26,7 @@ timepoints = fscanf(fileID,formatSpec);
 mat = 1;
 all_subj = zeros(size(timepoints,1),1);
 for loopnum = 1:length(subjects_to_process) %for each subject
-    FFR_file = fullfile(OPTIONS.indir,subjects_to_process{loopnum},strcat(subjects_to_process{loopnum},'_',OPTIONS.params,'_abr_shifted_data_HF.txt')) ;
+    FFR_file = fullfile(OPTIONS.indir,subjects_to_process{loopnum},strcat(subjects_to_process{loopnum},'_',OPTIONS.params,'_abr_', OPTIONS.polarity,'_shifted_data_HF.txt')) ;
     fileID = fopen(FFR_file,'r');
     formatSpec = '%f';
     FFR_subj = fscanf(fileID,formatSpec);
@@ -37,20 +37,22 @@ end
 % Plot individual FFR
 for jj = 1:length(subjects_to_process)
     % Plot timeseries
-    figure ; 
+    fig = figure ; 
     plot(timepoints,all_subj(:,jj),'Color', FFR_color, 'Linewidth',0.5); hold on ;set(gca,'YDir','reverse') ;
     grid on ; 
     %Add legend
-    legend('Individual FFR', subjects_to_process(jj), 'Interpreter', 'None');
+    legend(strcat(subjects_to_process(jj), '_', OPTIONS.polarity), 'Interpreter', 'None');
     % Adjust scales (y-axis and x-axis) (transform in milliseconds)
     xlim([min(timepoints), max(timepoints)]); ylim(OPTIONS.ylim) ; grid on ;
     %Display labels
     xlabel('Times (ms)'); ylabel('uV'); 
     %Add title
-    title ([' FFR ', subjects_to_process(jj)], 'Interpreter', 'None');
+    title (strcat(' FFR ', '_', subjects_to_process(jj),'_',OPTIONS.polarity), 'Interpreter', 'None');
 
-print('-dsvg',fullfile(OPTIONS.indir,subjects_to_process{jj},strcat(subjects_to_process{jj},'_FFR_temporal.svg')));
-print('-dpng',fullfile(OPTIONS.plot_dir,strcat(subjects_to_process{jj},'_FFR_temporal.png')));
+
+print('-dsvg',fullfile(OPTIONS.indir,subjects_to_process{jj},strcat(subjects_to_process{jj},'_', OPTIONS.polarity, '_FFR_temporal.svg')));
+print('-dpng',fullfile(OPTIONS.plot_dir,strcat(subjects_to_process{jj},'_', OPTIONS.polarity,'_FFR_temporal.png')));
+saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat(subjects_to_process{jj},'_', OPTIONS.polarity,'_FFR_temporal.fig')));
 
 
 %========Frequency domain============
@@ -120,7 +122,7 @@ HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
 HzScale = HzScale(1:length(fftFFR));
 
 %% Plot FFT in specific frequency windows
-figure ;
+fig = figure ;
 
 subplot(2,2,1);
 plot(HzScale,fftFFR);
@@ -155,6 +157,7 @@ ylabel("Amplitude (µV)");
 
 print('-dsvg',fullfile(OPTIONS.indir,subjects_to_process{jj},strcat(subjects_to_process{jj},'_FFR_frequential.svg')));
 print('-dpng',fullfile(OPTIONS.plot_dir,strcat(subjects_to_process{jj},'_FFR_frequential.png')));
+saveas(fig',fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat(subjects_to_process{jj},'_FFR_frequential.fig')));
 
 end
 

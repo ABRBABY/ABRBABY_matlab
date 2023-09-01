@@ -6,7 +6,7 @@ addpath(OPTIONS.BT_toolbox);
 for ss = 1:length(subjects_to_process) %for each subject
     
     
-    FFR_file = fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_shifted_data_HF.avg')) ;
+    FFR_file = fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_', OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
     
     [LAG_atmaxmin, maxmincor, all_corrs, all_lags] = bt_xcorrelation2(FFR_file, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, OPTIONS.chan, OPTIONS.chancomp) ; 
     
@@ -23,4 +23,4 @@ end
 
 % Write a table with all lags 
 neural_lags = table(subjects_to_process, subject_lag', group', 'VariableNames', {'suject_ID', 'neural_lag', 'group'}) ;
-writetable(neural_lags,fullfile(OPTIONS.indir,'all_neural_lags.csv'), 'WriteVariableNames', true) ;
+writetable(neural_lags,fullfile(OPTIONS.indir,strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv')), 'WriteVariableNames', true) ;

@@ -26,8 +26,18 @@ for ss=1:length(subjects_to_process)
     % Gets files 
     for cc=1:length(cond_sylab)
         
-        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'*_',OPTIONS.balance_STD,'_',OPTIONS.params,'.set'))) ; 
-        fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'*_',OPTIONS.balance_STD,'_',OPTIONS.params,'.set'))) ; 
+        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'*_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'*_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        
+        if size(fname_STD,1) > 1
+        rman = find(contains({fname_STD.name}, 'rman')) ;
+        fname_STD = fname_STD(rman,1) ;
+        end
+
+        if size(fname_DEV,1) > 1
+        rman = find(contains({fname_DEV.name}, 'rman')) ;
+        fname_DEV = fname_DEV(rman,1) ;
+        end
         
         % Loads DEV trials
         EEG_DEV = pop_loadset(fname_DEV.name,fullfile(OPTIONS.indir,subjects_to_process{ss})) ;
@@ -58,7 +68,7 @@ for ss=1:length(subjects_to_process)
         OPTIONS.title = [strcat('Subject -> ',subjects_to_process{ss},' | Condition ->',strcat('DEV/STD',num2str(cc))),' (' ,OPTIONS.balance_STD,' number of STDs)'] ; 
         
         % Call visualisation function (grids with electrode subset) 
-        plot_electrodes_subset(signals,OPTIONS) ; 
+        [fig] = plot_electrodes_subset(signals,OPTIONS) ; 
         
         % Save data in vectoriel in subject folder
         out_fname = fullfile(OPTIONS.indir,subjects_to_process{ss},strrep(fname_DEV.name,'.set','.svg'));
@@ -66,6 +76,9 @@ for ss=1:length(subjects_to_process)
         
         % Save data in png (with same filename as vectoriel) but different directory
         print('-dpng',fullfile(OPTIONS.plot_dir,strrep(fname_DEV.name,'.set','.png')));
+
+        % Save data in fig (with same filename as vectoriel) but different directory
+        saveas(fig, fullfile(strrep(OPTIONS.plot_dir, 'png', 'fig'),strrep(fname_DEV.name,'.set','.fig')));
 
     end
 end

@@ -1,4 +1,4 @@
-function [] = plot_electrodes_subset(signals, OPTIONS)
+function [fig] = plot_electrodes_subset(signals, OPTIONS)
 % ERPs visualization script 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 

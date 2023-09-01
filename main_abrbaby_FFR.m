@@ -8,7 +8,7 @@
 % custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_data') ;
+indir = fullfile(custom_path,'BABYLANG_WILLIAM') ;
 plot_dir = fullfile(custom_path, 'png_folder') ;
 
 % This function sets custom path (either for Estelle or AnneSo)
@@ -68,10 +68,11 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_006_T24', 'DVL_037_T10', 'DVL_048_T10'} ;
+subjects_to_process = {'CINC_C_004_T0'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
-OPTIONS_disp.params = 'stepA1_stepB1'; 
+OPTIONS_disp.params = 'stepA1_stepB1';
+OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_disp.indir = indir ; 
 OPTIONS_disp.plot_dir = plot_dir ; 
@@ -84,18 +85,21 @@ display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 
 %% -------------------Compute neural lag for all subject and write a table
 OPTIONS_neural.params = 'stepA1_stepB1'; 
+OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir; 
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 0 ;
 OPTIONS_neural.lagstop = 10 ;
-OPTIONS_neural.polarity = 'POSITIVE' ; 
+OPTIONS_neural.polarity = 'POSITIVE' ;
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
 OPTIONS_neural.BT_toolbox = BT_toolbox ;
-OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
-OPTIONS_neural.grpB = {'_T18','_T24'};
+% OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
+% OPTIONS_neural.grpB = {'_T18','_T24'};
+OPTIONS_neural.grpA = {'CINC_C'};
+OPTIONS_neural.grpB = {'CINC_H'};
 
 subjects_to_process = get_all_subjects(indir) ;
 
@@ -109,21 +113,31 @@ OPTIONS_rej.suffix_csv = '_infos_trials_low_-45_high_45' ;     % suffix for CVS 
 OPTIONS_rej.param = '_stepB1';                                 % suffix for set of parameters to process
 OPTIONS_rej.visu = 1 ;                                         % 1 to display rejection rates, otherwise 0
 OPTIONS_rej.neural_lag = 3 ;                                   % neural lag threshold : under this value, subjects are rejected
+OPTIONS_rej.ffr_polarity = 'avg' ; 
+OPTIONS_rej.polarity = 'POSITIVE' ;
 
-all_subjects = get_all_subjects(indir) ;
-[subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
+% all_subjects = get_all_subjects(indir) ;
+% [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
 
 OPTIONS_analysis.indir = indir ;
 OPTIONS_analysis.param = '_stepA1_stepB1';
-grpA.suffix = {'_T3','_T6','_T8','_T10'};
-grpB.suffix = {'_T18','_T24'};
+% grpA.suffix = {'_T3','_T6','_T8','_T10'};
+% grpB.suffix = {'_T18','_T24'};
+grpA.suffix = {'CINC_C'};
+grpB.suffix = {'CINC_H'};
 OPTIONS_analysis.groups = {grpA, grpB} ;
 OPTIONS_analysis.srate = 16384 ;
 OPTIONS_analysis.win_of_interest = [-0.04, 0.2] ;
+OPTIONS_analysis.neural_lag = OPTIONS_rej.neural_lag ;
+OPTIONS_analysis.ffr_polarity = OPTIONS_rej.ffr_polarity ; 
+OPTIONS_analysis.polarity = OPTIONS_rej.polarity  ;
+OPTIONS_analysis.plot_dir = plot_dir ; 
 
 % Reject participants based on visualization
-participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
-subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
-
+% participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
+% participants_to_reject = {'CINC_H_005_T0','CINC_C_006_T0'} ;
+% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
+subjects_to_analyse = get_all_subjects(indir);
 %Run FFR analysis only on kept subjects
-FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+%FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+FFR_analysis_CINC(subjects_to_analyse,OPTIONS_analysis);
