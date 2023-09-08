@@ -10,15 +10,15 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 if ~isempty(OPTIONS) 
 
     % If participant selection is based on suffix
-    if isfield(OPTIONS.suffix)
+    if isfield(OPTIONS,'suffix')
     
         subjects = subjects(contains(subjects,OPTIONS.suffix)) ;
     
     % If participant selection is based on a table
-    elseif isfield(OPTIONS.file)
+    elseif isfield(OPTIONS,'file')
     
         % Reads a .csv file that contains list of subjects to process
-        d = readtable(OPTIONS.file) ;
+        d = readtable(OPTIONS.file, 'Delimiter','space','ReadVariableNames',false);
         subjects = table2array(d) ;
     
     end

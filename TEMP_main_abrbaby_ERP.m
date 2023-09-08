@@ -5,10 +5,11 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
+
 % custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_data');
+indir = custom_path ; %fullfile(custom_path,'DEVLANG_data');
 
 %Get list of subjects in indir
 list_subjects = get_subjects(indir,[]);
@@ -204,7 +205,7 @@ OPTIONS_disp_contrast.writecsv = 0 ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
 
 OPTIONS.suffix = {'_T6','_T8','_T10'} ;
-subjects_to_process_grp1 = get_subjects(indir,OPTIONS.suffix) ;
+subjects_to_process_grp1 = get_subjects(indir,OPTIONS) ;
 
 OPTIONS.suffix = {'_T18','_T24'} ;
 subjects_to_process_grp2 = get_subjects(indir,OPTIONS.suffix) ;
