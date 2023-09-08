@@ -6,7 +6,6 @@
 
 % DATA directory 
 custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-
 % custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = custom_path ; %fullfile(custom_path,'DEVLANG_data');
@@ -108,7 +107,6 @@ subj_to_rman = {'DVL_045_T10'} ;
 %% -------------------- Create folders to get back to structure
 % directory = 'D:\preprocessed_data_EEG\RFE2_REJ2' ;
 % files_num = 9 ;
-
 % organize_folders(indir, directory, files_num)
 
 %% ------------------- Create grand averages per condition per subject
@@ -122,50 +120,6 @@ OPTIONS_average.param = 'RFE1_REJ1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
 grand_averages(ALLEEG, OPTIONS_average) ;
-
-%%
-% OPTIONS_average.conditions = {'DEV1', 'DEV2'} ;
-OPTIONS_average.opt_balance = 'unbalanced' ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-
-%%
-OPTIONS_average.indir = 'D:\preprocessed_data_EEG\RFE1_REJ2' ;
-spl = split(OPTIONS_average.indir, '\') ;
-OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-% OPTIONS_average.indir = indir ;
-% OPTIONS_average.param = 'RFE2_REJ2' ;
-OPTIONS_average.opt_balance = 'balanced' ;
-OPTIONS_average.conditions = {'STD1', 'STD2', 'DEV1', 'DEV2'} ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-% OPTIONS_average.conditions = {'DEV1', 'DEV2'} ;
-OPTIONS_average.opt_balance = 'unbalanced' ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-
-OPTIONS_average.indir = 'D:\preprocessed_data_EEG\RFE2_REJ1' ;
-spl = split(OPTIONS_average.indir, '\') ;
-OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-% OPTIONS_average.indir = indir ;
-% OPTIONS_average.param = 'RFE2_REJ2' ;
-OPTIONS_average.opt_balance = 'balanced' ;
-OPTIONS_average.conditions = {'STD1', 'STD2', 'DEV1', 'DEV2'} ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-% OPTIONS_average.conditions = {'DEV1', 'DEV2'} ;
-OPTIONS_average.opt_balance = 'unbalanced' ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-
-OPTIONS_average.indir = 'D:\preprocessed_data_EEG\RFE2_REJ2' ;
-spl = split(OPTIONS_average.indir, '\') ;
-OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-% OPTIONS_average.indir = indir ;
-% OPTIONS_average.param = 'RFE2_REJ2' ;
-OPTIONS_average.opt_balance = 'balanced' ;
-OPTIONS_average.conditions = {'STD1', 'STD2', 'DEV1', 'DEV2'} ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-% OPTIONS_average.conditions = {'DEV1', 'DEV2'} ;
-OPTIONS_average.opt_balance = 'unbalanced' ;
-grand_averages(ALLEEG, OPTIONS_average) ;
-
-
 
 %% ------------------- Display results at individual level
 OPTIONS_disp.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1' ;
