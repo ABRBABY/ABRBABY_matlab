@@ -5,14 +5,15 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_DATA_to_look');
-plot_dir = fullfile(custom_path, 'png_folder');
+indir = fullfile(custom_path,'DEVLANG_data');
 
 %Get list of subjects in indir
-list_subjects = get_all_subjects(indir);
+list_subjects = get_subjects(indir);
+
+plot_dir = fullfile(custom_path, 'png_folder');
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
@@ -202,11 +203,11 @@ OPTIONS_disp_contrast.writecsv = 0 ;
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
 
-suffix1 = {'_T6','_T8','_T10'} ;
-suffix2  = {'_T18','_T24'} ;
+OPTIONS.suffix = {'_T6','_T8','_T10'} ;
+subjects_to_process_grp1 = get_subjects(indir,OPTIONS.suffix) ;
 
-subjects_to_process_grp1 = get_subjects_by_suffix(indir,suffix1) ;
-subjects_to_process_grp2 = get_subjects_by_suffix(indir,suffix2) ;
+OPTIONS.suffix = {'_T18','_T24'} ;
+subjects_to_process_grp2 = get_subjects(indir,OPTIONS.suffix) ;
 
 % Remove subjects based on number of trial rejected 
 thresh = 0.33; %(20 DEV kept in each condtion)
