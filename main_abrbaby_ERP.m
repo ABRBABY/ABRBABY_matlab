@@ -171,3 +171,8 @@ thresh = 0.33; %(20 DEV kept in each condtion)
 
 % Display results
 display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
+
+%% BRAINSTORM PROC
+% Call Brainstorm and populate database 
+ABRBABY_populate_BST_DB_averages('RFE1_REJ1','unbalanced',indir)
+
