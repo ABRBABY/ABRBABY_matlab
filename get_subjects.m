@@ -7,18 +7,20 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-% If participant selection is based on suffix
-if isfield(OPTIONS.suffix)
+if ~isempty(OPTIONS) 
 
-    subjects = subjects(contains(subjects,OPTIONS.suffix)) ;
-
-% If participant selection is based on a table
-elseif isfield(OPTIONS.file)
-
-    % Reads a .csv file that contains list of subjects to process
-    d = readtable(OPTIONS.file) ;
-    subjects = table2array(d) ;
+    % If participant selection is based on suffix
+    if isfield(OPTIONS.suffix)
     
+        subjects = subjects(contains(subjects,OPTIONS.suffix)) ;
+    
+    % If participant selection is based on a table
+    elseif isfield(OPTIONS.file)
+    
+        % Reads a .csv file that contains list of subjects to process
+        d = readtable(OPTIONS.file) ;
+        subjects = table2array(d) ;
+    
+    end
+
 end
-
-

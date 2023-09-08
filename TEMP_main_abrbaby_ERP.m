@@ -11,7 +11,7 @@ custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY
 indir = fullfile(custom_path,'DEVLANG_data');
 
 %Get list of subjects in indir
-list_subjects = get_subjects(indir);
+list_subjects = get_subjects(indir,[]);
 
 plot_dir = fullfile(custom_path, 'png_folder');
 
