@@ -11,7 +11,7 @@ custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder') ;
 
-list_subjects = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
+list_subjects = get_subjects(indir,fullfile(indir, 'participants_included.xlsx')) ;
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
@@ -143,8 +143,7 @@ OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\Tool
 % subjects_to_analyse = get_all_subjects(indir);
 % subjects_to_process = list_subjects ;
 % subjects_to_process(contains(subjects_to_process,participants_to_reject)) = [] ;
-% subjects_to_analyse = get_subj(fullfile(indir,'participants_included.xlsx')) ;
-subjects_to_analyse = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
+subjects_to_analyse = get_subjects(indir,fullfile(indir,'participants_included.xlsx')) ;
 
 % Run FFR analysis only on kept subjects
 % FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
