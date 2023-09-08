@@ -103,9 +103,9 @@ bt_txt2avg(fname_out_all, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTION
 % 
 %  % Display neural lag distribution as a function of age
 % figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
-% figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
+% figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
-%% Frequency domain
+%% FFT : group analysis
 
 % Adaptation of Skoe function (bt_fftsc)
  %function [Freq1 Freq2 Freq3 fftFFR HzScale]=bt_fftsc(FILENAME,start,stop,F0_Lo,F0_Hi,F1_Lo,F1_Hi,HF_Lo,HF_Hi, chan)
@@ -149,16 +149,12 @@ for list_num = 1:3
     FFR = FFR_list{list_num};
     filename_export = filename_list{list_num};
     color = color_list{list_num};
-%startPoint = ms2row(avg, start);
-%endPoint = ms2row(avg, stop);
 
-%FFR = data(startPoint:endPoint);
 numPoints = length(FFR);
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 %**** STEP 2. FFT OF FFR
 %******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
 rampMS = 4/1000; % length of ramp (on and off) in seconds
-% hanPoints = 26;  %hard coded to be the same as Biologic's settings (December 7, 2005);
 hanPoints = rampMS.*FS; % length of ramp in points
 hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
 hanHalfPoints = round(hanPoints./2);
@@ -309,154 +305,213 @@ sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight'
 
 print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.svg'));
 
+%% FFT : by subject analysis
 
- %% Pitch tracking
+% Adaptation of Skoe function (bt_fftsc)
+ %function [Freq1 Freq2 Freq3 fftFFR HzScale]=bt_fftsc(FILENAME,start,stop,F0_Lo,F0_Hi,F1_Lo,F1_Hi,HF_Lo,HF_Hi, chan)
+% bt_fftsc computes frequency-domain amplitudes of three user-defined 
+% frequency bins of Brainstem response.  Results are scaled to peak �V.
+%
+% Usage: [F0 F1 HF] = bt_fftsc('filename.avg',10,40,100,150,300,350,600,800);
+%    over the range of 10 to 40 ms, finds average frequency amplitude of
+%    100-150 Hz, 300-350 Hz and 600-800 Hz.
+% 
+% Three variables are returned the workspace:
+% (1) Freq1: mean amplitude over F0_Lo-F0_Hi Hz
+% (2) Freq2: mean amplitude over F1_Lo-F1_Hi Hz
+% (3) Freq3: mean amplitude over HF_Lo to HF_Hi Hz 
 
-%  function [time autocorr LAG FFT freqAxis preFFT blocks]= pitchtrack(avgname, block, step, startAnalysis,channel,exportData)
-% 
-% % block = 1;
-% % step = 1;
-% % startAnalysis = 1;
-% % %channel = 1;
-% % %exportData = 1;
-% % file.xmin =1; 
-% % file.xmax=240;
-% % file.pnts=2932;
-% % 
-% % % if block<40
-% % %     display('Block Size is too small. Using default: 40 ms');
-% % %     block = 40;
-% % % end
-% % 
-% % % %Open average file 
-% % % [file]= openavg(avgname);
-% % %Define time axis 
-% % timeaxis = linspace(file.xmin, file.xmax, file.pnts)';
-% % 
-% %  % extract signal
-% %  %SIGNAL = file.signal(:,channel);
-% %  SIGNAL = FFR_avg_grpB;
-% %  % get sampling rate
-% %  fs = 16384;
-% % 
-% %  
-% %  % ---------------------------PRESTIM, ---------------------------
-% %  % extract portion of prestimulus time, and detrend. The size of the prestim portion is dependent on the block size.
-% %  % To do SNR calculations block and prestim must be same the same number of ms.
-% %  % If the block size is 40ms, then only 40ms of the prestim will be
-% %  % extracted. 
-% %  
-% %  %PRESTIM = SIGNAL(1: ms2row(file, block));   %start with the very first point.
-% %  PRESTIM = Segment_B;
-% %  % ramp
-% %  r = hann(size(PRESTIM, 1));  % the entire prestim is ramped.
-% %  % ramp and detrend
-% %  PRESTIM = detrend(PRESTIM.*hann(size(PRESTIM,1)), 'constant');
-% %  % FFT (zero-padded to sampling rate);
-% %  preFFT = abs(fft(PRESTIM, fs));
-% %  %scale preFFT
-% %  preFFT= preFFT*(2./length(PRESTIM));
-% %  preFFT=preFFT(1:1001,1);  %truncate above 1000 Hz
-% %  
-% %    
-% % %  ------------------ FFTS of RESPONSE CHUNKS-----------------------
-% % j = startAnalysis; % each time through loop j increases by step size;
-% % 
-% %     chunks = 5000;    % an arbitrary maximum number of blocks that the program will create. 
-% %                         
-% %     for k = 1:chunks;   %the program knows to stop once file.xmax is exceeded 
-% % 
-% %         % variables created: 
-% %         ramptime = (block/1000);   % ramp the entire chunk
-% %         start = j;
-% %         stop = j+block;
-% % 
-% %         if stop>(file.xmax)  % if stop exceeds the maximum ms time then abort and break out from loop
-% %             k=k-1;
-% %             j=j-step;
-% %             break;
-% %         else
-% %             signal = detrend(SIGNAL(ms2row(file, start):ms2row(file, stop)), 'constant');   % de-mean to zero           
-% %         end
-% %         
-% %         midpoint(k) = mean(ms2row(file, start):ms2row(file,stop));  %calculates the time corresponding to the midpoint of the chunk
-% % 
-% %         % generate ramp
-% %         ramp = hann(size(signal,1));
-% %         % ramp and de-mean
-% %         signal = detrend(signal.*ramp, 'constant');
-% % 
-% % 
-% %         % autocorrelation (see Boersma 1993)
-% %         [c lag]=xcorr(signal, 'coeff');
-% %        
-% %         
-% %         [cwin lagwin]=xcorr(ramp, 'coeff');
-% %         LAG = linspace(-block, block, length(c));
-% %     
-% %         autoc=c./cwin;
-% %         autoc(autoc>1)=1;  %this handles the very rare case that the remainder of the previous step is >1.
-% %         % only plot the first 15 ms; % lowest frequency is ~66 Hz.
-% %         
-% %         
-% %             
-% %             startlag = find(LAG==0);  
-% %             endlag = find(LAG==closestrc(LAG, 15));
-% % 
-% %         
-% %         % truncate lag and r value matrices to only include values up to first 15 ms.
-% %         autocorr(:,k)=autoc(startlag:endlag)';
-% %         LAG = LAG(startlag:endlag)';
-% %      
-% %         ostartlag = startlag;
-% %         
-% %         ostoplag = endlag;
-% %          
-% %          %%% Now do FFTs;
-% %         % fft, pads to sampling rate
-% %         fftsignal{k} = abs(fft(signal, fs));
-% %         % only go up to 1000 Hz;
-% %         FFT{k} = fftsignal{k}(1:1001,1);
-% %         FFT{k}= FFT{k}*(2./length(signal));
-% %         freqAxis = linspace(0, 1000, 1001);
-% %         
-% %         j = j+step;  % loop through next time chunk
-% %         
-% %        
-% %        
-% %     end
-% %     time = timeaxis(round(midpoint));
-% %     
-% %     blocks = k;
-% %     
-% %     FFT = cell2mat(FFT);
-%     
-%     
-% %     if exportData == 1
-% %         [fpath fname ext]=fileparts(avgname);
-% %         FFTfile = [fpath, '\', fname, '-FFTmatrix.xls'];
-% %         ACfile = [fpath, '\', fname, '-ACmatrix.xls'];
-% %         
-% %         xlswrite(FFT, fname, {'FFT matrix'}, FFTfile, 'Sheet1');
-% %         xlswrite(freqAxis', fname, {'Frequency Axis'}, FFTfile, 'Sheet2');
-% %         xlswrite(time, fname, {'Time Axis'}, FFTfile,     'Sheet3');
-% %         
-% %         xlswrite(autocorr, fname, {'autocorrelation matrix'}, ACfile, 'Sheet1');
-% %         xlswrite( LAG, fname, {'Lag Axis'} , ACfile, 'Sheet2');
-% %         xlswrite(time, fname, {'Time Axis'} , ACfile, 'Sheet3');
-% %        
-% %      
-% %     end
-% %     
-% %% Pitch error
-% 
-% 
-% %% Response-to-response correlation    
-% 
-% %compare grpA and grpB
-% 
-% %% Response consistency 
-% 
-% %compare 2 subaverages of the same FFR (use all subjects from eacg group)
-% 
+% % Dependancies: ms2row, openavg
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Originally developed by E.E. Skoe.  
+% Toolbox version by E.E. Skoe & T.G. Nicol
+% eeskoe@northwestern.edu tgn@northwestern.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+all_F0 = zeros(size(all_subj,2),1) ;
+all_ampl = zeros(size(all_subj,2),1) ;
+
+% Loop through subjects to get FFR, F0 and amplitude of F0
+
+for ss=1:size(all_subj,2)
+
+    FFR = all_subj(:,ss) ;
+
+    % baseline, window, then baseline again
+    FFR = detrend(FFR, 'constant');
+    FFR = detrend(FFR.*FFRhan_A, 'constant');
+
+    % Perform FFT
+    fftFFR = abs(fft(FFR, round(FS)));
+    fftFFR = fftFFR(1:round(round(FS)/2));
+    fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
+    HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
+    HzScale = HzScale(1:length(fftFFR));
+
+    % Plot FFT if set in options
+    if OPTIONS.plot_FFT == 1 
+        figure('Name',subjects{ss}) ;
+
+        plot(HzScale,fftFFR);
+        xlim([0 1000]);
+        grid on;
+        title("Single-Sided Amplitude Spectrum of X(t)");
+        xlabel("Frequency (Hz)");
+        ylabel("Amplitude (µV)");
+    end 
+
+    % Save F0 and amplitude
+
+    A = max(fftFFR(90:110,1)) ;   % get amplitude A of F0 within window of interest
+%     A = max(fftFFR) ;   % get amplitude A of F0
+    freq = find(fftFFR == A) ;    % get index of F0 in fftFFR list of values
+    F = HzScale(freq);            % get value F of F0
+
+    all_F0(ss,1) = F ;
+    all_ampl(ss,1) = A ;
+
+end
+
+F0_and_ampl = table(subjects, all_F0, all_ampl,'VariableNames', {'subject','F0_Hz','amplitude_uV'}) ;
+
+% Save table in a .csv file
+fname = fullfile(OPTIONS.indir, 'all_subjects_F0_and_amplitude.csv');
+writetable(F0_and_ampl,fname, 'WriteVariableNames', true) ;
+
+ %% Pitch error and pitch tracking
+
+ % Get inputed values. -------------------------------------------
+ block = 40 ;
+ step = 1 ;
+ startSTIM = 0 ;
+ endSTIM =  169;
+ channel =  1;
+ minFrequency = 0 ;
+ maxFrequency = 120 ;
+ minFrequency_stim = 80 ;
+ maxFrequency_stim = 120 ;
+
+ % set some more defaults and compute some more values from inputs
+ stim_channel = 1; % i.e. if stereo file, will only work on 1st channel
+ n_lags = readtable(fullfile(OPTIONS.indir,'\all_neural_lags_avg_ffr_POSITIVE_corr.csv'));
+%  % this allows path information to be retained from subject to subject
+%  set(guifig, 'visible', 'off');
+ 
+ %% Run pitchtrack functions ------------------------------------------------------
+
+ for ss=1:size(all_subj,2)
+
+     neural_lag = n_lags.neural_lag(ss);
+     startRESP = startSTIM + neural_lag;
+     % pitchtrack response
+     [time autocorr lag FFT_resp freqaxis prestimFFT totalblocks]= pitchtrack(fullfile(OPTIONS.indir,subjects{ss}, strcat(subjects{ss}, '_stepA1_stepB1_abr_avg_shifted_data_HF.avg')), block, step, startRESP, channel, 0);
+
+     % pitchtrack stimulus (make conditional)
+     [time_stim autocorr_stim lag_stim FFT_stim null freqaxis_stim totalblocks_stim]=pitchtrack(OPTIONS.stim_avg, block, step, startSTIM, stim_channel,0);
+
+     time_stim = time_stim + neural_lag;  %for plotting purpose shift stimulus forward in time.
+
+     [v stopPT]=closestrc(time_stim, endSTIM+(block./2));
+
+     autocorr_stim(:, stopPT+1:end)=[];
+     time_stim(stopPT+1:end)=[];
+     FFT_stim(:, stopPT+1:end)=[];
+     totalblocks_stim = stopPT;
+
+     %Extract F0 from stimulus using Autocorrelation Method
+     freqAC_vector = 1000./lag_stim;
+     [s LagStart_stim]=closestrc(freqAC_vector,maxFrequency_stim);  %s is dummy variable
+     [s LagStop_stim] =closestrc(freqAC_vector,minFrequency_stim);
+     [R_stim index] = max(autocorr_stim(LagStart_stim:LagStop_stim, :));
+     FreqAC_stim=freqAC_vector(LagStart_stim+index-1);
+     clear index s
+
+     %Extract F0 from response using Autocorrelation Method
+     freqAC_vector = 1000./lag;
+     [s LagStart]=closestrc(freqAC_vector,maxFrequency);  %s is dummy variable
+     [s LagStop] =closestrc(freqAC_vector,minFrequency);
+     [R index] = max(autocorr(LagStart:LagStop, :));
+     FreqAC=freqAC_vector(LagStart+index-1);
+     LAG = 1000./FreqAC;
+
+     %Extract F0 from stimulus using FFT Method
+     [FFTAMP_stim index]= max(FFT_stim(minFrequency_stim+1:maxFrequency_stim+1, :));
+     FreqFFT_stim = minFrequency_stim+index-1;
+     FreqFFT_stim = FreqFFT_stim';
+
+     %Extract F0 from response using FFT Method
+     [MaxFFTAMP index]= max(FFT_resp(minFrequency+1:maxFrequency+1, :));
+     FreqFFT = (minFrequency+index-1)'; %flip direction so that it matches FreqAC
+
+ end
+
+ %% Determine whether each extracted frequency was above the noise floor (NF)
+ % When the pitch-track is plotted a small gray dot will appear over the time
+ % ranges where the extracted frequency is below the noise floor The dot will be located above the plot and the location
+ % is based on what was inputted for maxFrequency (maxFrequency+4).  The total (i.e. total_belowNF) that gets exported is based
+ % only on the total number of blocks in the stimulus and not the total
+ % number of blocks in the response.  In other words, it only includes the blocks that were used to calculate pitch error.
+
+ for x = 1:totalblocks;
+     F0_AMPusingACfreqs(x,1) = FFT_resp(round(FreqAC(x))-1,x);  %Find amplitude using frequencies extracted using AC method
+ end
+
+ mean_F0_AMP = mean(F0_AMPusingACfreqs(1:totalblocks_stim,1));
+ F0_AMP_prestim = prestimFFT(round(FreqAC)-1);
+ PITCH_SNR = F0_AMPusingACfreqs./F0_AMP_prestim ;
+
+ %Determine whether the extracted frequency was also the spectral maximum
+ for x = 1:totalblocks;
+     peaks{x}=localmax(FFT_resp(:,x));  %Find amplitude using frequencies extracted using AC method
+     [closest_spectralpeak(x) row(x) column(x)]=closestrc(peaks{x}, FreqAC(x));
+     if  FreqFFT(x)== (closest_spectralpeak(x)-1)
+         notspectralMax(x) = 0;
+     else
+         notspectralMax(x) = 1;
+     end
+ end
+
+ % When the pitch-track is plotted a small gray dot will appear over the time
+ % ranges where the extracted frequency is not at the spectral max. The dot will be located above the plot and the location
+ % is based on what was inputted for maxFrequency.  The total (i.e. total_notatSpectralMax) that gets exported is based
+ % only on the total number of blocks in the stimulus and not the total number of blocks in the response.  In other words, \
+ % it only includes the blocks that were used to calculate pitch error.
+
+ total_notatSpectralMax = sum(notspectralMax(1:totalblocks_stim));
+ plot_notatspectralMax(notspectralMax==1)=maxFrequency+5;
+ plot_notatspectralMax(notspectralMax==0)=NaN;
+
+ plot_belowNF(PITCH_SNR<1)=maxFrequency+4;
+ plot_belowNF(PITCH_SNR>=1)=NaN;
+
+ % Calculate Final Measures:
+  % Autocorrelation
+  PITCH_ERROR_autocorrelation = mean(abs(FreqAC(1:totalblocks_stim)-FreqAC_stim));  %Measured in Hz.
+
+   %FFT
+  PITCH_ERROR_fft = mean(abs(FreqFFT(1:totalblocks_stim)-FreqFFT_stim));  %Measured in Hz.
+
+ %on the off chance that one or more of the Rs is exactly 1, we must set
+ %these Rs to 0.999999 to get a valid number for fisher (i.e. not inf)If you are are reading this you are as annoyed as we are.
+ PITCH_STRENGTH = mean(R(1:totalblocks_stim));
+ Rtemp=R;
+ Rtemp(Rtemp==1)=0.999999;
+ PITCH_STRENGTH2 = fisherinv(mean(fisher(Rtemp(1:totalblocks_stim))));
+ CORR = corrcoef(FreqAC(1:totalblocks_stim), FreqAC_stim);  %correlation between stimulus and response f0 contour
+ PITCH_SRCORR =CORR(1,2); %the first number is always 1, need to take second
+ total_belowNF =  sum(PITCH_SNR(1:totalblocks_stim)<1);
+ total_notatSpectralMax = sum(notspectralMax(1:totalblocks_stim));
+
+
+%Extract variables of interest
+
+%% Response-to-response correlation    
+
+%compare grpA and grpB
+
+%% Response consistency 
+
+%compare 2 subaverages of the same FFR (use all subjects from eacg group)
+
 

@@ -11,7 +11,7 @@ custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 indir = fullfile(custom_path,'DEVLANG_data') ;
 plot_dir = fullfile(custom_path, 'png_folder') ;
 
-list_subjects = get_subj(fullfile(indir, 'participants_included.xlsx')) ;
+list_subjects = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
@@ -70,9 +70,9 @@ end
 %% ------------------- Display : 
 
 % Display one participant results 
-subjects_to_process = {'DVL_032_T18', 'DVL_027_T24', 'DVL_035_T18' 'DVL_045_T10', 'DVL_043_T6'} ;
+subjects_to_process = {'DVL_019_T24'} ;
 % subjects_to_process = get_all_subjects(indir) ;
-subjects_to_process = list_subjects ;
+% subjects_to_process = list_subjects ;
 
 OPTIONS_disp.params = 'stepA1_stepB1';
 OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
@@ -93,8 +93,8 @@ OPTIONS_neural.indir= indir;
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
-OPTIONS_neural.lagstart = 6 ;
-OPTIONS_neural.lagstop = 9 ;
+OPTIONS_neural.lagstart = 3 ;
+OPTIONS_neural.lagstop = 10 ;
 OPTIONS_neural.polarity = 'POSITIVE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
@@ -103,7 +103,8 @@ OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
 OPTIONS_neural.grpB = {'_T18','_T24'};
 
 % subjects_to_process = get_all_subjects(indir) ;
-subjects_to_process = list_subjects ;
+% subjects_to_process = list_subjects ;
+subjects_to_process = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
 
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
@@ -132,17 +133,18 @@ OPTIONS_analysis.neural_lag = OPTIONS_rej.neural_lag ;
 OPTIONS_analysis.ffr_polarity = OPTIONS_rej.ffr_polarity ; 
 OPTIONS_analysis.polarity = OPTIONS_rej.polarity  ;
 OPTIONS_analysis.plot_dir = plot_dir ; 
+OPTIONS_analysis.plot_FFT = 0 ; 
+OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013\da_170_kraus_16384_LP3000_HP80.avg' ;
 
 % Reject participants based on visualization
 % participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
-% participants_to_reject = {'CINC_C_004_T0','CINC_C_006_T0', 'CINC_C_008_T0'} ;
+% participants_to_reject = {'DVL_032_T10', 'DVL_010_T24', 'DVL_029_T10'} ;
 % subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 % subjects_to_analyse = get_all_subjects(indir);
-% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
-% participants_to_reject = {'DVL_032_T10', 'DVL_010_T24', 'DVL_029_T10'} ;
 % subjects_to_process = list_subjects ;
 % subjects_to_process(contains(subjects_to_process,participants_to_reject)) = [] ;
-subjects_to_analyse = get_subj(fullfile(indir,'participants_included.xlsx')) ;
+% subjects_to_analyse = get_subj(fullfile(indir,'participants_included.xlsx')) ;
+subjects_to_analyse = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
 
 % Run FFR analysis only on kept subjects
 % FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
