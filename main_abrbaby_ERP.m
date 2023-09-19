@@ -71,7 +71,7 @@ RFE_test_existance = RFE_num(24:28);
 flag_sub_to_create_rej = (contains(list_subjects,list_subjects))';
 
 % Reject bad trials and save new .set file
-% [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
 
