@@ -6,15 +6,15 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data'; 
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
 % custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = custom_path ; %fullfile(custom_path,'DEVLANG_data');
+indir = fullfile(custom_path,'DEVLANG_data');
 
 %Get list of subjects in indir
 list_subjects = get_subjects(indir,[]);
 
-plot_dir = fullfile(custom_path, 'png_folder');
+plot_dir = fullfile(custom_path, 'plot_dir');
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
@@ -109,10 +109,11 @@ OPTIONS_disp.diff_display = 1 ;                               % 1 to display dif
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_disp.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
+create_plot_dirs_if_does_not_exist(plot_dir);
 
-% Display one participant results 
-subjects_to_process = {'DVL_012_T24'} ;
-% subjects_to_process = get_all_subjects(indir) ;
+% Display one participant results  
+% subjects_to_process = {'DVL_012_T24'} ;
+subjects_to_process = get_subjects(indir,[]) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
@@ -124,10 +125,12 @@ OPTIONS_disp_contrast.indir = indir ;                                  % directo
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp_contrast.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp_contrast.ylim = [-5, 5] ;                                 % limits of y axis
-OPTIONS_disp_contrast.png_folder = plot_dir ;                          % path to save png files of plots
-OPTIONS_disp_contrast.svg_folder = strrep(plot_dir,'png','svg') ;
-OPTIONS_disp_contrast.fig_folder = strrep(plot_dir,'png','fig') ;      % path to save fig files of plots
+OPTIONS_disp_contrast.png_folder = fullfile(plot_dir,'png_folder') ;                          % path to save png files of plots
+OPTIONS_disp_contrast.svg_folder = strrep(OPTIONS_disp_contrast.png_folder,'png','svg') ;
+OPTIONS_disp_contrast.fig_folder = strrep(OPTIONS_disp_contrast.png_folder,'png','fig') ;      % path to save fig files of plots
 OPTIONS_disp_contrast.writecsv = 0 ;
+
+create_plot_dirs_if_does_not_exist(plot_dir);
 
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
