@@ -41,7 +41,7 @@ OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
 OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
-conditionsMMN = { 'DEV1-STD1', 'DEV2-STD2'} ; 
+conditionsMMN = { 'DEV1-STD1', 'DEV2-STD1'} ; 
 vTime = [-0.200012207, 0.4999389648] ; 
 sGroups{1} = ["_T6","_T8","_T10"] ; 
 sGroups{2} = ["_T18","_T24"] ; 
@@ -56,13 +56,13 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 %thresh = 0.33;
 %subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 
-% Loop through all subjects
-for jj=1:length(subjects) 
-
-    % Process individual analysis : Feed the BST database with subjects data 
-    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance);
-
-end
+% % Loop through all subjects
+% for jj=1:length(subjects) 
+% 
+%     % Process individual analysis : Feed the BST database with subjects data 
+%     process_pipeline(INDIR, subjects{jj}, set_params, opt_balance);
+% 
+% end
 
 % Process contrast by groups : t-test
 process_group_analysis(conditionsMMN, vTime, sGroups) ; 
@@ -162,7 +162,7 @@ for ccMMN=1:length(conditionsMMN)
     
     % Process: t-test equal [-200ms,500ms]          H0:(A=B), H1:(A<>B)
     sFiles = bst_process('CallProcess', 'process_test_parametric2', sFilesG1, sFilesG2, ...
-        'timewindow',    vTime, ...
+        'timewindow',    [], ...
         'sensortypes',   '', ...
         'isabs',         0, ...
         'avgtime',       0, ...
