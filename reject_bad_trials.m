@@ -75,6 +75,7 @@ for ii=1:length(subjects)
     [EEG_DEV1_thresh,idx_dev1_rej] = pop_eegthresh(EEG_DEV1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     [EEG_DEV2_thresh,idx_dev2_rej] = pop_eegthresh(EEG_DEV2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     
+    %% If we want to select the same number of trial both for DEV and STD
     if strcmp(opt_balance,'balanced')
 
         [EEG_STD_thresh, idx_removed] = pop_eegthresh(EEG_STD,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
@@ -117,7 +118,7 @@ for ii=1:length(subjects)
       
     end
     
-    % Create a custom history variable to keep track of OPTIONS in each
+    %% Create a custom history variable to keep track of OPTIONS in each
     % .set saved
     EEG_DEV1_thresh.history_rej = OPTIONS ;
     EEG_DEV2_thresh.history_rej = OPTIONS ;
@@ -129,13 +130,13 @@ for ii=1:length(subjects)
     % Save datasets 
     pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
     pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-     if strcmp(opt_balance,'balanced')
+    if strcmp(opt_balance,'balanced')
          pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
          pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-     elseif strcmp(opt_balance,'unbalanced')
+    elseif strcmp(opt_balance,'unbalanced')
          pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STDD_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STDD_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
 
-     end
+    end
     % Name of the file report 
     fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
     
@@ -156,12 +157,15 @@ function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low
      % Get indices of the trials which were rejected (without messing around with the relative indices)
     [~,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
 
+    % Reject the STD at the very begining of block
+    begining_of_block = repelem((1:30:900)-1,3)+repmat(1:3,1,30); 
+
     % Extract variables of interest
     trial_index = 1:EEG.trials;
     trial_num = [EEG.event.urevent];
     condition = {EEG.event.type} ;
     latency = [EEG.event.latency]/EEG.srate;  
-    rejected = ismember(trial_index,idx_rejected_all) ; 
+    rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ; 
     
     % Create table to store these information
     list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
