@@ -141,7 +141,7 @@ for ii=1:length(subjects)
     fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
     
     % Write csv file directly into the subject dir
-    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high) ; 
+    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
 
 end
 
@@ -152,8 +152,12 @@ end
 % conditions) -> we re-excute pop_eegthresh on all trials 
 % (we do not save .set but the report)
 %--------------------------------------------------------------
-function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high) 
+function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) 
 
+    if strcmp(opt_balance,'balanced')
+        warndlg('The report of trial status (rejected/not rejected) is under developement for ''balanced'' option ','Warning')
+        return
+    end
      % Get indices of the trials which were rejected (without messing around with the relative indices)
     [~,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
 
