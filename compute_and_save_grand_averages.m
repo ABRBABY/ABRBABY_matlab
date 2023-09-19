@@ -1,4 +1,4 @@
-function [] = grand_averages(ALLEEG,OPTIONS)
+function [] = compute_and_save_grand_averages(ALLEEG,OPTIONS)
 
 % Get options
 [indir, opt_balance, param, conditions]= get_OPTIONS(OPTIONS) ;
