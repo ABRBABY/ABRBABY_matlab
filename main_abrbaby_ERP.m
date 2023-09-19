@@ -90,29 +90,21 @@ subj_to_rman = {'DVL_045_T10'} ;
 [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'balanced', subj_to_rman) ; 
 [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'unbalanced', subj_to_rman) ; 
 
-%% -------------------- Create folders to get back to structure
-% directory = 'D:\preprocessed_data_EEG\RFE2_REJ2' ;
-% files_num = 9 ;
-% organize_folders(indir, directory, files_num)
-
 %% ------------------- Create grand averages per condition per subject
 
-OPTIONS_average.indir = 'E:\EEG_ANALYSES\EEG_data_revised_by_participant_rejA' ;
-% OPTIONS_average.indir = 'D:\preprocessed_data_EEG\RFE1_REJ1' ;
 spl = split(OPTIONS_average.indir, '\') ;
 OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-% OPTIONS_average.indir = indir ;
+OPTIONS_average.indir = indir ;
 OPTIONS_average.param = 'RFE1_REJ1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
-grand_averages(ALLEEG, OPTIONS_average) ;
+compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level
-OPTIONS_disp.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1' ;
 OPTIONS_disp.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
-% OPTIONS_disp.indir = indir ;                                  % directory path of files to process
+OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_disp.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
@@ -122,14 +114,10 @@ OPTIONS_disp.ylim = [-15,15] ;                                % limits of y axis
 subjects_to_process = {'DVL_012_T24'} ;
 % subjects_to_process = get_all_subjects(indir) ;
 
-
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
 
 
 %% ------------------- Display results at GROUP level
-% indir = 'D:\preprocessed_data_EEG\RFE1_REJ1' ;
-indir = 'E:\EEG_ANALYSES\EEG_data_revised_by_participant_rejA' ;
-
 OPTIONS_disp_contrast.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
