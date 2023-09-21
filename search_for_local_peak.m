@@ -14,10 +14,10 @@ else amp=-pks ; slat = locs;
 
 end
 
-if OPTIONS.disp ; figure ; plot(vTimes(:,vTimes>timeW(1)&vTimes<timeW(2)), signal(:,vTimes>timeW(1)&vTimes<timeW(2))) ; hold on ; plot(vTimes(locs-1)+find(vTimes>timeW(1),1),-pks,'r*') ; end
+if OPTIONS.disp ; figure ; plot(vTimes(:,vTimes>timeW(1)&vTimes<timeW(2)), signal(:,vTimes>timeW(1)&vTimes<timeW(2))) ; hold on ; plot(vTimes(locs-1)+find(vTimes>timeW(1),1),-pks,'k*') ; plot(vTimes(slat-1)+find(vTimes>timeW(1),1),amp,'r*') ; end
 
 % Get latency in the right time referential 
-lat =vTimes(slat)+find(vTimes>timeW(1),1) ; 
+lat =vTimes(find(vTimes>timeW(1),1)+slat) ; 
 
 % Compute auc
 auc = mean(signal(:,vTimes>lat-OPTIONS.auc_delta&vTimes<lat+OPTIONS.auc_delta)) ; 
