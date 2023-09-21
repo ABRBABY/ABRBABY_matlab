@@ -94,7 +94,8 @@ subj_to_rman = {'DVL_045_T10'} ;
 
 spl = split(OPTIONS_average.indir, '\') ;
 OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-OPTIONS_average.indir = indir ;
+% OPTIONS_average.indir = indir ;
+OPTIONS_average.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
 OPTIONS_average.param = 'RFE1_REJ1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
@@ -158,7 +159,7 @@ display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPT
 OPTIONS_mmn.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_mmn.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
-OPTIONS_mmn.indir = indir ;                                  % directory path of files to process
+OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
 OPTIONS_mmn.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_mmn.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_mmn.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
@@ -173,13 +174,46 @@ if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end
 
 % Display one participant results  
 % subjects_to_process = {'DVL_012_T24'} ;
-subjects_to_process = get_subjects(indir,[]) ;
+subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
 
 [data_avg, vTimes] = compute_grand_average_allcond(subjects_to_process, OPTIONS_mmn) ; 
 
 [lat, amp, ~] = search_for_local_peak(data_avg,vTimes,[150, 210],OPTIONS_mmn) ; 
 
 [all_lat, all_amp, all_auc] = search_for_mmn_across_subj(subjects_to_process, [lat-120, lat+120], OPTIONS_mmn) ; 
+
+%% Display violin plot 
+all(1,:,:) = all_lat ; 
+all(2,:,:) = all_amp ; 
+all(3,:,:) = all_auc ; 
+
+tit = {'peak latency','peak amplitude','auc'} ;
+leg = {'COND1', 'COND2'} ;
+figure ; 
+
+for dd=1:3 
+    [y1, x1] = hist(squeeze(all(dd,:,1)),20) ; 
+    [y2, x2] = hist(squeeze(all(dd,:,2)),20) ; 
+    y1 = smooth(y1,5)';
+    y2 = smooth(y2,5)';
+    y1 = y1./max(y1) ; 
+    y2 = y2./max(y2) ; 
+%     dataR1 = tiedrank(all(dd,1,:))./size(data_avg,2) ; 
+%     dataR2 = tiedrank(all(dd,2,:))./size(data_avg,2) ; 
+%     
+    subplot(1,3,dd) ; 
+    patch([y1 -y1(end:-1:1)] , [x1 x1(end:-1:1)], 'm', 'facealpha', .3) ; 
+    hold on ; 
+    
+    patch([y2 -y2(end:-1:1)]+3 , [x2 x2(end:-1:1)], 'b', 'facealpha', .3) ; 
+    legend(leg) ;
+    title(tit(dd)) ; 
+    grid on ; 
+
+end
+
+
+
 
 % figure ; plot(1,all_amp(:,1),'r*') ; hold on ; plot(1,all_amp(:,2),'b*') ; 
 
