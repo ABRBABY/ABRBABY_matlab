@@ -77,15 +77,18 @@ for ss=1:length(subjects_to_process)
         % Call visualisation function (grids with electrode subset) 
         [fig] = plot_electrodes_subset(signals,OPTIONS) ; 
         
-        % Save data in vectoriel in subject folder
-        out_fname = fullfile(OPTIONS.indir,subjects_to_process{ss},strrep(fname_DEV.name,'.set','.svg'));
-        print('-dsvg', out_fname);
-        
-        % Save data in png (with same filename as vectoriel) but different directory
-        print('-dpng',fullfile(OPTIONS.plot_dir,strrep(fname_DEV.name,'.set','.png')));
-
-        % Save data in fig (with same filename as vectoriel) but different directory
-        saveas(fig, fullfile(strrep(OPTIONS.plot_dir, 'png', 'fig'),strrep(fname_DEV.name,'.set','.fig')));
+        % Save figures 
+        if OPTIONS.savefigs == 1 
+            % Save data in vectoriel in subject folder
+            out_fname = fullfile(OPTIONS.indir,subjects_to_process{ss},strrep(fname_DEV.name,'.set','.svg'));
+            print('-dsvg', out_fname);
+            
+            % Save data in png (with same filename as vectoriel) but different directory
+            print('-dpng',fullfile(OPTIONS.plot_dir,strrep(fname_DEV.name,'.set','.png')));
+    
+            % Save data in fig (with same filename as vectoriel) but different directory
+            saveas(fig, fullfile(strrep(OPTIONS.plot_dir, 'png', 'fig'),strrep(fname_DEV.name,'.set','.fig')));
+        end
 
     end
 end
