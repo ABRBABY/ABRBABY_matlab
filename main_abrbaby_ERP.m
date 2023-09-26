@@ -202,10 +202,10 @@ for dd=1:3
 %     dataR2 = tiedrank(all(dd,2,:))./size(data_avg,2) ; 
 %     
     subplot(1,3,dd) ; 
-    patch([y1 -y1(end:-1:1)] , [x1 x1(end:-1:1)], 'm', 'facealpha', .3) ; 
+    patch([y1 -y1(end:-1:1)] , [x1 x1(end:-1:1)], 'm', 'facealpha', .8) ; 
     hold on ; 
     
-    patch([y2 -y2(end:-1:1)]+3 , [x2 x2(end:-1:1)], 'b', 'facealpha', .3) ; 
+    patch([y2 -y2(end:-1:1)]+3 , [x2 x2(end:-1:1)], 'r', 'facealpha', .8) ; 
     legend(leg) ;
     title(tit(dd)) ; 
     grid on ; 
