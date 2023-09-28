@@ -78,6 +78,15 @@ for jj=1:length(subjects)
     % Extract event from trigger channel (Erg1)
     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
 
+    % Resolves bad event detection linked to trigger artefact and detects
+    % events to remove
+    if size(EEG.event,2)>6000
+        [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
+    end
+
+    % Removes events identified above
+    EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
+
     % Identifies outliers events (e.g. boundaries) or too close events 
     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
                         find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 ms
