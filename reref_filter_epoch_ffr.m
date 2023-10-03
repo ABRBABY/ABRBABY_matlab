@@ -80,12 +80,11 @@ for jj=1:length(subjects)
 
     % Resolves bad event detection linked to trigger artefact and detects
     % events to remove
-    if size(EEG.event,2)>6000
+    if size(EEG.event,2)>6000 && sum(contains(readlines(OPTIONS.artestim), char(subjects)))
         [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
-    end
-
     % Removes events identified above
     EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
+    end
 
     % Identifies outliers events (e.g. boundaries) or too close events 
     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms

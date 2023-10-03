@@ -37,6 +37,7 @@ OPTIONS_rfe.eeg_elec = 1:16 ;
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
 suffix_rfe = '_reref_filtered_epoched_RFE' ;
+OPTIONS_rfe.artestim = fullfile(indir,'arte_stim_participants.txt') ;    % path to .txt taht contains participants ID with arte stim
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -67,9 +68,9 @@ RFE_test_existance = RFE_num(24:28);
 
 %Subjects to process : when whant to choose
 % subj_to_process = {'DVL_035_T18','DVL_045_T10','DVL_027_T24','DVL_043_T6'} ;
-% subj_to_process = {'DVL_045_T10'} ;
+subj_to_process = {'DVL_052_T6', 'DVL_053_T8', 'DVL_004_T24'}  ;
 % flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
-flag_sub_to_create_rej = (contains(list_subjects,list_subjects))';
+flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
