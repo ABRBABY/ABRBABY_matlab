@@ -80,7 +80,7 @@ for jj=1:length(subjects)
 
     % Resolves bad event detection linked to trigger artefact and detects
     % events to remove
-    if size(EEG.event,2)>6000 && sum(contains(readlines(OPTIONS.artestim), char(subjects)))
+    if size(EEG.event,2)>6000 && sum(contains(readlines(fullfile(indir,'arte_stim_participants.txt')), char(subjects{jj})))
         [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
     % Removes events identified above
     EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
