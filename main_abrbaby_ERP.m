@@ -10,7 +10,7 @@
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
-% indir = fullfile(custom_path,'DEVLANG_DATA_to_look');
+% indir = fullfile(custom_path,'FFR_65rej_epoch');
 
 %Get list of subjects in indir
 list_subjects = get_subjects(indir,[]);
@@ -45,7 +45,7 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_054_T10', 'DVL_055_T18'} ;
+subj_to_process = {'DVL_042_T24'} ;
 flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
@@ -68,7 +68,7 @@ RFE_test_existance = RFE_num(24:28);
 [flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_054_T10', 'DVL_055_T18'}  ;
+subj_to_process = {'DVL_042_T24'}  ;
 flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
@@ -117,7 +117,7 @@ OPTIONS_disp.savefigs = 1 ;
 if OPTIONS_disp.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 % Display one participant results  
-subjects_to_process = {'DVL_054_T10', 'DVL_055_T18'} ;
+subjects_to_process = {'DVL_042_T24'} ;
 % subjects_to_process = get_subjects(indir,[]) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 

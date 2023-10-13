@@ -9,7 +9,8 @@ indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
 % indir = 'E:\sauvegarde_data\DEVLANG_DATA_excluded' ;
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
-subject_of_interest = {'DVL_003_T18'} ;
+display_erg_channel = 0 ;    % 1 if want to display ERG channel, 0 otherwise
+subject_of_interest = {'DVL_042_T24'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -34,8 +35,10 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
     [~,filename,~] = fileparts(fname.name);    
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname',filename,'gui','off');
     
+    if display_erg_channel == 0
     EEG = pop_select( EEG, 'nochannel',{'Erg1'});
     [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',strcat(filename,'_noerg'),'gui','off');
+    end 
 
     EEG = eeg_checkset( EEG );
     pop_eegplot( EEG, 1, 1, 1);
