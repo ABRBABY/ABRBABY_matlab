@@ -6,8 +6,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -164,8 +164,8 @@ display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPT
 %% ------------------- MMN search
 OPTIONS_mmn.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
-% OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
-OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\all_included_data_revised_and_not_revisedCF' ;
+OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
+% OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\all_included_data_revised_and_not_revisedCF' ;
 OPTIONS_mmn.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_mmn.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
@@ -181,12 +181,17 @@ if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end
 % subjects_to_process = {'DVL_012_T24'} ;
 subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
 
-[data_avg, vTimes] = compute_grand_average_allcond(subjects_to_process, OPTIONS_mmn) ; 
-[lat, amp, ~] = search_for_local_peak(data_avg,vTimes,[150, 210],OPTIONS_mmn) ; 
-[all_lat, all_amp, all_auc] = search_for_mmn_across_subj(subjects_to_process, [lat-120, lat+120], OPTIONS_mmn) ; 
+% Comment ASD : for structuring the code it would be better to have two
+% functions : 
+% search et detect gr dmoyenne 
+% search et detect accross subject 
+
+OPTIONS_mmn.win_gd_mmn = [150, 210] ; 
+OPTIONS_mmn.win_mmn = [-120, 120] ; 
+
+[all_lat, all_amp, all_auc] = search_for_mmn(subjects_to_process, OPTIONS_mmn) ; 
 
 % Display violin plot
-
 figure; subplot(1,3,1);
 plot_violin(all_lat, {'r','m'}, '', 'Peak latency', {'COND1', 'COND2'}) ;
 hold on ; subplot(1,3,2);
