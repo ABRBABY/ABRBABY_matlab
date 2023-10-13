@@ -52,9 +52,9 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-% Remove subjects based on number of trial rejected 
-%thresh = 0.33;
-%subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
+% % Remove subjects based on number of trial rejected 
+% thresh = 0.33;
+% subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 
 % % Loop through all subjects
 % for jj=1:length(subjects) 

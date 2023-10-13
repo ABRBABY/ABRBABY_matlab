@@ -68,15 +68,23 @@ for jj=1:length(subjects)
     EEG = pop_reref(EEG, ref_elec, 'exclude',trigg_elec, 'keepref','on');
 
     %% EVENTS 
-    % Extract event from trigger channel (Erg1)
-    EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
-
-    % Identifies outliers events (e.g. boundaries) or too close events 
-    idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
-                        find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 m
-    
-    % Removes outliers events
-    EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;  
+%     % Extract event from trigger channel (Erg1)
+%     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
+% 
+%     % Resolves bad event detection linked to trigger artefact and detects
+%     % events to remove
+%     if size(EEG.event,2)>6000 && sum(contains(readlines(fullfile(indir,'arte_stim_participants.txt')), char(subjects{jj})))
+%         [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
+%         % Removes events identified above
+%     EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
+%     end
+%     
+%     % Identifies outliers events (e.g. boundaries) or too close events 
+%     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
+%                         find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 m
+%   
+%     % Removes outliers events
+%     EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;  
 
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;
