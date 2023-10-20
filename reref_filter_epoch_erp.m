@@ -85,6 +85,9 @@ for jj=1:length(subjects)
 %   
 %     % Removes outliers events
 %     EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;  
+    
+    % For DB37 data : Remove Erg channel
+    EEG = pop_select( EEG, 'nochannel', trig) ;
 
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;

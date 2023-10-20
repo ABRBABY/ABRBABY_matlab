@@ -62,13 +62,13 @@ subjects = table2array(choose_subj) ;
 % thresh = 0.33;
 % subjects = filter_subjects_based_rejection(subjects, thresh, OPTIONS) ;
 
-% % Loop through all subjects
-% for jj=1:length(subjects) 
-% 
-%     % Process individual analysis : Feed the BST database with subjects data 
-%     process_pipeline(INDIR, subjects{jj}, set_params, opt_balance);
-% 
-% end
+% Loop through all subjects
+for jj=1:length(subjects) 
+
+    % Process individual analysis : Feed the BST database with subjects data 
+    process_pipeline(INDIR, subjects{jj}, set_params, opt_balance);
+
+end
 
 % Process contrast by groups : t-test
 process_group_analysis(conditionsMMN, vTime, sGroups) ; 
