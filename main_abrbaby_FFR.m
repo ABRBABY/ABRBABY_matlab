@@ -9,7 +9,6 @@
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
-% indir = fullfile(custom_path, 'FFR_moche') ;
 
 plot_dir = fullfile(custom_path, 'plot_dir');
 
@@ -79,12 +78,6 @@ if sum(flag_sub_to_create_stepB)~=0
 end
 
 %% ------------------- Display : 
-
-% Display one participant results 
-subjects_to_process = {'DVL_042_T24'} ;
-% subjects_to_process = get_subjects(indir, '') ;
-% subjects_to_process = list_subjects ;
-
 OPTIONS_disp.params = 'stepA1_stepB1';
 OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
@@ -92,6 +85,16 @@ OPTIONS_disp.indir = indir ;
 OPTIONS_disp.plot_dir = plot_dir ; 
 OPTIONS_disp.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
 OPTIONS_disp.fs = 16384 ; 
+OPTIONS_disp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
+
+% Display one participant results 
+subjects_to_process = {'DVL_018_T6', 'DVL_030_T10'} ;
+
+% Or display all subjects
+% subjects_to_process = list_subjects ;
+
+% Or choose subjects with csv file
+% subjects_to_process = get_subjects(indir, OPTIONS_disp) ;
 
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 %to do : display number of trials kept
@@ -105,7 +108,7 @@ OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 3 ;
-OPTIONS_neural.lagstop = 10 ;
+OPTIONS_neural.lagstop = 9 ;
 OPTIONS_neural.polarity = 'POSITIVE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
@@ -128,22 +131,31 @@ subjects_rejinfo = get_subjects(indir, '') ;
 export_rejection_infos_FFR(subjects_rejinfo,OPTIONS_rejinfo) ;
 
 %% -------------------Reject bad participants and compute group analyses
-% Reject bad participants based on number of trials rejected and neural lag
+% Set options to reject bad participants based on number of trials rejected and neural lag
 OPTIONS_rej.indir = indir ;
-OPTIONS_rej.threshold = 1500 ;                                 % minimum number of artifact-free trials to keep a participant
+OPTIONS_rej.threshold = 3000 ;                                 % minimum number of artifact-free trials to keep a participant
 OPTIONS_rej.suffix_csv = '_infos_trials_low_-45_high_45' ;     % suffix for CVS file containing trial rejection info
 OPTIONS_rej.param = '_stepB1';                                 % suffix for set of parameters to process
 OPTIONS_rej.visu = 1 ;                                         % 1 to display rejection rates, otherwise 0
 OPTIONS_rej.neural_lag = 3 ;                                   % neural lag threshold : under this value, subjects are rejected
-OPTIONS_rej.ffr_polarity = 'avg' ; 
-OPTIONS_rej.polarity = 'POSITIVE' ;
-OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_69okvisu.csv' ;
-% OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_moche_unpeumoins.csv' ;
+OPTIONS_rej.ffr_polarity = 'avg' ;                             % which FFR polarity to use
+OPTIONS_rej.polarity = 'POSITIVE' ;                            % which correlation value for neural lag to use
+% OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
+OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_ok.csv';
 
-all_subjects = get_subjects(indir, OPTIONS_rej) ;
+% Choose subjects to analyse
+% subjects_to_analyse = get_subjects(indir, '') ;                      % get all subjects
+subjects_to_analyse = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
+
+% % Reject bad participants based on number of trials rejected and neural lag
 % all_subjects = get_subjects(indir, '') ;
 % [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
+% ----- OR -------
+% % Reject bad participants based on visualization
+% participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
+% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
 
+% Set options to compute group analyses
 OPTIONS_analysis.indir = indir ;
 OPTIONS_analysis.param = '_stepA1_stepB1';
 grpA.suffix = {'_T6','_T8','_T10'};
@@ -157,16 +169,10 @@ OPTIONS_analysis.polarity = OPTIONS_rej.polarity  ;
 OPTIONS_analysis.plot_dir = plot_dir ; 
 OPTIONS_analysis.plot_FFT = 0 ; 
 OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013\da_170_kraus_16384_LP3000_HP80.avg' ;
-% OPTIONS_analysis.woi_F0 = ;   %add option to compute F0 in woi or on
-% whole stim response
-% Reject participants based on visualization
+OPTIONS_analysis.woi_F0 = [90:110];   %add option to compute F0 in woi (in Hz) or no -> []
+OPTIONS_analysis.nlag_filename = 'all_neural_lags_avg_ffr_POSITIVE_corr_3_9.csv' ;
 
-% participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
-% participants_to_reject = {'DVL_032_T10', 'DVL_010_T24', 'DVL_029_T10'} ;
-% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
-% subjects_to_analyse = get_subjects(indir,'');
-subjects_to_analyse = all_subjects ;
 % Run FFR analysis only on kept subjects
 FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
-% FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
+FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
 

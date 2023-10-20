@@ -6,8 +6,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -164,14 +164,14 @@ display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPT
 %% ------------------- MMN search
 OPTIONS_mmn.params = 'RFE1_REJ1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
-OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
-% OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\all_included_data_revised_and_not_revisedCF' ;
+% OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
+OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
 OPTIONS_mmn.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_mmn.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
 OPTIONS_mmn.savefigs = 0 ; 
 OPTIONS_mmn.conditions = {'DEV1','DEV2','STD1'};
-OPTIONS_mmn.disp = 0 ;                                       % 1 if want to display local peak figure, 0 otherwise
+OPTIONS_mmn.disp = 1 ;                                       % 1 if want to display local peak figure, 0 otherwise
 OPTIONS_mmn.auc_delta = 5 ;                                  % time window to compute auc around peak
 
 % Create folder for plots if doesn't exist
