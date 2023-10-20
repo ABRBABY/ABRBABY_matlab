@@ -24,4 +24,4 @@ end
 
 % Write a table with all lags 
 neural_lags = table(subjects_to_process, subject_lag', group', 'VariableNames', {'suject_ID', 'neural_lag', 'group'}) ;
-writetable(neural_lags,fullfile(OPTIONS.indir,strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv')), 'WriteVariableNames', true) ;
+writetable(neural_lags,fullfile(OPTIONS.indir,strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr_', num2str(OPTIONS.lagstart),'_',num2str(OPTIONS.lagstop),'.csv')), 'WriteVariableNames', true) ;
