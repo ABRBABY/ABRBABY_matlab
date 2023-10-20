@@ -35,7 +35,7 @@ function [] = ABRBABY_populate_BST_DB_averages(set_params, opt_balance, INDIR)
 % INDIR = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data';
 % INDIR = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
 % INDIR = 'D:\preprocessed_data_EEG\RFE1_REJ1' ;
-% INDIR = 'E:\EEG_ANALYSES\EEG_data_revised_by_participant_rejA' ; 
+% INDIR = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ; 
 
 OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
@@ -49,8 +49,14 @@ sGroups{2} = ["_T18","_T24"] ;
 % Reads all folders that are in INDIR 
 d = dir(INDIR); 
 isub = [d(:).isdir]; % returns logical vector if is folder
-subjects = {d(isub).name}';
-subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
+subjects_list = {d(isub).name}';
+subjects_list(ismember(subjects_list,{'.','..'})) = []; % Removes . and ..
+
+% Choose subjects to process
+choose_subj = readtable('\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_ok.csv', 'Delimiter', 'Space', 'ReadVariableNames',0) ;
+subjects = table2array(choose_subj) ;
+% subjects = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
+
 
 % % Remove subjects based on number of trial rejected 
 % thresh = 0.33;
