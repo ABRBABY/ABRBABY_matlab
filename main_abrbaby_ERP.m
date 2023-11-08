@@ -100,7 +100,7 @@ OPTIONS_average.param = 'RFE1_REJ1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
 OPTIONS_average.srate = 256 ; 
-
+OPTIONS_average.keyword = 'gd_avg' ; 
 compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level
@@ -187,6 +187,7 @@ subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
 
 OPTIONS_mmn.win_gd_mmn = [150, 250] ; 
 OPTIONS_mmn.win_mmn = [-120, 120] ; 
+OPTIONS_mmn.keyword = 'gd_avg' ; 
 
 [all_lat, all_amp, all_auc] = search_for_mmn(subjects_to_process, OPTIONS_mmn) ; 
 
