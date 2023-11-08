@@ -253,7 +253,17 @@ fftFFR_B = fftFFR_B.*(2./numPoints_A); % scale to peak �V
 HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
 HzScale_B = HzScale_B(1:length(fftFFR_B));
 
-% Plot FFT
+% Plot FFT in specific window of interest
+figure('Name', 'Group_comparison_FFR_frequential') ;
+plot(HzScale_A,fftFFR_A, 'Color', grpA_color); hold on;
+plot(HzScale_B,fftFFR_B,'Color', grpB_color);
+xlim([0 550]);
+grid on;
+title("Single-Sided Amplitude Spectrum of X(t)");
+xlabel("Frequency (Hz)");
+ylabel("Amplitude (µV)");
+
+% Plot FFT in differents windows of interest
 figure('Name', 'Group_comparison_FFR_frequential') ;
 
 subplot(2,2,1);

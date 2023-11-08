@@ -40,9 +40,9 @@ suffix_stepA = '_FFR_stepA';
 % counter to use to name the saved files
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA,'') ; 
 
-% Choose subject to process
-subj_to_process = {'DVL_021_T18','DVL_040_T24','DVL_043_T8','DVL_048_T10','DVL_051_T8','DVL_052_T6'} ;
-flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+% % Choose subject to process
+% subj_to_process = {'DVL_021_T18','DVL_040_T24','DVL_043_T8','DVL_048_T10','DVL_051_T8','DVL_052_T6'} ;
+% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce
 %report
@@ -68,9 +68,9 @@ stepA_num = 1 ;                                      %Set of stepA parameters to
 % counter to use to name the saved files
 [flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
 
-% Choose subject to process
-subj_to_process = {'DVL_003_T18','DVL_012_T24','DVL_018_T18','DVL_021_T18','DVL_040_T24','DVL_043_T8','DVL_048_T10','DVL_051_T8','DVL_052_T6'} ;
-flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+% % Choose subject to process
+% subj_to_process = {'DVL_003_T18','DVL_012_T24','DVL_018_T18','DVL_021_T18','DVL_040_T24','DVL_043_T8','DVL_048_T10','DVL_051_T8','DVL_052_T6'} ;
+% flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 
 %Filter epoched data and prepare input for brainstem toolbox
 if sum(flag_sub_to_create_stepB)~=0
@@ -88,7 +88,7 @@ OPTIONS_disp.fs = 16384 ;
 OPTIONS_disp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
 
 % Display one participant results 
-subjects_to_process = {'DVL_018_T6', 'DVL_030_T10'} ;
+subjects_to_process = {'DVL_046_T24'} ;
 
 % Or display all subjects
 % subjects_to_process = list_subjects ;
@@ -173,6 +173,6 @@ OPTIONS_analysis.woi_F0 = [90:110];   %add option to compute F0 in woi (in Hz) o
 OPTIONS_analysis.nlag_filename = 'all_neural_lags_avg_ffr_POSITIVE_corr_3_9.csv' ;
 
 % Run FFR analysis only on kept subjects
-FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+% FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
 FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
 

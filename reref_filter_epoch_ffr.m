@@ -89,13 +89,13 @@ for jj=1:length(subjects)
 %     % Identifies outliers events (e.g. boundaries) or too close events 
 %     idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
 %                         find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 ms
-%    
+%     
+%     % Removes outliers events
+%     EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;
+
     % For DB37 data : Remove Erg channel
     EEG = pop_select( EEG, 'nochannel', trig) ;
-
-    % Removes outliers events
-    EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;
-
+    
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;
     EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;

@@ -45,7 +45,7 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_042_T24'} ;
+subj_to_process = {'DVL_046_T24'} ;
 flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
@@ -68,7 +68,7 @@ RFE_test_existance = RFE_num(24:28);
 [flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_042_T24'}  ;
+subj_to_process = {'DVL_046_T24'}  ;
 flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
@@ -85,7 +85,7 @@ OPTIONS_rman.REJ_num = '_REJ1' ;
 
 %Get all subjects
 subj_to_rman = get_all_subjects(indir) ; 
-subj_to_rman = {'DVL_045_T10'} ;
+% subj_to_rman = {'DVL_046_T24'} ;
 
 % Reject bad trials and save new .set file
 [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'balanced', subj_to_rman) ; 
@@ -117,7 +117,7 @@ OPTIONS_disp.savefigs = 1 ;
 if OPTIONS_disp.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 % Display one participant results  
-subjects_to_process = {'DVL_042_T24'} ;
+subjects_to_process = {'DVL_046_T24'} ;
 % subjects_to_process = get_subjects(indir,[]) ;
 
 display_individual_subjects(subjects_to_process, OPTIONS_disp) ; 
@@ -144,13 +144,13 @@ if OPTIONS_disp_contrast.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_
 % subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
 % subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
 
-% OPTIONS.suffix = {'_T6','_T8','_T10'} ;
-OPTIONS.suffix = {'_T6','_T8','_T10','_T18','_T24'} ;
+OPTIONS.suffix = {'_T6','_T8','_T10'} ;
+% OPTIONS.suffix = {'_T6','_T8','_T10','_T18','_T24'} ;
 subjects_to_process_grp1 = get_subjects(indir,OPTIONS) ;
 
-% OPTIONS.suffix = {'_T6','_T8','_T10'} ;
-% subjects_to_process_grp2 = get_subjects(indir,OPTIONS) ;
-subjects_to_process_grp2 = subjects_to_process_grp1 ;
+% OPTIONS.suffix = {'_T18','_T24'} ;
+subjects_to_process_grp2 = get_subjects(indir,OPTIONS) ;
+% subjects_to_process_grp2 = subjects_to_process_grp1 ;
 
 % Remove subjects based on number of trial rejected 
 thresh = 0.33; %(20 DEV kept in each condtion)
@@ -159,7 +159,6 @@ thresh = 0.33; %(20 DEV kept in each condtion)
 
 % Display results
 display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
-
 
 %% ------------------- MMN search
 OPTIONS_mmn.params = 'RFE1_REJ1';                            % option of preprocess to consider
@@ -186,7 +185,7 @@ subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
 % search et detect gr dmoyenne 
 % search et detect accross subject 
 
-OPTIONS_mmn.win_gd_mmn = [150, 210] ; 
+OPTIONS_mmn.win_gd_mmn = [150, 250] ; 
 OPTIONS_mmn.win_mmn = [-120, 120] ; 
 
 [all_lat, all_amp, all_auc] = search_for_mmn(subjects_to_process, OPTIONS_mmn) ; 
