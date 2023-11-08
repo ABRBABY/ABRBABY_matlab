@@ -10,7 +10,7 @@ indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 display_erg_channel = 0 ;    % 1 if want to display ERG channel, 0 otherwise
-subject_of_interest = {'DVL_042_T24'} ;
+subject_of_interest = {'DVL_046_T24'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 

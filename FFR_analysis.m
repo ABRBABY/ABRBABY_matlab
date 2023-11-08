@@ -253,7 +253,7 @@ writetable(RMS_and_SNR_all,fname, 'WriteVariableNames', true) ;
 % Calculated from the time lag that produces the maximum stimulus-to-response cross-correlation magnitude
 
 % Read files that contains neural lag and age information
-neural_lags = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv'))) ;
+neural_lags = readtable(fullfile(OPTIONS.indir, OPTIONS.nlag_filename)) ;
 age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
 
 % Keep only subjects of interest (not rejected)
