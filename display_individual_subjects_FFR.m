@@ -51,7 +51,7 @@ for jj = 1:length(subjects_to_process)
 
 
 print('-dsvg',fullfile(OPTIONS.indir,subjects_to_process{jj},strcat(subjects_to_process{jj},'_', OPTIONS.polarity, '_FFR_temporal.svg')));
-print('-dpng',fullfile(OPTIONS.plot_dir,strcat(subjects_to_process{jj},'_', OPTIONS.polarity,'_FFR_temporal.png')));
+print('-dpng',fullfile(OPTIONS.plot_dir, 'png_folder',strcat(subjects_to_process{jj},'_', OPTIONS.polarity,'_FFR_temporal.png')));
 saveas(fig, fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat(subjects_to_process{jj},'_', OPTIONS.polarity,'_FFR_temporal.fig')));
 
 
@@ -156,7 +156,7 @@ xlabel("Frequency (Hz)");
 ylabel("Amplitude (µV)");
 
 print('-dsvg',fullfile(OPTIONS.indir,subjects_to_process{jj},strcat(subjects_to_process{jj},'_FFR_frequential.svg')));
-print('-dpng',fullfile(OPTIONS.plot_dir,strcat(subjects_to_process{jj},'_FFR_frequential.png')));
+print('-dpng',fullfile(OPTIONS.plot_dir, 'png_folder',strcat(subjects_to_process{jj},'_FFR_frequential.png')));
 saveas(fig',fullfile(strrep(OPTIONS.plot_dir,'png','fig'),strcat(subjects_to_process{jj},'_FFR_frequential.fig')));
 
 end
