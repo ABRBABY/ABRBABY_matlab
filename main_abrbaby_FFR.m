@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 
@@ -77,6 +77,32 @@ if sum(flag_sub_to_create_stepB)~=0
     [preproc_filt_filenames] = rej_and_prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 end
 
+%% Note ASD : 
+% stim f0 = 100.4 Hz
+
+
+% n = 80 -> 95.4 (delta = 15.4)
+% s = 95.4 -> 105.4 
+% n= 105.4 -> 120.8 (delat =15.4)
+
+% n = 80 ->95
+% s = 95 -> 105
+% n = 105 -> 120
+
+OPTIONS_disp.params = 'stepA1_stepB1';
+OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
+OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
+OPTIONS_disp.indir = indir ; 
+OPTIONS_disp.plot_dir = plot_dir ; 
+OPTIONS_disp.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
+OPTIONS_disp.ffr_polarity = 'avg' ;                             % which FFR polarity to use
+OPTIONS_disp.winNoise = cat(2,80:1:95,105:1:120); 
+OPTIONS_disp.winSignal = [95:1:105];
+% Or choose subjects with csv file
+subjects_to_process = get_subjects(indir, []) ;
+
+snr = FFR_analysis_get_SNR_freq(subjects_to_process, OPTIONS_disp) ; 
+
 %% ------------------- Display : 
 OPTIONS_disp.params = 'stepA1_stepB1';
 OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
@@ -88,13 +114,13 @@ OPTIONS_disp.fs = 16384 ;
 OPTIONS_disp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
 
 % Display one participant results 
-subjects_to_process = {'DVL_046_T24'} ;
+% subjects_to_process = {'DVL_046_T24'} ;
 
 % Or display all subjects
 % subjects_to_process = list_subjects ;
 
 % Or choose subjects with csv file
-% subjects_to_process = get_subjects(indir, OPTIONS_disp) ;
+subjects_to_process = get_subjects(indir, []) ;
 
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 %to do : display number of trials kept
@@ -123,7 +149,10 @@ subjects_to_process = get_subjects(indir, '') ;
 
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
-%% -------------------Export infos on rejection
+%% Compute SNR here? 
+
+
+%% -------------------Export infos on rejection : create a csv to summarize the number of trials rejected by subject
 OPTIONS_rejinfo.indir = indir ;
 OPTIONS_rejinfo.param = '_stepA1_stepB1';
 subjects_rejinfo = get_subjects(indir, '') ;
