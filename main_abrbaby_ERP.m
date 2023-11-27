@@ -45,7 +45,7 @@ suffix_rfe = '_reref_filtered_epoched_RFE' ;
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_046_T24'} ;
+subj_to_process = {'DVL_056_T10'} ;
 flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
@@ -170,15 +170,16 @@ OPTIONS_mmn.balance_STD = 'unbalanced';                      % 'balanced' or 'un
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
 OPTIONS_mmn.savefigs = 0 ; 
 OPTIONS_mmn.conditions = {'DEV1','DEV2','STD1'};
-OPTIONS_mmn.disp = 1 ;                                       % 1 if want to display local peak figure, 0 otherwise
+OPTIONS_mmn.disp = 0 ;                                       % 1 if want to display local peak figure, 0 otherwise
 OPTIONS_mmn.auc_delta = 5 ;                                  % time window to compute auc around peak
-
+OPTIONS_mmn.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\mmn_participants_ok80.csv' ;
 % Create folder for plots if doesn't exist
 if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 % Lookk for local peak at group then individual level 
 % subjects_to_process = {'DVL_012_T24'} ;
-subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
+% subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
+subjects_to_process = get_subjects(OPTIONS_mmn.indir,OPTIONS_mmn) ;
 
 % Comment ASD : for structuring the code it would be better to have two
 % functions : 
