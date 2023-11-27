@@ -74,7 +74,7 @@ for jj=1:length(subjects)
     % Re-index the trigger channel after removing some channels
     trigg_elec = find(ismember({EEG.chanlocs.labels},trig));
 
-    %% EVENTS
+    %% EVENTS (commented because now we trigg with true triggers)
 %     % Extract event from trigger channel (Erg1)
 %     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
 % 
