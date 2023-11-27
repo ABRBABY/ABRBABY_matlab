@@ -114,7 +114,7 @@ OPTIONS_disp.fs = 16384 ;
 OPTIONS_disp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
 
 % Display one participant results 
-% subjects_to_process = {'DVL_046_T24'} ;
+subjects_to_process = {'DVL_056_T10'} ;
 
 % Or display all subjects
 % subjects_to_process = list_subjects ;

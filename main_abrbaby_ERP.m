@@ -166,15 +166,17 @@ OPTIONS_mmn.balance_STD = 'unbalanced';                        % 'balanced' or '
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
 OPTIONS_mmn.savefigs = 0 ; 
 OPTIONS_mmn.conditions = {'DEV1','DEV2','STD1'};
+OPTIONS_mmn.disp = 0 ;                                       % 1 if want to display local peak figure, 0 otherwise
+OPTIONS_mmn.auc_delta = 5 ;                                  % time window to compute auc around peak
+OPTIONS_mmn.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\mmn_participants_ok80.csv' ;
 
-OPTIONS_mmn.disp = 1 ; 
-OPTIONS_mmn.auc_delta = 5 ; % time window to compute auc around peak
-
+% Create folder for plots if doesn't exist
 if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 % Display one participant results  
 % subjects_to_process = {'DVL_012_T24'} ;
-subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
+% subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
+subjects_to_process = get_subjects(OPTIONS_mmn.indir,OPTIONS_mmn) ;
 
 [data_avg, vTimes] = compute_grand_average_allcond(subjects_to_process, OPTIONS_mmn) ; 
 

@@ -24,15 +24,15 @@ IQR1 = data([dsearchn(dataR1, .25) dsearchn(dataR1, .75)]) ;
 IQR2 = data([dsearchn(dataR2, .25) dsearchn(dataR2, .75)]) ;
 
 % main plot is a patch, start with condition 1
-patch([y1 -y1(end:-1:1)] , [x1 x1(end:-1:1)], colors{1}, 'facealpha', .3) ;
+p1 = patch([y1 -y1(end:-1:1)] , [x1 x1(end:-1:1)], colors{1}, 'facealpha', .3) ;
 hold on ;
 % plot other descriptive stats
-plot([0 0], IQR1, 'k', 'linew', 3) ;
-plot(0, mean(data(:,1)), 'ks', 'markerfacecolor', 'r', 'markersize', 10) ;
-plot(0, median(data(:,1)), 'ko', 'markerfacecolor', 'g', 'markersize', 10) ;
+p3 = plot([0 0], IQR1, 'k', 'linew', 3) ;
+p4 = plot(0, mean(data(:,1)), 'ks', 'markerfacecolor', 'r', 'markersize', 10) ;
+p5 = plot(0, median(data(:,1)), 'ko', 'markerfacecolor', 'g', 'markersize', 10) ;
 
 % do the same for condition 2
-patch([y2 -y2(end:-1:1)]+3 , [x2 x2(end:-1:1)], colors{2}, 'facealpha', .3) ;
+p2 = patch([y2 -y2(end:-1:1)]+3 , [x2 x2(end:-1:1)], colors{2}, 'facealpha', .3) ;
 % plot other descriptive stats
 plot([3 3], IQR2, 'k', 'linew', 3) ;
 plot(3, mean(data(:,2)), 'ks', 'markerfacecolor', 'r', 'markersize', 10) ;
@@ -42,7 +42,7 @@ plot(3, median(data(:,2)), 'ko', 'markerfacecolor', 'g', 'markersize', 10) ;
 conditions{3} = 'IQR' ;
 conditions{4} = 'Mean' ;
 conditions{5} = 'Median' ;
-legend(conditions) ;
+legend([p1 p2 p3 p4 p5],conditions) ;
 title(tit) ;
 grid on ;
 
