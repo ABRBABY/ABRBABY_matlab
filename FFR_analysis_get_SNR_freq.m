@@ -16,7 +16,7 @@ for loopnum = 1:length(subjects) %for each subject
     fileID = fopen(FFR_file,'r'); FFR_subj = fscanf(fileID,'%f');
     
     % Compute FFT
-    [vHertz, fft] = compute_fft(timepoints/1000, FFR_subj); 
+    [vHertz, fft] = compute_fft(timepoints/1000, FFR_subj, OPTIONS); 
 
     % Compute SNR (Ribas-Prats et al. 2021)
     snr(loopnum) = 10*log(mean(fft(OPTIONS.winSignal))/mean(fft(OPTIONS.winNoise)));
@@ -28,7 +28,7 @@ end
 %% ===== GET DEFAULT MEASURE =====
 % USAGE:   [vHertz, fft] = compute_fft(timpoints, ffr)
 % Inspired by bt_fftsc developed by E.E. Skoe.
-function [vHertz, fftFFR] = compute_fft(timepoints, FFR)
+function [vHertz, fftFFR] = compute_fft(timepoints, FFR, OPTIONS)
  
     FS = 1 / (timepoints(2)-timepoints(1));
     numPoints = length(FFR);
@@ -49,6 +49,7 @@ function [vHertz, fftFFR] = compute_fft(timepoints, FFR)
 
     %******** STEP 2b. Perform FFT
     fftFFR = abs(fft(FFR, round(FS)));
+    fftFFR = abs(fft(FFR(round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(1)/1000)*16384):round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(2)/1000)*16384)), round(FS)));
     fftFFR = fftFFR(1:round(round(FS)/2));
     fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
     vHertz = [0:1:round(FS/2)]'; % frequency 'axis'
