@@ -5,8 +5,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
 
@@ -77,31 +77,6 @@ if sum(flag_sub_to_create_stepB)~=0
     [preproc_filt_filenames] = rej_and_prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 end
 
-%% Note ASD : 
-% stim f0 = 100.4 Hz
-
-
-% n = 80 -> 95.4 (delta = 15.4)
-% s = 95.4 -> 105.4 
-% n= 105.4 -> 120.8 (delat =15.4)
-
-% n = 80 ->95
-% s = 95 -> 105
-% n = 105 -> 120
-
-OPTIONS_disp.params = 'stepA1_stepB1';
-OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
-OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-OPTIONS_disp.indir = indir ; 
-OPTIONS_disp.plot_dir = plot_dir ; 
-OPTIONS_disp.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
-OPTIONS_disp.ffr_polarity = 'avg' ;                             % which FFR polarity to use
-OPTIONS_disp.winNoise = cat(2,80:1:95,105:1:120); 
-OPTIONS_disp.winSignal = [95:1:105];
-% Or choose subjects with csv file
-subjects_to_process = get_subjects(indir, []) ;
-
-snr = FFR_analysis_get_SNR_freq(subjects_to_process, OPTIONS_disp) ; 
 
 %% ------------------- Display : 
 OPTIONS_disp.params = 'stepA1_stepB1';
@@ -133,8 +108,8 @@ OPTIONS_neural.indir= indir;
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
-OPTIONS_neural.lagstart = 3 ;
-OPTIONS_neural.lagstop = 9 ;
+OPTIONS_neural.lagstart = 6 ;
+OPTIONS_neural.lagstop = 10 ;
 OPTIONS_neural.polarity = 'POSITIVE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
@@ -143,14 +118,39 @@ OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
 OPTIONS_neural.grpB = {'_T18','_T24'};
 
 subjects_to_process = get_subjects(indir, '') ;
-% subjects_to_process = list_subjects ;
-% subjects_to_process = get_subj('\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\participants_rejA.xlsx') ;
-% subjects_to_process = {'DVL_TestGiu'};
 
 compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
 
-%% Compute SNR here? 
+%% -------------------Compute SNRs and save in table
 
+% Notes ASD : 
+% stim f0 = 100.4 Hz
+% n = 80 -> 95.4 (delta = 15.4)
+% s = 95.4 -> 105.4 
+% n= 105.4 -> 120.8 (delat =15.4)
+% n = 80 ->95
+% s = 95 -> 105
+% n = 105 -> 120
+
+OPTIONS_SNR.params = 'stepA1_stepB1';
+OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
+OPTIONS_SNR.indir = indir ; 
+OPTIONS_SNR.plot_dir = plot_dir ; 
+OPTIONS_SNR.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
+OPTIONS_SNR.ffr_polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
+OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120); 
+OPTIONS_SNR.winSignal = [95:1:105];
+OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
+OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
+
+% Or choose subjects with csv file
+subjects_to_process = get_subjects(indir, []) ;
+
+snr = FFR_analysis_get_SNR_freq(subjects_to_process, OPTIONS_SNR) ; 
+
+% Write a table with SNR info
+SNR_all = table(subjects_to_process, snr', 'VariableNames', {'suject_ID', 'SNR'}) ;
+writetable(SNR_all,fullfile(OPTIONS_SNR.indir,strcat('all_SNRs_F0s_',OPTIONS_SNR.ffr_polarity, '_ffr_', num2str(OPTIONS_SNR.timew_F0(1)), '_', num2str(OPTIONS_SNR.timew_F0(2)), 'tw.csv')), 'WriteVariableNames', true) ;
 
 %% -------------------Export infos on rejection : create a csv to summarize the number of trials rejected by subject
 OPTIONS_rejinfo.indir = indir ;
@@ -170,11 +170,11 @@ OPTIONS_rej.neural_lag = 3 ;                                   % neural lag thre
 OPTIONS_rej.ffr_polarity = 'avg' ;                             % which FFR polarity to use
 OPTIONS_rej.polarity = 'POSITIVE' ;                            % which correlation value for neural lag to use
 % OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
-OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_ok.csv';
+OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\FFR_rej_Ntrials_SNR_F0.csv';
 
 % Choose subjects to analyse
-% subjects_to_analyse = get_subjects(indir, '') ;                      % get all subjects
-subjects_to_analyse = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
+subjects_to_analyse = get_subjects(indir, '') ;                      % get all subjects
+% subjects_to_analyse = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
 
 % % Reject bad participants based on number of trials rejected and neural lag
 % all_subjects = get_subjects(indir, '') ;
@@ -196,12 +196,13 @@ OPTIONS_analysis.neural_lag = OPTIONS_rej.neural_lag ;
 OPTIONS_analysis.ffr_polarity = OPTIONS_rej.ffr_polarity ; 
 OPTIONS_analysis.polarity = OPTIONS_rej.polarity  ;
 OPTIONS_analysis.plot_dir = plot_dir ; 
-OPTIONS_analysis.plot_FFT = 0 ; 
+OPTIONS_analysis.plot_FFT = 0 ;   % display FFT for eachs subject (1 to display, 0 to not) 
 OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013\da_170_kraus_16384_LP3000_HP80.avg' ;
-OPTIONS_analysis.woi_F0 = [90:110];   %add option to compute F0 in woi (in Hz) or no -> []
+OPTIONS_analysis.woi_F0 = [90 110];   %add option to search F0 amplitude in woi (in Hz) or no -> []
+OPTIONS_analysis.timew_F0 = [0 200] ; %timewindow of FFR on which to compute F0 (in ms)
 OPTIONS_analysis.nlag_filename = 'all_neural_lags_avg_ffr_POSITIVE_corr_3_9.csv' ;
 
 % Run FFR analysis only on kept subjects
-% FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
 FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
 

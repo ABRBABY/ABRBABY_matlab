@@ -78,33 +78,6 @@ bt_txt2avg(fname_out_grpA, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIO
 bt_txt2avg(fname_out_grpB, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIONS.win_of_interest(2)*1000);
 bt_txt2avg(fname_out_all, OPTIONS.srate, OPTIONS.win_of_interest(1)*1000, OPTIONS.win_of_interest(2)*1000);
 
-%% Neural lag
-
-% % Estimation of the transmission delay between stimulus and response.
-% % Calculated from the time lag that produces the maximum stimulus-to-response cross-correlation magnitude
-%
-% % Read files that contains neural lag and age information
-% neural_lags = readtable(fullfile(OPTIONS.indir, strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr.csv'))) ;
-% age_in_days = readtable(fullfile(OPTIONS.indir, 'age_in_days.xlsx')) ;
-%
-% % Keep only subjects of interest (not rejected)
-% neural_lags = neural_lags(contains(neural_lags.suject_ID, subjects),:) ;
-% age_in_days = age_in_days(contains(age_in_days.subjects, subjects),:) ;
-%
-% %Get variables of interest: neural lags and ages
-% IDlist_grA = neural_lags.suject_ID(contains(neural_lags.group,'A')) ;
-% IDlist_grB = neural_lags.suject_ID(contains(neural_lags.group,'B')) ;
-% neural_lags_grA = neural_lags.neural_lag(contains(neural_lags.group,'A')) ;
-% neural_lags_grB = neural_lags.neural_lag(contains(neural_lags.group,'B')) ;
-% age_grA = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grA)) ;
-% age_grB = age_in_days.age_in_days(contains(age_in_days.subjects,IDlist_grB)) ;
-%
-% all_info = table(neural_lags.suject_ID, neural_lags.neural_lag, neural_lags.group, age_in_days.age_in_days) ;
-%
-%  % Display neural lag distribution as a function of age
-% figure ; scatter(age_grA, neural_lags_grA) ; hold on ; scatter(age_grB, neural_lags_grB) ; legend({'6-10 mo', '18-24mo'}) ;
-% figure ; boxplot(all_info.Var2, all_info.Var3, 'Notch','on','Labels',{'6-10 mo', '18-24mo'}) ;
-
 %% FFT : group analysis
 
 % Adaptation of Skoe function (bt_fftsc)
@@ -167,7 +140,8 @@ for list_num = 1:3
     FFR = detrend(FFR.*FFRhan_A, 'constant');
 
     %******** STEP 2b. Perform FFT
-    fftFFR = abs(fft(FFR, round(FS)));
+%     fftFFR = abs(fft(FFR, round(FS)));
+    fftFFR = abs(fft(FFR(round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(1)/1000)*16384):round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(2)/1000)*16384)), round(FS)));
     fftFFR = fftFFR(1:round(round(FS)/2));
     fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
     HzScale = [0:1:round(FS/2)]'; % frequency 'axis'
@@ -241,13 +215,15 @@ FFR_B = detrend(FFR_B, 'constant');
 FFR_B = detrend(FFR_B.*FFRhan_B, 'constant');
 
 %******** STEP 2b. Perform FFT
-fftFFR_A = abs(fft(FFR_A, round(FS)));
+% fftFFR_A = abs(fft(FFR_A, round(FS)));
+fftFFR_A = abs(fft(FFR_A(round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(1)/1000)*16384):round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(2)/1000)*16384)), round(FS)));
 fftFFR_A = fftFFR_A(1:round(round(FS)/2));
 fftFFR_A = fftFFR_A.*(2./numPoints_A); % scale to peak �V
 HzScale_A = [0:1:round(FS/2)]'; % frequency 'axis'
 HzScale_A = HzScale_A(1:length(fftFFR_A));
 
-fftFFR_B = abs(fft(FFR_B, round(FS)));
+% fftFFR_B = abs(fft(FFR_B, round(FS)));
+fftFFR_B = abs(fft(FFR_B(round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(1)/1000)*16384):round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(2)/1000)*16384)), round(FS)));
 fftFFR_B = fftFFR_B(1:round(round(FS)/2));
 fftFFR_B = fftFFR_B.*(2./numPoints_A); % scale to peak �V
 HzScale_B = [0:1:round(FS/2)]'; % frequency 'axis'
@@ -353,7 +329,7 @@ for ss=1:size(all_subj,2)
     FFR = detrend(FFR.*FFRhan_A, 'constant');
 
     % Perform FFT
-    fftFFR = abs(fft(FFR(round(0.095*16384):round(0.240*16384)), round(FS)));
+    fftFFR = abs(fft(FFR(round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(1)/1000)*16384):round((abs(OPTIONS.win_of_interest(1))+OPTIONS.timew_F0(2)/1000)*16384)), round(FS)));
     %     fftFFR = abs(fft(FFR, round(FS)));
     fftFFR = fftFFR(1:round(round(FS)/2));
     fftFFR = fftFFR.*(2./numPoints); % scale to peak �V
@@ -391,9 +367,9 @@ F0_and_ampl = table(subjects, all_F0, all_ampl,'VariableNames', {'subject','F0_H
 
 % Save table in a .csv file
 if isempty(OPTIONS.woi_F0)
-    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_no_woi.csv'));
+    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_no_woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw.csv'));
 else
-    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_', num2str(OPTIONS.woi_F0(1)),'_', num2str(OPTIONS.woi_F0(end)),'.csv'));
+    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_', num2str(OPTIONS.woi_F0(1)),'_', num2str(OPTIONS.woi_F0(end)),'woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw.csv'));
 end
 writetable(F0_and_ampl,fname, 'WriteVariableNames', true) ;
 
@@ -563,6 +539,6 @@ writetable(pitch_error_infos,fullfile(OPTIONS.indir,'pitch_error_group_data.csv'
 
 %% Response consistency
 
-%compare 2 subaverages of the same FFR (use all subjects from eacg group)
+%compare 2 subaverages of the same FFR (ucse all subjects from eacg group)
 
 
