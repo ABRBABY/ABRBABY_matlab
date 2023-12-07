@@ -35,6 +35,7 @@ OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value =
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
 suffix_stepA = '_FFR_stepA';
+OPTIONS_stepA.analysis = 'FFR';
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -47,7 +48,7 @@ suffix_stepA = '_FFR_stepA';
 %Reref data, compute FFR formula, epoch, reject bad trials and produce
 %report
 if sum(flag_sub_to_create_stepA)~=0
-    [preproc_filenames] = reref_filter_epoch_ffr(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+    [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
 end
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 

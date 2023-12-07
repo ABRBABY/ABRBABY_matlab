@@ -37,18 +37,20 @@ OPTIONS_rfe.eeg_elec = 1:16 ;
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
 suffix_rfe = '_reref_filtered_epoched_RFE' ;
+OPTIONS_rfe.analysis = 'ERP';
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_040_T24'} ;
-flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
+subj_to_process = get_subjects(indir,[]);
+
+% flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
+[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials 
 OPTIONS_rej.indir = indir ;                             % directory path
