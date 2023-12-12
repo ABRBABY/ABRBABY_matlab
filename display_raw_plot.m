@@ -1,8 +1,8 @@
 %function display_raw_plot(indir,subject_of_interest)
 %%Script for opening bdf files and display plot of raw data
 
-indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
-% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_to_look';
+% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
+indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_to_look';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_NEW';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_excluded';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data_issues';
@@ -10,7 +10,8 @@ indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 display_erg_channel = 0 ;    % 1 if want to display ERG channel, 0 otherwise
-subject_of_interest = {'DVL_056_T10'} ;
+
+subject_of_interest = {'DVL_018_T24'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 

@@ -2,8 +2,8 @@ function[] = export_rejection_infos_FFR(subjects, OPTIONS)
 
 %% Rejection rates : export into .csv
 % Get rejection option name
-part_param = split(OPTIONS.param, '_') ;
-rejoption = part_param{3} ;
+part_param = split(OPTIONS.params, '_') ;
+rejoption = part_param{2} ;
 % Initialize variables
 total_num_of_trials = [] ;
 num_of_trials_rejected = [] ;
@@ -24,7 +24,7 @@ for loopnum = 1:length(subjects) %for each subject
 end
 
 rej_table = table(subjects,total_num_of_trials',num_of_trials_rejected',percent_of_rej', n_trials_kept','VariableNames', {'subjects', 'n_trial_total', 'n_trials_rejected', 'percent_trials_rejected', 'n_trials_kept'}) ;
-writetable(rej_table, fullfile(OPTIONS.indir, 'FFR_rejection_info_all_subj.csv')) ;
+writetable(rej_table, fullfile(OPTIONS.indir, strcat('FFR_rejection_info_all_subj_', OPTIONS.params,'.csv'))) ;
 
 
 disp('Rejection info exported.')
