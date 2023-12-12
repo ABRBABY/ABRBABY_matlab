@@ -77,7 +77,7 @@ for jj=1:length(subjects)
     %% EVENTS (commented because now we trigg with true triggers)
 %     % Extract event from trigger channel (Erg1)
 %     EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
-% 
+%  
 %     % Resolves bad event detection linked to trigger artefact and detects
 %     % events to remove
 %     if size(EEG.event,2)>6000 && sum(contains(readlines(fullfile(indir,'arte_stim_participants.txt')), char(subjects{jj})))
@@ -95,7 +95,7 @@ for jj=1:length(subjects)
 
     % For DB37 data : Remove Erg channel
     EEG = pop_select( EEG, 'nochannel', trig) ;
-    
+
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','.txt'),EEG.event) ;
     EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;
@@ -112,8 +112,11 @@ for jj=1:length(subjects)
     % Create a custom history variable to keep track of OPTIONS
     EEG.history_stepA = OPTIONS ;
 
+    % Index all elec
+    all_elec = [EEG.chanlocs.urchan] ;
+
     %Filter data
-    EEG  = pop_basicfilter(EEG,  1 , 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2 ); % GUI: 11-Apr-2022 12:47:48
+    EEG  = pop_basicfilter(EEG,  all_elec, 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2 ); % GUI: 11-Apr-2022 12:47:48
 
     %% SAVE DATASET
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_FFR_stepA'),'savenew', out_filenames{jj},'gui','off');
