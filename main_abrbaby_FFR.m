@@ -6,6 +6,7 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data') ;
@@ -77,8 +78,7 @@ if sum(flag_sub_to_create_stepB)~=0
     [preproc_filt_filenames] = rej_and_prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 end
 
-
-%% ------------------- Display : 
+%% ------------------- Display :
 OPTIONS_disp.params = 'stepA1_stepB2';
 OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
@@ -95,7 +95,8 @@ subjects_to_process = {'DVL_018_T24'} ;
 % subjects_to_process = list_subjects ;
 
 % Or choose subjects with csv file
-% subjects_to_process = get_subjects(indir, []) ;
+subjects_to_process = get_subjects(indir, []) ;
+% subjects_to_process = get_subjects(indir, OPTIONS_disp) ;
 
 display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 %to do : display number of trials kept
