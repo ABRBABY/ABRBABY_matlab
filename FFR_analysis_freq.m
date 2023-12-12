@@ -21,7 +21,7 @@ timepoints = fscanf(fileID,formatSpec);
 mat = 1;
 all_subj = zeros(size(timepoints,1),1);
 for loopnum = 1:length(subjects) %for each subject
-    FFR_file = fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},OPTIONS.param,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.txt')) ;
+    FFR_file = fullfile(OPTIONS.indir,subjects{loopnum},strcat(subjects{loopnum},'_',OPTIONS.params,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.txt')) ;
     if exist(FFR_file,'file')==0 ; error(['File does not exist, please run FFR preprocessing steps on ',subjects{loopnum}]); end
     fileID = fopen(FFR_file,'r');
     formatSpec = '%f';
@@ -57,17 +57,17 @@ FFR_avg_grpA = mean(data_groups{1,1},2);
 FFR_avg_grpB = mean(data_groups{1,2},2);
 
 %% Export mean FFRs into .txt files and convert into .avg files
-fname_out_grpA = fullfile(OPTIONS.indir,'mean_FFR_grpA.txt') ;
+fname_out_grpA = fullfile(OPTIONS.indir,strcat('mean_FFR_grpA_', OPTIONS.params,'.txt')) ;
 fid = fopen(fname_out_grpA,'w');
 fprintf(fid,'%c\n',FFR_avg_grpA);
 fclose(fid);
 
-fname_out_grpB = fullfile(OPTIONS.indir,'mean_FFR_grpB.txt') ;
+fname_out_grpB = fullfile(OPTIONS.indir,strcat('mean_FFR_grpB_', OPTIONS.params,'.txt')) ;
 fid = fopen(fname_out_grpB,'w');
 fprintf(fid,'%c\n',FFR_avg_grpB);
 fclose(fid);
 
-fname_out_all = fullfile(OPTIONS.indir,'mean_FFR_all.txt') ;
+fname_out_all = fullfile(OPTIONS.indir,strcat('mean_FFR_all_', OPTIONS.params,'.txt')) ;
 fid = fopen(fname_out_all,'w');
 fprintf(fid,'%c\n',grd_FFR);
 fclose(fid);
@@ -114,7 +114,7 @@ HF_Hi = 2750;
 FS = 16384;
 FFR_list = {grd_FFR,FFR_avg_grpA,FFR_avg_grpB};
 FFR_name = {'All_data','6-10mo','18-24mo'};
-filename_list = {'FFR_frequential_domain_all_subj.svg','FFR_frequential_domain_groupA.svg','FFR_frequential_domain_groupB.svg'};
+filename_list = {strcat('FFR_frequential_domain_all_subj_', OPTIONS.params,'.svg'),strcat('FFR_frequential_domain_groupA_', OPTIONS.params,'.svg'),strcat('FFR_frequential_domain_groupB_', OPTIONS.params,'.svg')};
 color_list = {FFR_color;grpA_color;grpB_color};
 
 %******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD
@@ -289,7 +289,7 @@ Lgnd.Position(2) = 0.9;
 %Add a single title for 4 plots
 sgtitle('FFR Frequential domain, group comparison', 'Fontsize', 16, 'FontWeight', 'bold');
 
-print('-dsvg',fullfile(OPTIONS.indir, 'FFR_frequential_domain_group_comparison_bis.svg'));
+print('-dsvg',fullfile(OPTIONS.indir, strcat('FFR_frequential_domain_group_comparison_bis_', OPTIONS.params,'.svg')));
 
 %% FFT : by subject analysis
 
@@ -352,7 +352,7 @@ for ss=1:size(all_subj,2)
     if isempty(OPTIONS.woi_F0)
         A = max(fftFFR) ;             % get amplitude A of F0 (no window of interest)
     else
-        A = max(fftFFR(OPTIONS.woi_F0,1)) ;   % get amplitude A of F0 within window of interest
+        A = max(fftFFR(OPTIONS.woi_F0(1):OPTIONS.woi_F0(2),1)) ;   % get amplitude A of F0 within window of interest
     end
 
     freq = find(fftFFR == A) ;    % get index of F0 in fftFFR list of values
@@ -367,9 +367,9 @@ F0_and_ampl = table(subjects, all_F0, all_ampl,'VariableNames', {'subject','F0_H
 
 % Save table in a .csv file
 if isempty(OPTIONS.woi_F0)
-    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_no_woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw.csv'));
+    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_no_woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw_', OPTIONS.params,'.csv'));
 else
-    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_', num2str(OPTIONS.woi_F0(1)),'_', num2str(OPTIONS.woi_F0(end)),'woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw.csv'));
+    fname = fullfile(OPTIONS.indir, strcat('all_subjects_F0_and_amplitude_', num2str(OPTIONS.woi_F0(1)),'_', num2str(OPTIONS.woi_F0(end)),'woi_',num2str(OPTIONS.timew_F0(1)),'_',num2str(OPTIONS.timew_F0(2)),'tw_', OPTIONS.params,'.csv'));
 end
 writetable(F0_and_ampl,fname, 'WriteVariableNames', true) ;
 
@@ -531,7 +531,7 @@ end
 %Extract variables of interest in table and save table
 pitch_error_infos = table(subjects,PITCH_ERROR_autocorrelation',PITCH_ERROR_fft',PITCH_STRENGTH2',PITCH_SRCORR', ...
     'VariableNames',{'subject_ID', 'PITCH_ERROR_autocorrelation','PITCH_ERROR_fft','PITCH_STRENGTH_2','PITCH_SRCORR'}) ;
-writetable(pitch_error_infos,fullfile(OPTIONS.indir,'pitch_error_group_data.csv')) ;
+writetable(pitch_error_infos,fullfile(OPTIONS.indir,strcat('pitch_error_group_data_', OPTIONS.params,'.csv'))) ;
 
 %% Response-to-response correlation
 
