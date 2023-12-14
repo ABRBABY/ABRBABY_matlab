@@ -6,8 +6,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -37,8 +37,8 @@ OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ;
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
-suffix_rfe = '_reref_filtered_epoched_RFE' ;
 OPTIONS_rfe.analysis = 'ERP';
+suffix_rfe = strcat(OPTIONS_rfe.analysis,'_reref_filtered_epoched_RFE') ;
 % OPTIONS_rfe.artestim = fullfile(indir,'arte_stim_participants.txt') ;    % path to .txt taht contains participants ID with arte stim
 
 
@@ -49,7 +49,7 @@ OPTIONS_rfe.analysis = 'ERP';
 %Subjects to process : when whant to choose
 subj_to_process = get_subjects(indir,[]);
 
-% flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
+flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;

@@ -39,7 +39,7 @@ for jj=1:length(subjects)
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
     % Compute ABR (to computed before reref)
-    abr_signal = compute_ABR(EEG) ; 
+    [abr_signal, id_left] = compute_ABR(EEG) ; 
     
      % Add channels information
     EEG = pop_chanedit(EEG, 'lookup',chan_dir) ;
@@ -160,7 +160,7 @@ end
 %--------------------------------------------------------------
 % FUNCTION that get OPTIONS values
 %--------------------------------------------------------------
-function [abr_signal]= compute_ABR(EEG)
+function [abr_signal,id_left]= compute_ABR(EEG)
 
     %% Compute FFR
     % forumla : {(Left)+(Right)}/-2 = Ref - {(LA+RA)/2}
