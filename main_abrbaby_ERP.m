@@ -38,9 +38,7 @@ OPTIONS_rfe.eeg_elec = 1:16 ;
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
 OPTIONS_rfe.analysis = 'ERP';
-suffix_rfe = strcat(OPTIONS_rfe.analysis,'_reref_filtered_epoched_RFE') ;
-% OPTIONS_rfe.artestim = fullfile(indir,'arte_stim_participants.txt') ;    % path to .txt taht contains participants ID with arte stim
-
+suffix_rfe = strcat('_',OPTIONS_rfe.analysis,'_reref_filtered_epoched_RFE') ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
