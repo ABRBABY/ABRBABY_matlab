@@ -6,8 +6,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -37,38 +37,45 @@ OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ;
 OPTIONS_rfe.eeg_elec = 1:16 ; 
 OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
-suffix_rfe = '_reref_filtered_epoched_RFE' ;
-% OPTIONS_rfe.artestim = fullfile(indir,'arte_stim_participants.txt') ;    % path to .txt taht contains participants ID with arte stim
+OPTIONS_rfe.analysis = 'ERP';
+
+suffix_rfe = strcat('_',OPTIONS_rfe.analysis,'_stepA') ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_056_T10'} ;
+subj_to_process = get_subjects(indir,[]);
+
 flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-% count_rfe = 1 ;
-[preproc_filenames] = reref_filter_epoch_erp(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
+[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
 
-%% ------------------- Preprocess : Select trials per condition and reject BAD trials 
+%% ------------------- Preprocess : Select trials per condition and reject BAD trials
 OPTIONS_rej.indir = indir ;                             % directory path
 OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adults
 OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
 OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
-suffix_rej = '_REJ' ;
-RFE_num = '_reref_filtered_epoched_RFE1' ;              % set of RFE parameters to use for this step
-RFE_test_existance = RFE_num(24:28);
+OPTIONS_rej.analysis = 'ERP';
+
+suffix_rej = '_stepB' ;
+
+set_of_param = '1' ; 
+
+RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters to use for this step
+RFE_test_existance = strcat('_stepA',set_of_param);
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
 
-%Subjects to process : when whant to choose
-subj_to_process = {'DVL_046_T24'}  ;
+%Subjects to process : when whant to choose one subject otherwise comment
+%the following line 
+% subj_to_process = {'DVL_046_T24'}  ;
 flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
@@ -80,8 +87,8 @@ flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 % OPTIONS_rman.indir = indir ;                             % directory path
 OPTIONS_rman.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1'  ;
 OPTIONS_rman.suffix_rman = '_rman' ;
-OPTIONS_rman.RFE_num = '_RFE1' ;              % set of RFE parameters to use for this step
-OPTIONS_rman.REJ_num = '_REJ1' ;
+OPTIONS_rman.RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
+OPTIONS_rman.REJ_num = '_stepB1' ;
 
 %Get all subjects
 subj_to_rman = get_all_subjects(indir) ; 
