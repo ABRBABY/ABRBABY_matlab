@@ -128,13 +128,13 @@ for ii=1:length(subjects)
     suffix_rfe = strsplit(RFE,'_') ; 
     
     % Save datasets 
-    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
     if strcmp(opt_balance,'balanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
     elseif strcmp(opt_balance,'unbalanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STDD_thresh_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STDD_thresh_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STDD_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STDD_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
 
     end
     % Name of the file report 
