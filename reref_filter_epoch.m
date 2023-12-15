@@ -74,36 +74,6 @@ for jj=1:length(subjects)
     
     % Replace Left channel by a new one called ABR
     EEG.data(id_left,:) = abr_signal ; EEG.chanlocs(id_left).labels = 'ABR' ;
-% 
-%     %% Get events : either based on ERG (if file _ergstim.txt exist) or, alternatively with DB37 
-%     if exist(fullfile(indir,subjects{jj},strcat(subjects{jj},TRIG_MODALITY)),'file')
-%     
-%         % Extract event from trigger channel (Erg1)
-%         EEG = pop_chanevent(EEG, trigg_elec,'oper','X>20000','edge','leading','edgelen',1);
-%     
-%         % Resolves bad event detection linked to trigger artefact and detects
-%         % events to remove
-%         if size(EEG.event,2)>6000 && sum(contains(readlines(fullfile(indir,'arte_stim_participants.txt')), char(subjects{jj})))
-%             
-%             [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
-%             
-%             % Removes events identified above
-%             EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
-%         end
-%         
-%         % Identifies outliers events (e.g. boundaries) or too close events 
-%         idx_to_remove = [   find(diff([EEG.event.latency])<0.219*EEG.srate),... % minimum intretrial duration = 219 ms
-%                             find(diff([EEG.event.latency])>1.5*EEG.srate) ];    % maximum intertrial duration = around 1500 m
-%       
-%         % Removes outliers events
-%         EEG.event(idx_to_remove) = [] ;  EEG.urevent(idx_to_remove) = [] ;  
-%     
-%     else
-%     
-%         % For DB37 data : Remove Erg channel
-%         EEG = pop_select( EEG, 'nochannel', trig) ;
-% 
-%     end
 
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','_trials_description.txt'),EEG.event) ;
@@ -138,9 +108,6 @@ function out_event = read_custom_events(fname, in_event)
 
 % Read .txt 
 my_events = readtable(fname, 'ReadVariableNames', 0);
-
-% % Insert info from .txt into EEG.event
-% my_events = table2array(my_events);
 
 if size(my_events,2)~=3 
     error('Wrong number of column in file _trial_descriptions.txt');
