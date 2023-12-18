@@ -6,8 +6,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -64,14 +64,13 @@ OPTIONS_rej.analysis = 'ERP';
 
 suffix_rej = '_stepB' ;
 
-set_of_param = '1' ; 
+set_of_param = '1' ;                                    % set of stepA param to use
 
 RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters to use for this step
-RFE_test_existance = strcat('_stepA',set_of_param);
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_test_existance) ; 
+[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_num) ; 
 
 %Subjects to process : when whant to choose one subject otherwise comment
 %the following line 

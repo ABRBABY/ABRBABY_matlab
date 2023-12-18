@@ -23,7 +23,7 @@ out_filenames = [] ;
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
-%Check if RFE(number).set files exist for all subjects
+%Check if stepA(number).set files exist for all subjects
 for jj=1:length(subjects)
     setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},RFE,'.set')));
     if isempty(setname) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
