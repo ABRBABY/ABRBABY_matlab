@@ -72,6 +72,14 @@ for jj=1:length(subjects)
     % Re-reference data and rename new file
     EEG = pop_reref(EEG, ref_elec, 'exclude',trigg_elec, 'keepref','on');
     
+    % Detect events when first time run on participant
+    EventDetection = fullfile(indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt')); 
+    if ~exist(EventDetection,'file') 
+        % Add filepath in EEG structure
+        EEG.filepath = fname.folder ;
+        [EEG] = detect_events_and_create_report(EEG, indir, TRIG_MODALITY, trig) ;
+    end
+
     % Replace Left channel by a new one called ABR
     EEG.data(id_left,:) = abr_signal ; EEG.chanlocs(id_left).labels = 'ABR' ;
 
@@ -80,7 +88,7 @@ for jj=1:length(subjects)
     EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;
 
     %% FILTERS the data with ERPLab
-%     EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
+    EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
     
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); EEG = eeg_checkset( EEG );
 
@@ -115,7 +123,8 @@ else
     idx_events = my_events{:,2}==1 ; 
     out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
                     'type', my_events{idx_events,1}',...
-                    'urevent', num2cell(my_events{idx_events,3}'));
+                    'urevent', num2cell(1:6000)) ;
+%                     'urevent', num2cell(my_events{idx_events,3}'));                      
 end
 
 end
