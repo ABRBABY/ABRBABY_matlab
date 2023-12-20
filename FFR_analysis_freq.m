@@ -407,7 +407,7 @@ for ss=1:size(all_subj,2)
     neural_lag = n_lags.neural_lag(ss);
     startRESP = startSTIM + neural_lag;
     % pitchtrack response
-    [~, autocorr_all{ss}, lag{ss}, FFT_resp_all{ss}, ~, prestimFFT_all{ss}, totalblocks_all{ss}]= pitchtrack(fullfile(OPTIONS.indir,subjects{ss}, strcat(subjects{ss}, '_stepA1_stepB1_abr_avg_shifted_data_HF.avg')), block, step, startRESP, channel, 0) ;
+    [~, autocorr_all{ss}, lag{ss}, FFT_resp_all{ss}, ~, prestimFFT_all{ss}, totalblocks_all{ss}]= pitchtrack(fullfile(OPTIONS.indir,subjects{ss}, strcat(subjects{ss}, '_', OPTIONS.params, '_abr_avg_shifted_data_HF.avg')), block, step, startRESP, channel, 0) ;
 
     % pitchtrack stimulus (make conditional)
     [time_stim_all{ss}, autocorr_stim_all{ss}, lag_stim{ss}, FFT_stim_all{ss}, ~, ~, totalblocks_stim_all{ss}]=pitchtrack(OPTIONS.stim_avg, block, step, startSTIM, stim_channel,0) ;
