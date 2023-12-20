@@ -104,7 +104,7 @@ display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
 
 
 %% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA1_stepB1'; 
+OPTIONS_neural.params = 'stepA1_stepB2'; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir; 
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
@@ -112,7 +112,7 @@ OPTIONS_neural.start = 0 ;
 OPTIONS_neural.stop = 169 ;
 OPTIONS_neural.lagstart = 3 ;
 OPTIONS_neural.lagstop = 10 ;
-OPTIONS_neural.polarity = 'POSITIVE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
+OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 OPTIONS_neural.chan =1 ;
 OPTIONS_neural.chancomp =1 ;
 OPTIONS_neural.BT_toolbox = BT_toolbox ;
@@ -170,7 +170,7 @@ OPTIONS_rej.param = '_stepB2';                                 % suffix for set 
 OPTIONS_rej.visu = 1 ;                                         % 1 to display rejection rates, otherwise 0
 OPTIONS_rej.neural_lag = 3 ;                                   % neural lag threshold : under this value, subjects are rejected
 OPTIONS_rej.ffr_polarity = 'avg' ;                             % which FFR polarity to use
-OPTIONS_rej.polarity = 'POSITIVE' ;                            % which correlation value for neural lag to use
+OPTIONS_rej.polarity = 'ABSOLUTE' ;                            % which correlation value for neural lag to use
 % OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
 % OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\FFR_rej_Ntrials_SNR_F0.csv';
 OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\participants_rejFFR_corrected_sure.csv';
@@ -189,7 +189,7 @@ subjects_to_analyse = get_subjects(indir, '') ;                      % get all s
 
 % Set options to compute group analyses
 OPTIONS_analysis.indir = indir ;
-OPTIONS_analysis.params = 'stepA1_stepB1';
+OPTIONS_analysis.params = 'stepA1_stepB2';
 grpA.suffix = {'_T6','_T8','_T10'};
 grpB.suffix = {'_T18','_T24'};
 OPTIONS_analysis.groups = {grpA, grpB} ;
@@ -203,11 +203,11 @@ OPTIONS_analysis.plot_FFT = 0 ;   % display FFT for eachs subject (1 to display,
 OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013\da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_analysis.woi_F0 = [90 110];   %add option to search F0 amplitude in woi (in Hz) or no -> []
 OPTIONS_analysis.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_analysis.nlag_filename = strcat('all_neural_lags_avg_ffr_POSITIVE_corr_3_10_', OPTIONS_analysis.params,'.csv') ;
+OPTIONS_analysis.nlag_filename = strcat('all_neural_lags_avg_ffr_ABSOLUTE_corr_3_10_', OPTIONS_analysis.params,'.csv') ;
 
 % Run FFR analysis only on kept subjects
-% FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
-FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
+FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
+% FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
 
 %% -------------------Group display
 

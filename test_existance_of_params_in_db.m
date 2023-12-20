@@ -15,9 +15,9 @@ for jj=1:length(subjects)
     fprintf(strcat(subjects{jj}, '...\n'));
 
     if isempty(RFE_num)
-        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat(OPTIONS.analysis,'*', suffix,'*'), OPTIONS) ; 
+        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat(subjects{jj},'*', suffix,'*'), OPTIONS) ; 
     else
-        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat(OPTIONS.analysis,'*', RFE_num, '*',suffix,'*'), OPTIONS) ; 
+        [does_exist, count(jj)] = check_exist_set_params(subjects{jj}, strcat(subjects{jj},'*', RFE_num, '*',suffix,'*'), OPTIONS) ; 
     end
     
     flag_sub_to_create(jj) = ~does_exist ; 
