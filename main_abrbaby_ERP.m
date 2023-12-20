@@ -78,7 +78,7 @@ RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters
 flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
-[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+% [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
 
@@ -103,7 +103,7 @@ subj_to_rman = {'DVL_003_T8'} ;
 OPTIONS_average.indir = 'E:\EEG_ANALYSES\to_gd_avg';                                  % directory path of files to process
 % spl = split(OPTIONS_average.indir, '\') ;
 % OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
-OPTIONS_average.param = 'RFE1_REJ1' ;
+OPTIONS_average.param = 'stepA1_stepB1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
 OPTIONS_average.srate = 256 ; 
@@ -111,7 +111,7 @@ OPTIONS_average.keyword = 'gd_avg' ;
 compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level
-OPTIONS_disp.params = 'RFE1_REJ1';                            % option of preprocess to consider
+OPTIONS_disp.params = 'stepA1_stepB1' ;                         % option of preprocess to consider
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
 % OPTIONS_disp.indir = indir ;                                  % directory path of files to process
@@ -134,7 +134,7 @@ display_individual_subjects(subjects_to_process, OPTIONS_disp) ;
 
 
 %% ------------------- Display results at GROUP level
-OPTIONS_disp_contrast.params = 'RFE1_REJ1';                            % option of preprocess to consider
+OPTIONS_disp_contrast.params = 'stepA1_stepB1' ;                            % option of preprocess to consider
 OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
@@ -171,7 +171,7 @@ thresh = 0.33; %(20 DEV kept in each condtion)
 display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPTIONS_disp_contrast)
 
 %% ------------------- MMN search
-OPTIONS_mmn.params = 'RFE1_REJ1';                            % option of preprocess to consider
+OPTIONS_mmn.params = 'stepA1_stepB1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
 OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
