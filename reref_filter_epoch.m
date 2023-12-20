@@ -5,8 +5,6 @@ function [out_filenames] = reref_filter_epoch(ALLEEG, OPTIONS, flag_sub_to_creat
 % Get OPTIONS
 [indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir]= get_OPTIONS(OPTIONS) ;
 
-TRIG_MODALITY = '_ergstim.txt';
-
 % Reads all folders that are in indir 
 d = dir(indir); 
 isub = [d(:).isdir]; % returns logical vector if is folder
@@ -75,9 +73,7 @@ for jj=1:length(subjects)
     % Detect events when first time run on participant
     EventDetection = fullfile(indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt')); 
     if ~exist(EventDetection,'file') 
-        % Add filepath in EEG structure
-        EEG.filepath = fname.folder ;
-        [EEG] = detect_events_and_create_report(EEG, indir, TRIG_MODALITY, trig) ;
+        error('ABRBABY: File "_trials_description.txt" does not exist for participant %s.', subjects{jj})
     end
 
     % Replace Left channel by a new one called ABR
