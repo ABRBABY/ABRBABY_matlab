@@ -123,8 +123,7 @@ else
     idx_events = my_events{:,2}==1 ; 
     out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
                     'type', my_events{idx_events,1}',...
-                    'urevent', num2cell(1:6000)) ;
-%                     'urevent', num2cell(my_events{idx_events,3}'));                      
+                    'urevent', num2cell(1:height(my_events))) ;                      
 end
 
 end
