@@ -1,5 +1,15 @@
 function [EEG] = detect_events_and_create_report(EEG, indir, trig_modality, trig)
 
+% Inputs : 
+% EEG : EEG structure created with EEGLAB
+% indir : directory path where participants folders are stored (1 folder
+% per recording)
+% Trig modality : if a 'participantID_ergstim.txt' exist in participant
+% folder, the function considers that the triggers are stored in a 'Erg'
+% channels and need to be detected with threshold. Otherwise, the function 
+% considers that the triggers were received via DB37 plug.
+% trig : name of trigger channel if stored in Erg channel. Generally 'Erg'.
+
 % Check trigger modality (Erg or DB37)
 erg_filename = fullfile(EEG.filepath, strcat(EEG.setname, trig_modality)) ;
 if exist(erg_filename, 'file')
