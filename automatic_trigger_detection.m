@@ -1,26 +1,29 @@
 % Automatic trigger detection
 
+% ------------------- Set environment 
+% Variables to enter manually before running the code
+
+% DATA directory 
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
 custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+
 indir = fullfile(custom_path,'DEVLANG_data');
 
-% OPTIONS_rfe.indir = indir ;
-% OPTIONS_rfe.hp = 1;                                         % high-pass (Hz) (APICE)
-% OPTIONS_rfe.lp = 30;                                        % low-pass (Hz) (APICE)
-% OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};
-% OPTIONS_rfe.                                % Ref and trigger channels
-% OPTIONS_rfe.baseline = [-99, 0] ;
-% OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ;
-% OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ;
-% OPTIONS_rfe.eeg_elec = 1:16 ;
-% OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ;
-% OPTIONS_rfe.varhistory = 'EEG.history_rfe' ;
-% OPTIONS_rfe.analysis = 'ERP';
-% 
-% % Get OPTIONS
-% [indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir]= get_OPTIONS(OPTIONS_rfe) ;
+%Get list of subjects in indir
+list_subjects = get_subjects(indir,[]);
+
+plot_dir = fullfile(custom_path, 'plot_dir');
+
+% This function sets custom path (either for Estelle or AnneSo)
+[eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
+
+% Load path and start Matlab : returns ALLEEG (EEGLAB structure)
+ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
 trig = {'Erg1'};
 TRIG_MODALITY = '_ergstim.txt';
+chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 
 % Reads all folders that are in indir
 d = dir(indir);
