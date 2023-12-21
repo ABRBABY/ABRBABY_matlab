@@ -12,7 +12,15 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 % Get files to average according to options
 for ii = 1:length(subjects)
     for cc = 1:length(conditions)
-        filename = dir(fullfile(indir, subjects{ii},strcat(subjects{ii},'_', conditions{cc},'_thresh_',opt_balance,'_',param,'*.set'))) ;
+       
+        tmp = conditions{cc}  ; 
+        if contains(conditions{cc},'STD') ;  
+               conditions{cc} = 'STD*'; 
+        end 
+        
+        filename = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,'_',conditions{cc},'_',opt_balance,'_',param,'*.set'))) ; 
+        outname = fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,'_',tmp,'_',opt_balance,'_',param,'_',OPTIONS.keyword,'.set')) ; 
+
         if size(filename,1) > 1
             rman = contains({filename.name},'rman') ;
             filename = filename(rman,1) ;
@@ -25,7 +33,10 @@ for ii = 1:length(subjects)
         % Resample data to 256 Hz
         EEG = eeg_checkset( EEG );
 %         EEG = pop_resample( EEG, OPTIONS.srate);
-        pop_newset(ALLEEG, EEG, 1, 'setname',strrep(fname,'thresh',OPTIONS.keyword),'savenew', fullfile(filepath, strrep(fname,'thresh','gd_avg')),'gui','off');
+       
+        [~,outfname,~] = fileparts(outname);
+
+        pop_newset(ALLEEG, EEG, 1, 'setname',outfname,'savenew', outname,'gui','off');
     end
 end
 

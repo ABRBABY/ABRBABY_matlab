@@ -5,7 +5,7 @@ function [] = write_txt_file_set_params(flag, count,suffix, OPTIONS)
 % If one element of the vector is 1 (=a subject to create)
 if sum(flag) ~= 0
     
-    fname_txt = fullfile(OPTIONS.indir,strcat('PARAM',suffix,num2str(count),'.txt')) ;
+    fname_txt = fullfile(OPTIONS.indir,strcat('PARAM','_',OPTIONS.analysis,suffix,num2str(count),'.txt')) ;
    
     % If txt file does not exist -> creates it 
     if ~exist(fname_txt)

@@ -30,7 +30,7 @@ for jj=1:length(subjects)
     [~,filename,~] = fileparts(fname.name);    
 
     % Creates resulting filename
-    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,suffix,num2str(count),'.set')) ; 
+    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_',OPTIONS.analysis,suffix,num2str(count),'.set'));
             
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
@@ -85,7 +85,7 @@ for jj=1:length(subjects)
 
     %% FILTERS the data with ERPLab
     EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
-    
+
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); EEG = eeg_checkset( EEG );
 
     %% Extract ALL conditions epochs

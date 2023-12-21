@@ -39,16 +39,17 @@ OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/st
 OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
 OPTIONS_rfe.analysis = 'ERP';
 
-suffix_rfe = strcat('_',OPTIONS_rfe.analysis,'_stepA') ;
+% suffix_rfe = strcat('_',OPTIONS_rfe.analysis,'_stepA') ;
+suffix_rfe = '_stepA' ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
 
-%Subjects to process : when whant to choose
-subj_to_process = get_subjects(indir,[]);
-
-flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
+% Subjects to process : when whant to choose
+% subj_to_process = get_subjects(indir,[]);
+% subj_to_process = {'DVL_003_T10'};
+% flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
@@ -64,9 +65,7 @@ OPTIONS_rej.analysis = 'ERP';
 
 suffix_rej = '_stepB' ;
 
-set_of_param = '1' ;                                    % set of stepA param to use
-
-RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters to use for this step
+RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -75,32 +74,30 @@ RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters
 %Subjects to process : when whant to choose one subject otherwise comment
 %the following line 
 % subj_to_process = {'DVL_046_T24'}  ;
-flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
+% flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
 % [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
-[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
 
-
-%% ------------------- Manual rejection of bad trials
-% OPTIONS_rman.indir = indir ;                             % directory path
-OPTIONS_rman.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1'  ;
-OPTIONS_rman.suffix_rman = '_rman' ;
-OPTIONS_rman.RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
-OPTIONS_rman.REJ_num = '_stepB1' ;
-
-%Get all subjects
-subj_to_rman = get_all_subjects(indir) ; 
-subj_to_rman = {'DVL_003_T8'} ;
-% subj_to_rman = {'DVL_046_T24'} ;
-
-% Reject bad trials and save new .set file
-[preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'balanced', subj_to_rman) ; 
-[preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'unbalanced', subj_to_rman) ; 
+% %% ------------------- Manual rejection of bad trials
+% % OPTIONS_rman.indir = indir ;                             % directory path
+% OPTIONS_rman.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1'  ;
+% OPTIONS_rman.suffix_rman = '_rman' ;
+% OPTIONS_rman.RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
+% OPTIONS_rman.REJ_num = '_stepB1' ;
+% 
+% %Get all subjects
+% subj_to_rman = get_all_subjects(indir) ; 
+% subj_to_rman = {'DVL_003_T8'} ;
+% % subj_to_rman = {'DVL_046_T24'} ;
+% 
+% % Reject bad trials and save new .set file
+% [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'balanced', subj_to_rman) ; 
+% [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'unbalanced', subj_to_rman) ; 
 
 %% ------------------- Create grand averages per condition per subject
-
-OPTIONS_average.indir = 'E:\EEG_ANALYSES\to_gd_avg';                                  % directory path of files to process
+OPTIONS_average.indir = indir;                                  % directory path of files to process
 % spl = split(OPTIONS_average.indir, '\') ;
 % OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
 OPTIONS_average.param = 'stepA1_stepB1' ;
@@ -108,20 +105,22 @@ OPTIONS_average.opt_balance = 'unbalanced' ;
 OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
 OPTIONS_average.srate = 256 ; 
 OPTIONS_average.keyword = 'gd_avg' ; 
+OPTIONS_average.analysis = 'ERP';
 compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level
 OPTIONS_disp.params = 'stepA1_stepB1' ;                         % option of preprocess to consider
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
-% OPTIONS_disp.indir = indir ;                                  % directory path of files to process
-OPTIONS_disp.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;                                  % directory path of files to process
+OPTIONS_disp.indir = indir ;                                  % directory path of files to process
 % OPTIONS_disp.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_excluded' ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_disp.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp.ylim = [-5,5] ;                                % limits of y axis
 OPTIONS_disp.savefigs = 1 ; 
+OPTIONS_disp.keyword = 'gd_avg' ; 
+OPTIONS_disp.analysis = 'ERP';
 
 if OPTIONS_disp.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
@@ -174,7 +173,7 @@ display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPT
 OPTIONS_mmn.params = 'stepA1_stepB1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
-OPTIONS_mmn.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
+OPTIONS_mmn.indir = indir % 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
 OPTIONS_mmn.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_mmn.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
@@ -182,7 +181,7 @@ OPTIONS_mmn.savefigs = 0 ;
 OPTIONS_mmn.conditions = {'DEV1','DEV2','STD1'};
 OPTIONS_mmn.disp = 0 ;                                       % 1 if want to display local peak figure, 0 otherwise
 OPTIONS_mmn.auc_delta = 5 ;                                  % time window to compute auc around peak
-OPTIONS_mmn.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\mmn_participants_ok80.csv' ;
+OPTIONS_mmn.file = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/DEVLANG_data/participants_to_compute.csv' ;
 % Create folder for plots if doesn't exist
 if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
