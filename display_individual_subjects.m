@@ -26,32 +26,35 @@ for ss=1:length(subjects_to_process)
     % Gets files 
     for cc=1:length(cond_sylab)
         
-        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
-        if contains(OPTIONS.balance_STD,'unbalanced') == 1
-            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STDD_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
-            if isempty(fname_STD) == 1
-                fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD1_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
-            end
-        else
-            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
-        end 
+        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_',OPTIONS.analysis,'*',strcat('DEV',num2str(cc)),'*',OPTIONS.params,'*',OPTIONS.keyword,'.set'))) ; 
+        fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_',OPTIONS.analysis,'*',strcat('STD',num2str(cc)),'*',OPTIONS.params,'*',OPTIONS.keyword,'.set'))) ; 
 
-        if size(fname_STD,1) > 1
-        rman = find(contains({fname_STD.name}, 'rman')) ;
-        fname_STD = fname_STD(rman,1) ;
-        end
-
-        if size(fname_DEV,1) > 1
-        rman = find(contains({fname_DEV.name}, 'rman')) ;
-        fname_DEV = fname_DEV(rman,1) ;
-        end
+        % fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        % if contains(OPTIONS.balance_STD,'unbalanced') == 1
+        %     fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STDD_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        %     if isempty(fname_STD) == 1
+        %         fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD1_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        %     end
+        % else
+        %     fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        % end 
+        % 
+        % if size(fname_STD,1) > 1
+        % rman = find(contains({fname_STD.name}, 'rman')) ;
+        % fname_STD = fname_STD(rman,1) ;
+        % end
+        % 
+        % if size(fname_DEV,1) > 1
+        % rman = find(contains({fname_DEV.name}, 'rman')) ;
+        % fname_DEV = fname_DEV(rman,1) ;
+        % end
         
         % Loads DEV trials
-        EEG_DEV = pop_loadset(fname_DEV.name,fullfile(OPTIONS.indir,subjects_to_process{ss})) ;
+        EEG_DEV = pop_loadset(fname_DEV.name,fname_DEV.folder) ;
 
         % Loads STD trials
-        EEG_STD = pop_loadset(fname_STD.name,fullfile(OPTIONS.indir,subjects_to_process{ss})) ;
-        
+        EEG_STD = pop_loadset(fname_STD.name,fname_STD.folder) ;
+   
         nfig =1 ; 
         
         % Create figure for one condition (e.g. DEV1)

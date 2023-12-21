@@ -1,4 +1,4 @@
-function [out_filenames] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix, RFE)
+function [] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create, count, suffix, RFE)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 %INPUTS:
@@ -17,15 +17,12 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-% Inititalize output parameter
-out_filenames = [] ; 
-
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
 %Check if stepA(number).set files exist for all subjects
 for jj=1:length(subjects)
-    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},RFE,'.set')));
+    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_',OPTIONS.analysis,RFE,'.set')));
     if isempty(setname) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
 end
 
@@ -35,16 +32,13 @@ for ii=1:length(subjects)
     fprintf(strcat(subjects{ii}, '...\n'));
     
     %Set rfe file to work on
-    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},RFE,'.set'))) ;
+    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,RFE,'.set'))) ;
     
-    %Get filepath
-    filepath = file_rfe.folder ;
+    %Get subDir
+    subDir = file_rfe.folder ;
   
-    %Creates resulting filename
-    out_filenames{ii} = fullfile(indir,subjects{ii}, strcat(subjects{ii},suffix,num2str(count),'.set')) ; 
-
-    %Load the RFE .set file to work on
-    EEG = pop_loadset(strcat(subjects{ii},RFE,'.set'),filepath) ;
+     %Load the RFE .set file to work on
+    EEG = pop_loadset(file_rfe.name,subDir) ;
     
     %Get eeg_elec and win_of_interest from RFE set of parameters
     eeg_elec = EEG.history_rfe.eeg_elec ;
@@ -127,18 +121,25 @@ for ii=1:length(subjects)
 
     suffix_rfe = strsplit(RFE,'_') ; 
     
+    DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    STD1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD1_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    STD2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD2_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    
     % Save datasets 
-    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV1_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV1_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_DEV2_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_DEV2_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
+    pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',DEV2_fname,'savenew', fullfile(subDir, DEV2_fname),'gui','off');
+    
     if strcmp(opt_balance,'balanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD1_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD1_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
-         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STD2_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STD2_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',STD1_fname,'savenew', fullfile(subDir, STD1_fname),'gui','off');
+         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',STD2_fname,'savenew', fullfile(subDir, STD2_fname),'gui','off');
     elseif strcmp(opt_balance,'unbalanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',strcat(subjects{ii},'_','EEG_STDD_',OPTIONS.analysis,'_',opt_balance,suffix_rfe(end),suffix,num2str(count)),'savenew', fullfile(filepath, strcat(subjects{ii},'_STDD_',OPTIONS.analysis,'_',opt_balance,'_',suffix_rfe(end),suffix,num2str(count))),'gui','off');
+         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',STDD_fname,'savenew', fullfile(subDir, STDD_fname),'gui','off');
 
     end
     % Name of the file report 
-    fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
+    fname = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
     
     % Write csv file directly into the subject dir
     produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
