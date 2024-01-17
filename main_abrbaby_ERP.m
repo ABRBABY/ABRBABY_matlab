@@ -1,6 +1,24 @@
 % ERPs Pipeline analysisfor ABRBABY
 % Estelle Herve, A.-Sophie Dubarry - 2023 - %80PRIME Project
 
+% To run this script, data should be organized as follows: 
+
+% - One level-1 folder (custom_path) containing data folder (indir) and
+% plot folder (plot_dir)
+% 
+% - One level-2 folder (indir) containing level-3 folders: for n
+% recordings, there should be n level-3 folders (called "participants
+% folders")
+%
+% - In which participant folder, there must be:
+%           > a "participantID.bdf" file containing the EEG data 
+%           > a "participantID_trials_description.txt" file containing
+%           information about events, which is a table with 3 variables:
+%           event labels, rejection choice (1 for kept, 0 for rejected),
+%           and latency. No variable name needed.
+%
+% - Participant ID must have the following format: "STUDYCODE_PARTICIPANTNUMBER_AGE"
+
 %% ------------------- Set environment 
 % Variables to enter manually before running the code
 
