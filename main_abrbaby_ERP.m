@@ -130,15 +130,16 @@ compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level
 OPTIONS_disp.params = 'stepA1_stepB1' ;                         % option of preprocess to consider
+OPTIONS_disp.analysis = 'ERP' ;
 OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
 % OPTIONS_disp.elec_subset = {'F3','Fz','F4','Fp1','Fp2','T7','T8','O1';'C3','Cz','C4','Oz','O2','P3','Pz','P4'};   % electrodes to display
-% OPTIONS_disp.indir = indir ;                                  % directory path of files to process
-OPTIONS_disp.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;                                  % directory path of files to process
+OPTIONS_disp.indir = indir ;                                  % directory path of files to process
+% OPTIONS_disp.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;                                  % directory path of files to process
 % OPTIONS_disp.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_excluded' ;                                  % directory path of files to process
 OPTIONS_disp.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_disp.balance_STD = 'unbalanced';                        % 'balanced' or 'unbalanced' number of STD
-OPTIONS_disp.ylim = [-5,5] ;                                % limits of y axis
+OPTIONS_disp.ylim = [-10,10] ;                                % limits of y axis
 OPTIONS_disp.savefigs = 1 ; 
 
 if OPTIONS_disp.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 

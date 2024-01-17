@@ -26,23 +26,23 @@ for ss=1:length(subjects_to_process)
     % Gets files 
     for cc=1:length(cond_sylab)
         
-        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+        fname_DEV = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_DEV',num2str(cc),'_', OPTIONS.analysis, '_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
         if contains(OPTIONS.balance_STD,'unbalanced') == 1
-            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STDD_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STDD_',OPTIONS.analysis, '_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
             if isempty(fname_STD) == 1
-                fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD1_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+                fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD1_',OPTIONS.analysis, '_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
             end
         else
-            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'_thresh_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
+            fname_STD = dir(fullfile(OPTIONS.indir,subjects_to_process{ss},strcat(subjects_to_process{ss},'_STD',num2str(cc),'_',OPTIONS.analysis, '_',OPTIONS.balance_STD,'_',OPTIONS.params,'*.set'))) ; 
         end 
 
         if size(fname_STD,1) > 1
-        rman = find(contains({fname_STD.name}, 'rman')) ;
+        rman = find(contains({fname_STD.name}, '256')) ;
         fname_STD = fname_STD(rman,1) ;
         end
 
         if size(fname_DEV,1) > 1
-        rman = find(contains({fname_DEV.name}, 'rman')) ;
+        rman = find(contains({fname_DEV.name}, '256')) ;
         fname_DEV = fname_DEV(rman,1) ;
         end
         
