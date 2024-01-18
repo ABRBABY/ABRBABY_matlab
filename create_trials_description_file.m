@@ -60,7 +60,7 @@ for jj=1:length(subjects)
 
         % Add filepath in EEG structure
         EEG.filepath = fname.folder ;
-        [EEG] = detect_events_and_create_report(EEG, indir, TRIG_MODALITY, trig) ;
+        [EEG] = detect_events_and_create_report(EEG, indir, TRIG_MODALITY, trig, 'report') ;
 
     end
 
