@@ -23,19 +23,16 @@ out_filenames = [] ;
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
-%Check if stepA(number).set files exist for all subjects
-for jj=1:length(subjects)
-    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},RFE,'.set')));
-    if isempty(setname) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
-end
-
 % Loop though subjects
 for ii=1:length(subjects)
     % Printout the id of the subject in console
     fprintf(strcat(subjects{ii}, '...\n'));
     
-    %Set rfe file to work on
+    % Set rfe file to work on
     file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},RFE,'.set'))) ;
+
+    % Error if rfe file does not exist
+    if isempty(file_rfe) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
     
     %Get filepath
     filepath = file_rfe.folder ;
