@@ -42,70 +42,69 @@ plot_dir = fullfile(custom_path, 'plot_dir');
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
 
 %% ------------------- Preprocess : filter, reref, epoch, set chan positions
-OPTIONS_rfe.indir = indir ;
-OPTIONS_rfe.hp = 1;                                         % high-pass (Hz) (APICE)
-OPTIONS_rfe.lp = 30;                                        % low-pass (Hz) (APICE) 
-OPTIONS_rfe.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; 
-OPTIONS_rfe.trig = {'Erg1'};                                % Ref and trigger channels 
-OPTIONS_rfe.baseline = [-99, 0] ; 
-OPTIONS_rfe.win_of_interest = [-0.1, 0.5] ; 
-% OPTIONS_rfe.baseline = [-199, 0] ; 
-% OPTIONS_rfe.win_of_interest = [-0.2, 0.5] ; 
-OPTIONS_rfe.conditions = {'STD','DEV1','DEV2'} ; 
-OPTIONS_rfe.eeg_elec = 1:16 ; 
-OPTIONS_rfe.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
-OPTIONS_rfe.varhistory = 'EEG.history_rfe' ; 
-OPTIONS_rfe.analysis = 'ERP';
+OPTIONS_stepA.indir = indir ;
+OPTIONS_stepA.hp = 1;                                         % high-pass (Hz) (APICE)
+OPTIONS_stepA.lp = 30;                                        % low-pass (Hz) (APICE) 
+OPTIONS_stepA.mastos = {'Lmon','Rmon','MASTOG','MASTOD'}; 
+OPTIONS_stepA.trig = {'Erg1'};                                % Ref and trigger channels 
+OPTIONS_stepA.baseline = [-99, 0] ; 
+OPTIONS_stepA.win_of_interest = [-0.1, 0.5] ; 
+% OPTIONS_stepA.baseline = [-199, 0] ; 
+% OPTIONS_stepA.win_of_interest = [-0.2, 0.5] ; 
+OPTIONS_stepA.conditions = {'STD','DEV1','DEV2'} ; 
+OPTIONS_stepA.eeg_elec = 1:16 ; 
+OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
+OPTIONS_stepA.varhistory = 'EEG.history_rfe' ; 
+OPTIONS_stepA.analysis = 'ERP';
 
-suffix_rfe = strcat('_',OPTIONS_rfe.analysis,'_stepA') ;
+suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_rfe, count_rfe]= test_existance_of_params_in_db(OPTIONS_rfe, suffix_rfe, '') ; 
+[flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = get_subjects(indir,[]);
-
-flag_sub_to_create_rfe = (contains(list_subjects,subj_to_process))';
+% subj_to_process = get_subjects(indir,[]);
+% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_rfe,flag_sub_to_create_rfe, count_rfe, suffix_rfe) ;
+[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials
-OPTIONS_rej.indir = indir ;                             % directory path
-OPTIONS_rej.rej_low = -150 ;                            % 150 infants; 120 adults
-OPTIONS_rej.rej_high = 150 ;                            % 150 infants; 120 adults     
-OPTIONS_rej.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
-OPTIONS_rej.varhistory = 'EEG.history_rej' ;            % indicates index of rfe set of parameters to use
-OPTIONS_rej.analysis = 'ERP';
+OPTIONS_stepB.indir = indir ;                             % directory path
+OPTIONS_stepB.rej_low = -150 ;                            % 150 infants; 120 adults
+OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adults     
+OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
+OPTIONS_stepB.varhistory = 'EEG.history_rej' ;            % indicates index of stepA set of parameters to use
+OPTIONS_stepB.analysis = 'ERP';
 
-suffix_rej = '_stepB' ;
+suffix_stepB = '_stepB' ;
 
 set_of_param = '1' ;                                    % set of stepA param to use
 
-RFE_num = strcat(suffix_rfe,set_of_param) ;              % set of RFE parameters to use for this step
+stepA_num = strcat('_',OPTIONS_stepB.analysis,'_stepA', set_of_param) ;              % set of stepA parameters to use for this step
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_rej, count_rej]= test_existance_of_params_in_db(OPTIONS_rej, suffix_rej, RFE_num) ; 
+[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, stepA_num) ; 
 
 %Subjects to process : when whant to choose one subject otherwise comment
 %the following line 
-% subj_to_process = {'DVL_046_T24'}  ;
-flag_sub_to_create_rej = (contains(list_subjects,subj_to_process))';
+subj_to_process = {'DVL_052_T10', 'DVL_041_T24'}  ;
+flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file
-% [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'balanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
-[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_rej, 'unbalanced', flag_sub_to_create_rej, count_rej, suffix_rej,RFE_num) ; 
+% [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'balanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+[preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
 
 %% ------------------- Manual rejection of bad trials
 % OPTIONS_rman.indir = indir ;                             % directory path
 OPTIONS_rman.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1'  ;
 OPTIONS_rman.suffix_rman = '_rman' ;
-OPTIONS_rman.RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
-OPTIONS_rman.REJ_num = '_stepB1' ;
+OPTIONS_rman.stepA_num = '_stepA1' ;              % set of stepA parameters to use for this step
+OPTIONS_rman.stepB_num = '_stepB1' ;
 
 %Get all subjects
 subj_to_rman = get_all_subjects(indir) ; 
