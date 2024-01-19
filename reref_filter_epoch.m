@@ -69,7 +69,10 @@ for jj=1:length(subjects)
 
     % Re-reference data and rename new file
     EEG = pop_reref(EEG, ref_elec, 'exclude',trigg_elec, 'keepref','on');
-    
+
+    % Remove useless channels : Erg, Right
+    EEG = pop_select( EEG, 'nochannel', trig) ;
+
     % Detect events when first time run on participant
     EventDetection = fullfile(indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt')); 
     if ~exist(EventDetection,'file') 
@@ -78,6 +81,10 @@ for jj=1:length(subjects)
 
     % Replace Left channel by a new one called ABR
     EEG.data(id_left,:) = abr_signal ; EEG.chanlocs(id_left).labels = 'ABR' ;
+    
+    % Remove useless ABR channels : Ref, Right
+    EEG = pop_select( EEG, 'nochannel', {'Ref'}) ;
+    EEG = pop_select( EEG, 'nochannel', {'Right'}) ;
 
     % Relabels events with condition name (defined in txt file <SUBJECT>.txt)
     EEG.event = read_custom_events(strrep(fullfile(fname.folder,fname.name),'.bdf','_trials_description.txt'),EEG.event) ;
@@ -119,7 +126,7 @@ else
     idx_events = my_events{:,2}==1 ; 
     out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
                     'type', my_events{idx_events,1}',...
-                    'urevent', num2cell(1:height(my_events))) ;                      
+                    'urevent', num2cell(1:sum(idx_events))) ;                      
 end
 
 end
