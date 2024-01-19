@@ -1,8 +1,8 @@
 %function display_raw_plot(indir,subject_of_interest)
 %%Script for opening bdf files and display plot of raw data
 
-% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
-indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_to_look';
+indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data';
+% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_to_look';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_NEW';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_excluded';
 % indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data_issues';
@@ -11,8 +11,9 @@ indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_DATA_to
 
 display_erg_channel = 0 ;    % 1 if want to display ERG channel, 0 otherwise
 
-subject_of_interest = {'DVL_063_T8'; 'DVL_030_T24'} ;
+subject_of_interest = {'DVL_029_T24'} ;
 % 'DVL_048_T10'
+% 'DVL_018_T24' ; 'DVL_043_T10'
 
 % Reads all folders that are in indir 
 d = dir(indir); 

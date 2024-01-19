@@ -64,8 +64,8 @@ suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA, '') ; 
 
 %Subjects to process : when whant to choose
-% subj_to_process = get_subjects(indir,[]);
-% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+subj_to_process = {'DVL_043_T10'};
+flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
@@ -91,7 +91,7 @@ stepA_num = strcat('_',OPTIONS_stepB.analysis,'_stepA', set_of_param) ;         
 
 %Subjects to process : when whant to choose one subject otherwise comment
 %the following line 
-subj_to_process = {'DVL_052_T10', 'DVL_041_T24'}  ;
+subj_to_process = {'DVL_043_T10'}  ;
 flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 
 % Reject bad trials and save new .set file

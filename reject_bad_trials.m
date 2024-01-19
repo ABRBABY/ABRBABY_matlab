@@ -166,10 +166,18 @@ function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low
     trial_num = [EEG.event.urevent];
     condition = {EEG.event.type} ;
     latency = [EEG.event.latency]/EEG.srate;  
+
     rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ; 
     
+    % Add outliers events that are rejected in trials_description.txt
+    trials_description = readtable(strrep(fname, 'infos_trials_low_-150_high_150_stepA1_stepB1.csv', 'trials_description.txt')) ;
+    is_LF = strcmp(trials_description{:,1},'STD') + strcmp(trials_description{:,1},'DEV1') + strcmp(trials_description{:,1},'DEV2');
+    TrialsDescription_LF = trials_description(logical(is_LF),:) ;
+    TrialsDescription_LFOutliers = TrialsDescription_LF{:,2}==0 ;
+    rejected_all = rejected + TrialsDescription_LFOutliers' ;
+
     % Create table to store these information
-    list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
+    list_trial_infos = table(trial_index',condition',latency', trial_num',rejected_all', bloc',...
         'VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
 
     % Save this table into a csv file (use function writetable)
