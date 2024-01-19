@@ -138,7 +138,7 @@ for ii=1:length(subjects)
     fname = fullfile(filepath,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
     
     % Write csv file directly into the subject dir
-    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
+    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance, suffix_rfe, count, suffix) ; 
 
 end
 
@@ -149,7 +149,7 @@ end
 % conditions) -> we re-excute pop_eegthresh on all trials 
 % (we do not save .set but the report)
 %--------------------------------------------------------------
-function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) 
+function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance, suffix_rfe, count,suffix) 
 
     if strcmp(opt_balance,'balanced')
         warndlg('The report of trial status (rejected/not rejected) is under developement for ''balanced'' option ','Warning')
@@ -170,7 +170,7 @@ function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low
     rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ; 
     
     % Add outliers events that are rejected in trials_description.txt
-    trials_description = readtable(strrep(fname, 'infos_trials_low_-150_high_150_stepA1_stepB1.csv', 'trials_description.txt')) ;
+    trials_description = readtable(strrep(fname, strcat('infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe{end},suffix,num2str(count),'.csv'), 'trials_description.txt')) ;
     is_LF = strcmp(trials_description{:,1},'STD') + strcmp(trials_description{:,1},'DEV1') + strcmp(trials_description{:,1},'DEV2');
     TrialsDescription_LF = trials_description(logical(is_LF),:) ;
     TrialsDescription_LFOutliers = TrialsDescription_LF{:,2}==0 ;

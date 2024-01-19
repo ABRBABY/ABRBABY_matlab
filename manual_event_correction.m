@@ -2,7 +2,7 @@
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
 indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
-subject_name = 'DVL_018_T24' ;
+subject_name = 'DVL_059_T8' ;
 
 %% Open files
 
@@ -99,4 +99,4 @@ EEG_rejected = detect_events_and_create_report(EEG, fname_txt.folder, '_ergstim.
 %% Save new file_description
 
 % Save new description file
-writetable(trials_descr, fullfile(fname_txt.folder, fname_txt.name)) ;
+writetable(trials_descr, fullfile(fname_txt.folder, fname_txt.name), 'WriteVariableNames',false) ;

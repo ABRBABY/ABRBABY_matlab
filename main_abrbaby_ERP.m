@@ -64,8 +64,8 @@ suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA, '') ; 
 
 %Subjects to process : when whant to choose
-subj_to_process = {'DVL_043_T10'};
-flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+% subj_to_process = {'DVL_043_T10'};
+% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
@@ -97,7 +97,6 @@ flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 % Reject bad trials and save new .set file
 % [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'balanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
-
 
 %% ------------------- Manual rejection of bad trials
 % OPTIONS_rman.indir = indir ;                             % directory path
