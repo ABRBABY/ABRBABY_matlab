@@ -24,8 +24,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 % indir = fullfile(custom_path,'FFR_65rej_epoch');
@@ -56,6 +56,7 @@ OPTIONS_stepA.eeg_elec = 1:16 ;
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.varhistory = 'EEG.history_rfe' ; 
 OPTIONS_stepA.analysis = 'ERP';
+OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
 
 suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 
@@ -64,8 +65,10 @@ suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA, '') ; 
 
 %Subjects to process : when whant to choose
-% subj_to_process = {'DVL_043_T10'};
-% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+    flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+end
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
@@ -78,6 +81,7 @@ OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adu
 OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_stepB.varhistory = 'EEG.history_rej' ;            % indicates index of stepA set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
+OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
 
 suffix_stepB = '_stepB' ;
 
@@ -89,10 +93,11 @@ stepA_num = strcat('_',OPTIONS_stepB.analysis,'_stepA', set_of_param) ;         
 % counter to use to name the saved files
 [flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, stepA_num) ; 
 
-%Subjects to process : when whant to choose one subject otherwise comment
-%the following line 
-subj_to_process = {'DVL_043_T10'}  ;
-flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+% Subjects to process : when whant to choose
+if exist(OPTIONS_stepB.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+   flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+end
 
 % Reject bad trials and save new .set file
 % [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'balanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
@@ -106,7 +111,6 @@ OPTIONS_rman.stepA_num = '_stepA1' ;              % set of stepA parameters to u
 OPTIONS_rman.stepB_num = '_stepB1' ;
 
 %Get all subjects
-subj_to_rman = get_all_subjects(indir) ; 
 subj_to_rman = {'DVL_003_T8'} ;
 % subj_to_rman = {'DVL_046_T24'} ;
 
