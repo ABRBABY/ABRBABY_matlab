@@ -45,6 +45,11 @@ latencies_description =  [EEG.event.latency];
 if size(latencies_description,2)==height(conditions_description)
     T = table(conditions_description, flag_description', latencies_description') ;
     writetable(T, strcat(fullfile(EEG.filepath,EEG.setname),'_trials_description.txt'), 'WriteVariableNames', 0) ;
+else
+    latencies_description = zeros(1,height(conditions_description)) ;
+    T = table(conditions_description, flag_description', latencies_description') ;
+    writetable(T, strcat(fullfile(EEG.filepath,EEG.setname),'_trials_description.txt'), 'WriteVariableNames', 0) ;
+    warning('Manual event correction needed for participant %s.', EEG.setname) ;
+    open("manual_event_correction.m")
 end
-
 end
