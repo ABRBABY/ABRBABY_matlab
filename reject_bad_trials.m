@@ -32,17 +32,17 @@ for ii=1:length(subjects)
     fprintf(strcat(subjects{ii}, '...\n'));
     
     %Set rfe file to work on
-    file_rfe = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,RFE,'.set'))) ;
+    file_stepA = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,RFE,'.set'))) ;
     
     %Get subDir
-    subDir = file_rfe.folder ;
+    subDir = file_stepA.folder ;
   
      %Load the RFE .set file to work on
-    EEG = pop_loadset(file_rfe.name,subDir) ;
+    EEG = pop_loadset(file_stepA.name,subDir) ;
     
     %Get eeg_elec and win_of_interest from RFE set of parameters
-    eeg_elec = EEG.history_rfe.eeg_elec ;
-    win_of_interest = EEG.history_rfe.win_of_interest ;
+    eeg_elec = EEG.history_stepA.eeg_elec ;
+    win_of_interest = EEG.history_stepA.win_of_interest ;
 
     % Select trials per conditions
     [EEG_DEV1,target_indices1] = pop_selectevent(EEG,'type','DEV1');
@@ -64,10 +64,10 @@ for ii=1:length(subjects)
     [EEG_STD1,target_indices_std1] = pop_selectevent(EEG,'event',idx_std1);
     [EEG_STD2,target_indices_std2] = pop_selectevent(EEG,'event',idx_std2);
     
-    [EEG_STD1_thresh,idx_std1_rej] = pop_eegthresh(EEG_STD1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-    [EEG_STD2_thresh,idx_std2_rej] = pop_eegthresh(EEG_STD2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-    [EEG_DEV1_thresh,idx_dev1_rej] = pop_eegthresh(EEG_DEV1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-    [EEG_DEV2_thresh,idx_dev2_rej] = pop_eegthresh(EEG_DEV2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+    [EEG_STD1_thresh,idx_std1_stepB] = pop_eegthresh(EEG_STD1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+    [EEG_STD2_thresh,idx_std2_stepB] = pop_eegthresh(EEG_STD2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+    [EEG_DEV1_thresh,idx_dev1_stepB] = pop_eegthresh(EEG_DEV1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+    [EEG_DEV2_thresh,idx_dev2_stepB] = pop_eegthresh(EEG_DEV2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     
     %% If we want to select the same number of trial both for DEV and STD
     if strcmp(opt_balance,'balanced')
@@ -80,7 +80,7 @@ for ii=1:length(subjects)
             % Find number of trial to add in STD
             ntrials =  length(EEG_DEV1_thresh.event)-length(EEG_STD1_thresh.event) ;
             %Apply function to balance number of STD trial to reach the number of DEV trials
-            EEG_STD1_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices1,begining_of_block,target_indices_std1,idx_std1_rej,idx_std1) ;
+            EEG_STD1_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices1,begining_of_block,target_indices_std1,idx_std1_stepB,idx_std1) ;
             
         end
         
@@ -89,7 +89,7 @@ for ii=1:length(subjects)
             % Find number of trial to add in STD
             ntrials =  length(EEG_DEV2_thresh.event)-length(EEG_STD2_thresh.event) ;
             %Apply function to balance number of STD trial to reach the number of DEV trials
-            EEG_STD2_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices2,begining_of_block,target_indices_std2,idx_std2_rej,idx_std2) ;
+            EEG_STD2_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices2,begining_of_block,target_indices_std2,idx_std2_stepB,idx_std2) ;
             
         end
         
@@ -114,18 +114,18 @@ for ii=1:length(subjects)
     
     %% Create a custom history variable to keep track of OPTIONS in each
     % .set saved
-    EEG_DEV1_thresh.history_rej = OPTIONS ;
-    EEG_DEV2_thresh.history_rej = OPTIONS ;
-    EEG_STD1_thresh.history_rej = OPTIONS ;
-    EEG_STD2_thresh.history_rej = OPTIONS ;
+    EEG_DEV1_thresh.history_stepB = OPTIONS ;
+    EEG_DEV2_thresh.history_stepB = OPTIONS ;
+    EEG_STD1_thresh.history_stepB = OPTIONS ;
+    EEG_STD2_thresh.history_stepB = OPTIONS ;
 
-    suffix_rfe = strsplit(RFE,'_') ; 
+    suffix_stepA = strsplit(RFE,'_') ; 
     
-    DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
-    DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
-    STD1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD1_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
-    STD2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD2_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
-    STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_rfe{end},suffix,num2str(count));
+    DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+    DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+    STD1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+    STD2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+    STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     
     % Save datasets 
     pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
@@ -139,7 +139,7 @@ for ii=1:length(subjects)
 
     end
     % Name of the file report 
-    fname = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_rfe(end),suffix,num2str(count),'.csv')) ; 
+    fname = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
     
     % Write csv file directly into the subject dir
     produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
@@ -197,7 +197,7 @@ end
 % FUNCTION that select from EEG_STD ntrial with no repetition with exisitng
 % STD 
 %--------------------------------------------------------------
-function [EEG_STD_ALL] = balance_number_of_STD(EEG,ntrials,std_good,target_indices,begining_of_block,target_indices_std,idx_std_rej, idx_std)
+function [EEG_STD_ALL] = balance_number_of_STD(EEG,ntrials,std_good,target_indices,begining_of_block,target_indices_std,idx_std_stepB, idx_std)
    
         % Pool of STD without those rejected by threshold detection
         pool_std = setdiff(std_good,target_indices);   
@@ -206,7 +206,7 @@ function [EEG_STD_ALL] = balance_number_of_STD(EEG,ntrials,std_good,target_indic
         pool_std_w_no_beginners = setdiff(pool_std,begining_of_block);
         
         % Trials which were already selected 
-        idx_std_already_included = setdiff(target_indices_std, target_indices_std(idx_std_rej)) ; 
+        idx_std_already_included = setdiff(target_indices_std, target_indices_std(idx_std_stepB)) ; 
      
         % Trials to add to balance the number of trial to the same number
         % as DEV

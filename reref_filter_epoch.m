@@ -95,7 +95,7 @@ for jj=1:length(subjects)
     EEG = pop_rmbase( EEG, baseline,[] );
 
     %% Create a custom history variable to keep trakc of OPTIONS 
-    EEG.history_rfe = OPTIONS ;
+    EEG.history_stepA = OPTIONS ;
     
     %% SAVE DATASET 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames{jj},'gui','off');
