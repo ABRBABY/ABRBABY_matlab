@@ -34,7 +34,7 @@ for jj=1:length(subjects)
             
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
-
+      
     % Save a first dataset in EEGLAB 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
@@ -111,7 +111,7 @@ end
 function out_event = read_custom_events(fname, in_event) 
 
 % Read .txt 
-my_events = readtable(fname, 'ReadVariableNames', 0);
+my_events = readtable(fname, 'ReadVariableNames', 1);
 
 if size(my_events,2)~=3 
     error('Wrong number of column in file _trial_descriptions.txt');
