@@ -34,7 +34,7 @@ for jj=1:length(subjects)
             
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
-
+      
     % Save a first dataset in EEGLAB 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
@@ -95,7 +95,7 @@ for jj=1:length(subjects)
     EEG = pop_rmbase( EEG, baseline,[] );
 
     %% Create a custom history variable to keep trakc of OPTIONS 
-    EEG.history_rfe = OPTIONS ;
+    EEG.history_stepA = OPTIONS ;
     
     %% SAVE DATASET 
     [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames{jj},'gui','off');
@@ -111,7 +111,7 @@ end
 function out_event = read_custom_events(fname, in_event) 
 
 % Read .txt 
-my_events = readtable(fname, 'ReadVariableNames', 0);
+my_events = readtable(fname, 'ReadVariableNames', 1);
 
 if size(my_events,2)~=3 
     error('Wrong number of column in file _trial_descriptions.txt');
