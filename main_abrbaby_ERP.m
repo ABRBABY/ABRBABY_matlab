@@ -27,7 +27,6 @@ custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0
 % custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
-% indir = fullfile(custom_path,'FFR_65rej_epoch');
 
 %Get list of subjects in indir
 list_subjects = get_subjects(indir,[]);
