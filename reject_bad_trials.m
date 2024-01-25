@@ -139,10 +139,11 @@ for ii=1:length(subjects)
 
     end
     % Name of the file report 
-    fname = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
+    fnameReport = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
+    fnameTrialDescription = fullfile(subDir,strcat(subjects{ii},'_trials_description.txt'));
     
     % Write csv file directly into the subject dir
-    produce_report(fname{1}, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
+    produce_report(fnameReport{1},fnameTrialDescription, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) ; 
 
 end
 
@@ -153,7 +154,7 @@ end
 % conditions) -> we re-excute pop_eegthresh on all trials 
 % (we do not save .set but the report)
 %--------------------------------------------------------------
-function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) 
+function [] = produce_report(fname,fnameTrials, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) 
 
     if strcmp(opt_balance,'balanced')
         warndlg('The report of trial status (rejected/not rejected) is under developement for ''balanced'' option ','Warning')
@@ -178,6 +179,49 @@ function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low
 
     % Save this table into a csv file (use function writetable)
     writetable(list_trial_infos,fname, 'WriteVariableNames', true) ; 
+
+    % Update trial_despection
+    [~,header,~]=fileparts(fname);
+    T1 = readtable(fnameTrials); 
+    
+    exist_column = strcmp(header,T1.Properties.VariableNames) ; 
+
+    % Create a flag vector for bad trials
+    init = zeros(1,height(T1));
+    init(trial_num) = ~rejected ;
+
+    % If the variable does not exost in the table create a new 
+    if sum(exist_column)==0
+        T2 = table(init','VariableNames',{header});
+        T1= [T1 T2]; 
+        
+    else % If column exist just replace it 
+        if any(T1{:,exist_column}~=init')
+            fprintf('WARNING : trial_decription was replaced by new values');
+        end
+        
+        T1{:,exist_column}=init';
+    end
+    writetable(T1,fnameTrials,'WriteVariableNames', true);
+end
+
+%--------------------------------------------------------------
+% FUNCTION that reads events from text file and output 
+% an EEGLAB events structure 
+%--------------------------------------------------------------
+function out_event = update_trial_description(fname, in_event) 
+
+% Read .txt 
+my_events = readtable(fname, 'ReadVariableNames', 1);
+
+if size(my_events,2)~=3 
+    error('Wrong number of column in file _trial_descriptions.txt');
+else
+    idx_events = my_events{:,2}==1 ; 
+    out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
+                    'type', my_events{idx_events,1}',...
+                    'urevent', num2cell(1:height(my_events))) ;                      
+end
 
 end
 

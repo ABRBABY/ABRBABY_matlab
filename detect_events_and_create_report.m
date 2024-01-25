@@ -42,14 +42,17 @@ conditions_description = events_table{:,1};
 flag_description = ones(1,height(conditions_description)) ;
 latencies_description =  [EEG.event.latency];
 
-if size(latencies_description,2)==height(conditions_description)
-    T = table(conditions_description, flag_description', latencies_description','VariableNames', {'condition', 'rejection_acq', 'latency'}) ;
-    writetable(T, strcat(fullfile(EEG.filepath,EEG.setname),'_trials_description.txt'), 'WriteVariableNames', 1) ;
-else
+% If the number of events found in the data (.bdf) does not correspond 
+% to the number of events found in the description file (.txt)
+if size(latencies_description,2)~=height(conditions_description)   
     latencies_description = zeros(1,height(conditions_description)) ;
-    T = table(conditions_description, flag_description', latencies_description') ;
-    writetable(T, strcat(fullfile(EEG.filepath,EEG.setname),'_trials_description.txt'), 'WriteVariableNames', 1) ;
     warning('Manual event correction needed for participant %s.', EEG.setname) ;
     open("manual_event_correction.m")
 end
+
+% Write the trial_description.txt initial file
+T = table(conditions_description, latencies_description',flag_description','VariableNames', {'condition', 'latency', 'rejection_acq'}) ;
+writetable(T, strcat(fullfile(EEG.filepath,EEG.setname),'_trials_description.txt'), 'WriteVariableNames', 1) ;
+
+
 end
