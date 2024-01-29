@@ -27,6 +27,7 @@ OPTIONS_stepA.indir = indir;
 OPTIONS_stepA.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};   %Labels of the mastoids electrodes
 OPTIONS_stepA.trig = {'Erg1'};                              %Label of trigger channel
 OPTIONS_stepA.abr= {'Left','Right'};                        %Label of abr channels for formula 
+OPTIONS_stepA.conditions = {'HF'} ; 
 OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline
 OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
 OPTIONS_stepA.eeg_elec = 1:16 ;                             %Cortical electrodes (to get cortical FFRs)
