@@ -31,8 +31,11 @@ for ii=1:length(subjects)
     % Printout the id of the subject in console
     fprintf(strcat(subjects{ii}, '...\n'));
     
-    %Set rfe file to work on
+    % Set rfe file to work on
     file_stepA = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,RFE,'.set'))) ;
+    
+    % Error if rfe file does not exist
+    if isempty(file_stepA) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
     
     %Get subDir
     subDir = file_stepA.folder ;
