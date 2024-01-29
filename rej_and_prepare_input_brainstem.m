@@ -72,7 +72,7 @@ for ii=1:length(subjects)
     [EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,EEG.nbchan,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
  
     % Write csv file directly into the subject dir
-    produce_report(fname{1}, EEG, 1, bloc, win_of_interest, rej_low, rej_high) ; 
+    produce_report(fname{1}, EEG, 1, bloc, win_of_interest, rej_low, rej_high, suf, count) ; 
 
     % Compute mean FFR without rejected trials (averaged polarities)
     abr_average = mean(EEG_all.data(1,:,:),3);   %EEG.data = elec x samples x trials     ones_vector = ones(1,size(EEG.data, 3)/2);
@@ -196,7 +196,7 @@ end
 % conditions) -> we re-excute pop_eegthresh on all trials
 % (we do not save .set but the report)
 %--------------------------------------------------------------
-function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high)
+function [] = produce_report(fname,EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, suf, count)
 
 % Get indices of the trials which were rejected (without messing around with the relative indices)
 [~,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
@@ -206,11 +206,18 @@ trial_index = 1:EEG.trials;
 trial_num = [EEG.event.urevent];
 condition = {EEG.event.type} ;
 latency = [EEG.event.latency]/EEG.srate;
-rejected = ismember(trial_index,idx_rejected_all) ;
+% rejected = ismember(trial_index,idx_rejected_all) ;
+rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ;
+
+% Add outliers events that are rejected in trials_description.txt
+trials_description = readtable(strrep(fname, strcat('infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suf{end},num2str(count),'.csv'), 'trials_description.txt')) ;
+is_HF = strcmp(trials_description{:,1},'HF') ;
+TrialsDescription_HF = trials_description(logical(is_HF),:) ;
+TrialsDescription_HFOutliers = TrialsDescription_HF{:,2}==0 ;
+rejected_all = rejected + TrialsDescription_HFOutliers' ;
 
 % Create table to store these information
-list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
-    'VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
+list_trial_infos = table(trial_index',condition',latency', trial_num',rejected_all', bloc','VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
 
 %  Save this table into a csv file (use function writetable)
 writetable(list_trial_infos,fname, 'WriteVariableNames', true) ;
