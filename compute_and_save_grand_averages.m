@@ -30,9 +30,11 @@ for ii = 1:length(subjects)
         EEG = pop_loadset(fname, filepath) ;
         gd_avg = mean(EEG.data,3) ;
         EEG.data = gd_avg ;
-        % Resample data to 256 Hz
+        % Resample data to 256 Hz if needed
         EEG = eeg_checkset( EEG );
-%         EEG = pop_resample( EEG, OPTIONS.srate);
+        if EEG.srate ~=256
+            EEG = pop_resample( EEG, OPTIONS.srate);
+        end
        
         [~,outfname,~] = fileparts(outname);
 
