@@ -36,7 +36,7 @@ OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value 
 OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
-suffix_stepA = '_FFR_stepA';
+suffix_stepA = '_stepA';
 OPTIONS_stepA.analysis = 'FFR';
 OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
 
@@ -60,8 +60,8 @@ end
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
 OPTIONS_stepB.indir = indir ;
 OPTIONS_stepB.analysis = 'FFR' ;
-OPTIONS_stepB.rej_low = -45 ;                         %initial value = -45                               
-OPTIONS_stepB.rej_high = 45 ;                         %initial value = 45
+OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
+OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
