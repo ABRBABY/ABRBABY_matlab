@@ -123,8 +123,8 @@ my_events = readtable(fname, 'ReadVariableNames', 1);
 if size(my_events,2)~=3 
     error('Wrong number of column in file _trial_descriptions.txt');
 else
-    idx_events = my_events{:,2}==1 ; 
-    out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
+    idx_events = my_events{:,3}==1 ; 
+    out_event = struct('latency', num2cell(my_events{idx_events,2}'), ...
                     'type', my_events{idx_events,1}',...
                     'urevent', num2cell(1:sum(idx_events))) ;                     
 end
