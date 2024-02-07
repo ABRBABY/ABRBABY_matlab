@@ -159,6 +159,8 @@ end
 %--------------------------------------------------------------
 function [] = produce_report(fname,fnameTrials, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, opt_balance) 
 
+    NB_TRIALS = 6000 ;
+
     if strcmp(opt_balance,'balanced')
         warndlg('The report of trial status (rejected/not rejected) is under developement for ''balanced'' option ','Warning')
         return
@@ -185,27 +187,14 @@ function [] = produce_report(fname,fnameTrials, EEG, eeg_elec, bloc, win_of_inte
 
     % Update trial_despection
     [~,header,~]=fileparts(fname);
-    T1 = readtable(fnameTrials); 
-    
-    exist_column = strcmp(header,T1.Properties.VariableNames) ; 
-
-    % Create a flag vector for bad trials
-    init = zeros(1,height(T1));
+ 
+    % % Create a flag vector for bad trials
+    init = zeros(1,NB_TRIALS);
     init(trial_num) = ~rejected ;
 
-    % If the variable does not exost in the table create a new 
-    if sum(exist_column)==0
-        T2 = table(init','VariableNames',{header});
-        T1= [T1 T2]; 
-        
-    else % If column exist just replace it 
-        if any(T1{:,exist_column}~=init')
-            fprintf('WARNING : trial_decription was replaced by new values');
-        end
-        
-        T1{:,exist_column}=init';
-    end
-    writetable(T1,fnameTrials,'WriteVariableNames', true);
+    % Edit _trial_description.txt file with new column
+    add_flag_column_trials_description(fnameTrials, header,init);
+
 end
 
 %--------------------------------------------------------------

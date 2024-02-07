@@ -23,8 +23,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -38,6 +38,10 @@ plot_dir = fullfile(custom_path, 'plot_dir');
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
+
+%%
+%% Here for first execution run automatic_trigger_detection for fixing the trigger issues (input : .bdf + ergstim.txt if ERGO was used)
+%% This will produce the initial __trial_description.txt file
 
 %% ------------------- Preprocess : filter, reref, epoch, set chan positions
 OPTIONS_stepA.indir = indir ;
@@ -101,34 +105,15 @@ end
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
 
-% ------------------- Update trial_description with manual rejection of bad trials
+%% ------------------- Update trial_description with manual rejection of bad trials
 OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
 OPTION_rman.indir = indir ; 
 
 % Here update the trial_desrption files in the corresponding participants
 % folder (found in initial indir) 
 % Pick any .set (without parameters constraints) and add a column to the
-% trial_description w header 'visual_rej'
-
-add_manual_bad_trial_detection(OPTION_rman) ;
-
-
-
-
-% % OPTIONS_rman.indir = indir ;                             % directory path
-% OPTIONS_rman.indir = 'E:\preprocessed_data_EEG\RFE1_REJ1'  ;
-% OPTIONS_rman.suffix_rman = '_rman' ;
-% OPTIONS_rman.RFE_num = '_stepA1' ;              % set of RFE parameters to use for this step
-% OPTIONS_rman.REJ_num = '_stepB1' ;
-% 
-% %Get all subjects
-% subj_to_rman = get_all_subjects(indir) ; 
-% subj_to_rman = {'DVL_003_T8'} ;
-% % subj_to_rman = {'DVL_046_T24'} ;
-% 
-% % Reject bad trials and save new .set file
-% [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'balanced', subj_to_rman) ; 
-% [preproc_filenames_balanced] = reject_bad_trials_manual(ALLEEG, OPTIONS_rman, 'unbalanced', subj_to_rman) ; 
+% trial_description w header 'manual_rej'
+add_manual_bad_trial_detection(ALLEEG, OPTION_rman) ;
 
 %% ------------------- Create grand averages per condition per subject
 OPTIONS_average.indir = indir;                                  % directory path of files to process
