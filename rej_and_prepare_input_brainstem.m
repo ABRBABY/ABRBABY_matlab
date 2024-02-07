@@ -67,7 +67,7 @@ for ii=1:length(subjects)
     positive_altern = [ones_vector(:) zeros_vector(:)]';
     positive_altern = positive_altern(:);
     positive_altern_log = logical(positive_altern);
-    
+
     % Reject bad trials and write a report
     [EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,EEG.nbchan,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
  
@@ -206,15 +206,7 @@ trial_index = 1:EEG.trials;
 trial_num = [EEG.event.urevent];
 condition = {EEG.event.type} ;
 latency = [EEG.event.latency]/EEG.srate;
-% rejected = ismember(trial_index,idx_rejected_all) ;
-rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ;
-
-% Add outliers events that are rejected in trials_description.txt
-trials_description = readtable(strrep(fname, strcat('infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suf{end},num2str(count),'.csv'), 'trials_description.txt')) ;
-is_HF = strcmp(trials_description{:,1},'HF') ;
-TrialsDescription_HF = trials_description(logical(is_HF),:) ;
-TrialsDescription_HFOutliers = TrialsDescription_HF{:,2}==0 ;
-rejected_all = rejected + TrialsDescription_HFOutliers' ;
+rejected_all = ismember(trial_index,idx_rejected_all) ;
 
 % Create table to store these information
 list_trial_infos = table(trial_index',condition',latency', trial_num',rejected_all', bloc','VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;

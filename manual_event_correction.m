@@ -2,7 +2,7 @@
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
 indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
-subject_name = 'DVL_018_T18' ;
+subject_name = 'DVL_044_T8' ;
 
 %% Open files
 
@@ -51,7 +51,6 @@ writetable(trials_descr, fullfile(fname_txt.folder, strrep(fname_txt.name,'trial
 EEG.filepath = fname_txt.folder ;
 
 % Reject bad events
-% EEG_rejected = detect_events_and_create_report(EEG, indir, '_ergstim.txt', {'Erg1'}, 'no report') ;
 EEG_rejected = detect_events_and_create_report(EEG, indir, '_ergstim.txt', {'Erg1'}) ;
 %% Change manually values of rejection variable
 
