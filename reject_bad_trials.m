@@ -52,8 +52,21 @@ for ii=1:length(subjects)
     [EEG_DEV2,target_indices2] = pop_selectevent(EEG,'type','DEV2');
     [EEG_STD,target_indices_std] = pop_selectevent(EEG,'type','STD');
     
+   
+    % Update the (.set) file 
+    fname_trial_desc = fullfile(OPTIONS.indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt'));
+    
+    if ~exist(fname_trial_desc,'file')
+        error('\nABRBABY --------- File _trials_description.txt does not exist. You must run the first part of the analysis');
+    else
+     
+        % Read _trials_description file 
+        T1 = readtable(fname_trial_desc); 
+     
+    end
+    
     begining_of_block = repelem((1:30:900)-1,3)+repmat(1:3,1,30); 
-        
+       
     if strcmp(opt_balance,'balanced')
         idx_std1 = target_indices_std(ismember(target_indices_std,target_indices1-1));
         idx_std2 = target_indices_std(ismember(target_indices_std,target_indices2-1));
@@ -71,49 +84,7 @@ for ii=1:length(subjects)
     [EEG_STD2_thresh,idx_std2_stepB] = pop_eegthresh(EEG_STD2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     [EEG_DEV1_thresh,idx_dev1_stepB] = pop_eegthresh(EEG_DEV1,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     [EEG_DEV2_thresh,idx_dev2_stepB] = pop_eegthresh(EEG_DEV2,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-    
-    %% If we want to select the same number of trial both for DEV and STD
-    if strcmp(opt_balance,'balanced')
-
-        [EEG_STD_thresh, idx_removed] = pop_eegthresh(EEG_STD,1,eeg_elec ,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-        std_good = setdiff(1:900,target_indices_std(idx_removed)); 
-       
-        % If nubmber of STD1 < number of DEV1 : randomly select other STD
-        if length(EEG_DEV1_thresh.event)>length(EEG_STD1_thresh.event)
-            % Find number of trial to add in STD
-            ntrials =  length(EEG_DEV1_thresh.event)-length(EEG_STD1_thresh.event) ;
-            %Apply function to balance number of STD trial to reach the number of DEV trials
-            EEG_STD1_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices1,begining_of_block,target_indices_std1,idx_std1_stepB,idx_std1) ;
-            
-        end
-        
-        % If nubmber of STD2 < number of DEV2 : randomly select other STD
-        if length(EEG_DEV2_thresh.event)>length(EEG_STD2_thresh.event)
-            % Find number of trial to add in STD
-            ntrials =  length(EEG_DEV2_thresh.event)-length(EEG_STD2_thresh.event) ;
-            %Apply function to balance number of STD trial to reach the number of DEV trials
-            EEG_STD2_thresh = balance_number_of_STD(EEG,ntrials,std_good,target_indices2,begining_of_block,target_indices_std2,idx_std2_stepB,idx_std2) ;
-            
-        end
-        
-        % If nubmber of STD1 > number of DEV1 : delete random STD preceding missing DEV1
-        if length(EEG_DEV1_thresh.event)<length(EEG_STD1_thresh.event)
-            % Removes randomly the number of STD exceeding the number of DEV
-            idx_to_keep = randperm(length(EEG_STD1_thresh.event), length(EEG_DEV1_thresh.event)) ; 
-            %Modify EEG struct
-            [EEG_STD1_thresh,~] = pop_selectevent(EEG,'event',[target_indices1(idx_to_keep)]);
-        end
-        
-        % If nubmber of STD2 > number of DEV2 : delete random STD preceding
-        % missing DEV2
-        if length(EEG_DEV2_thresh.event)<length(EEG_STD2_thresh.event)
-            % Removes randomly the number of STD exceeding the number of DEV
-            idx_to_keep = randperm(length(EEG_STD2_thresh.event), length(EEG_DEV2_thresh.event)) ;            
-            %Modify EEG struct
-            [EEG_STD2_thresh,~] = pop_selectevent(EEG,'event',[target_indices2(idx_to_keep)]);   
-        end
-      
-    end
+   
     
     %% Create a custom history variable to keep track of OPTIONS in each
     % .set saved
@@ -126,21 +97,13 @@ for ii=1:length(subjects)
     
     DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
-    STD1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
-    STD2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STD2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     
     % Save datasets 
     pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
     pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',DEV2_fname,'savenew', fullfile(subDir, DEV2_fname),'gui','off');
-    
-    if strcmp(opt_balance,'balanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',STD1_fname,'savenew', fullfile(subDir, STD1_fname),'gui','off');
-         pop_newset(ALLEEG, EEG_STD2_thresh, 1, 'setname',STD2_fname,'savenew', fullfile(subDir, STD2_fname),'gui','off');
-    elseif strcmp(opt_balance,'unbalanced')
-         pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',STDD_fname,'savenew', fullfile(subDir, STDD_fname),'gui','off');
+    pop_newset(ALLEEG, EEG_STD1_thresh, 1, 'setname',STDD_fname,'savenew', fullfile(subDir, STDD_fname),'gui','off');
 
-    end
     % Name of the file report 
     fnameReport = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
     fnameTrialDescription = fullfile(subDir,strcat(subjects{ii},'_trials_description.txt'));
