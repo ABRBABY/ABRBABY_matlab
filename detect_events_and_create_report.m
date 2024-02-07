@@ -32,6 +32,13 @@ if exist(erg_filename, 'file')
 else
     % DB37 data : Remove Erg channel
     EEG = pop_select( EEG, 'nochannel', trig) ;
+    % Look for outliers if not 6000 events
+    if size(EEG.event,2)~=6000
+        [idx_to_remove_trigg] = resolve_event_detection_HF_trigg_artefact(EEG) ;
+        % Removes events identified above
+        EEG.event(idx_to_remove_trigg) = [] ;  EEG.urevent(idx_to_remove_trigg) = [] ;
+    end
+
 
 end
 

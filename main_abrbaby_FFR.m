@@ -27,6 +27,7 @@ OPTIONS_stepA.indir = indir;
 OPTIONS_stepA.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};   %Labels of the mastoids electrodes
 OPTIONS_stepA.trig = {'Erg1'};                              %Label of trigger channel
 OPTIONS_stepA.abr= {'Left','Right'};                        %Label of abr channels for formula 
+OPTIONS_stepA.conditions = {'HF'} ; 
 OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline
 OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
 OPTIONS_stepA.eeg_elec = 1:16 ;                             %Cortical electrodes (to get cortical FFRs)
@@ -35,16 +36,19 @@ OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value 
 OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
-suffix_stepA = '_FFR_stepA';
+suffix_stepA = '_stepA';
 OPTIONS_stepA.analysis = 'FFR';
+OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA,'') ; 
 
-% % Choose subject to process
-% subj_to_process = {'DVL_018_T18'} ; 
-% flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+    flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+end
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce
 %report
@@ -55,8 +59,9 @@ end
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
 OPTIONS_stepB.indir = indir ;
-OPTIONS_stepB.rej_low = -45 ;                         %initial value = -45                               
-OPTIONS_stepB.rej_high = 45 ;                         %initial value = 45
+OPTIONS_stepB.analysis = 'FFR' ;
+OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
+OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
