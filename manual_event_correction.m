@@ -120,4 +120,4 @@ EEG_rejected = detect_events_and_create_report(EEG, indir, '_ergstim.txt', {'Erg
 %% Save new file_description
 
 % Save new description file
-writetable(trials_descr, fullfile(fname_txt.folder, fname_txt.name), 'WriteVariableNames',false) ;
+writetable(trials_descr, fullfile(fname_txt.folder, fname_txt.name), 'WriteVariableNames',true) ;
