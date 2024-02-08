@@ -23,8 +23,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -102,8 +102,8 @@ end
 
 % Reject bad trials and save new .set file
 % [preproc_filenames_balanced] = reject_bad_trials(ALLEEG, OPTIONS_stepB, 'balanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,RFE_num) ; 
-reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
-
+% reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+reject_bad_trials_TEMP(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
 %% ------------------- Update trial_description with manual rejection of bad trials
 % OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
