@@ -20,12 +20,6 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
-%Check if stepA(number).set files exist for all subjects
-for jj=1:length(subjects)
-    setname = dir(fullfile(indir,subjects{jj},strcat(subjects{jj},'_',OPTIONS.analysis,RFE,'.set')));
-    if isempty(setname) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
-end
-
 % Loop though subjects
 for ii=1:length(subjects)
     % Printout the id of the subject in console
@@ -35,7 +29,7 @@ for ii=1:length(subjects)
     file_stepA = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,RFE,'.set'))) ;
     
     % Error if rfe file does not exist
-    if isempty(file_stepA) ; error('File %s does not exist for subject %s', RFE, subjects{jj}); end
+    if isempty(file_stepA) ; error('File %s does not exist for subject %s', RFE, subjects{ii}); end
     
     %Get subDir
     subDir = file_stepA.folder ;
@@ -48,7 +42,7 @@ for ii=1:length(subjects)
     win_of_interest = EEGorig.history_stepA.win_of_interest ;
 
     % Read trial_description.txt
-    fname_trial_desc = fullfile(OPTIONS.indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt'));
+    fname_trial_desc = fullfile(OPTIONS.indir,subjects{ii},strcat(subjects{ii},'_trials_description.txt'));
     
     if ~exist(fname_trial_desc,'file')
         error('\nABRBABY --------- File _trials_description.txt does not exist. You must run the first part of the analysis');
@@ -57,7 +51,7 @@ for ii=1:length(subjects)
         % Read _trials_description file 
         T1 = readtable(fname_trial_desc); 
         idx_not_HF =  ~matches(T1.condition,'HF') ; 
-       
+     
     
     % Removes the first 3 events in blocks (excpet the ones which were already removed because of acq issue)
     begining_of_block = setdiff(repelem((1:30:900)-1,3)+repmat(1:3,1,30),find(T1{idx_not_HF,3}==0)); 
