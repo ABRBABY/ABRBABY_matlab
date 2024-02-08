@@ -20,6 +20,8 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
+suffix_stepA = strsplit(RFE,'_') ; 
+
 % Loop though subjects
 for ii=1:length(subjects)
     % Printout the id of the subject in console
@@ -35,11 +37,11 @@ for ii=1:length(subjects)
     subDir = file_stepA.folder ;
   
      %Load the RFE .set file to work on
-    EEGorig = pop_loadset(file_stepA.name,subDir) ;
+    EEG = pop_loadset(file_stepA.name,subDir) ;
     
     %Get eeg_elec and win_of_interest from RFE set of parameters
-    eeg_elec = EEGorig.history_stepA.eeg_elec ;
-    win_of_interest = EEGorig.history_stepA.win_of_interest ;
+    eeg_elec = EEG.history_stepA.eeg_elec ;
+    win_of_interest = EEG.history_stepA.win_of_interest ;
 
     % Read trial_description.txt
     fname_trial_desc = fullfile(OPTIONS.indir,subjects{ii},strcat(subjects{ii},'_trials_description.txt'));
@@ -50,15 +52,44 @@ for ii=1:length(subjects)
      
         % Read _trials_description file 
         T1 = readtable(fname_trial_desc); 
+
+         %% Identifies (flag) the first 3 events in blocks 
+        begining_of_block = repelem((1:30:900)-1,3)+repmat(1:3,1,30); 
+        
+        % Init a vector 6000 trials
+        init_beg_bloc = ones(1,height(T1));
+        
+        % Get indices of STD, DEV1, DEV2 
         idx_not_HF =  ~matches(T1.condition,'HF') ; 
-     
+       
+        % Update flag values 
+        init_beg_bloc((T1{:,3}~=0)&idx_not_HF) = ~ismember(find(T1{idx_not_HF,3}~=0),begining_of_block);
+        add_flag_column_trials_description(fname_trial_desc, 'begining_block',init_beg_bloc);
+
+        %% Identifies (flag) the automatically rejected trials
+        idx_rejacq = find(contains(T1.Properties.VariableNames,'rejection_acq')) ; 
+        
+         % Get indices of the trials which were rejected (without messing around with the relative indices)
+        [~,idx_all_rejected] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     
-    % Removes the first 3 events in blocks (excpet the ones which were already removed because of acq issue)
-    begining_of_block = setdiff(repelem((1:30:900)-1,3)+repmat(1:3,1,30),find(T1{idx_not_HF,3}==0)); 
-   
-    % Remove begining of blocks trials 
-    EEG = pop_rejepoch(EEGorig, begining_of_block ,0);
-      
+        % Init a vector 6000 trials
+        init_rejected = ones(1,height(T1));
+    
+        % Update flag values 
+        init_rejected((T1{:,idx_rejacq}~=0)&idx_not_HF) = ~ismember(find(T1{idx_not_HF,idx_rejacq}~=0),idx_all_rejected);
+    
+        % Update trial_description.txt
+        header = char(strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count))) ;        
+        add_flag_column_trials_description(fname_trial_desc, header,init_rejected);
+
+        idx_rejauto = find(contains(T1.Properties.VariableNames,header));
+
+        idx_cond = find(contains(T1.Properties.VariableNames,'condition'));
+
+        
+        % pop_selectevent(EEG, idx_to_keep) ;
+
+
     % Select trials per conditions
     [EEG_DEV1,~] = pop_selectevent(EEG,'type','DEV1');
     [EEG_DEV2,~] = pop_selectevent(EEG,'type','DEV2');
@@ -76,12 +107,13 @@ for ii=1:length(subjects)
     EEG_STD1_thresh.history_stepB = OPTIONS ;
     % EEG_STD2_thresh.history_stepB = OPTIONS ;
 
-    suffix_stepA = strsplit(RFE,'_') ; 
     
     DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
     
+    % HERE REMOVE BEGINGIN OF BLOCK 
+
     % Save datasets 
     pop_newset(ALLEEG, EEG_DEV1_thresh, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
     pop_newset(ALLEEG, EEG_DEV2_thresh, 1, 'setname',DEV2_fname,'savenew', fullfile(subDir, DEV2_fname),'gui','off');
@@ -91,22 +123,7 @@ for ii=1:length(subjects)
     fnameReport = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
     fnameTrialDescription = fullfile(subDir,strcat(subjects{ii},'_trials_description.txt'));
     
-    % Get indices of the trials which were rejected (without messing around with the relative indices)
-    [~,idx_rejected_all] = pop_eegthresh(EEGorig,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-
-    % Get indices of rejected and begining of block
-    idx_all_rejected = unique([begining_of_block,idx_rejected_all]);
-
-    % Init a vector 6000 trials
-    init = zeros(1,height(T1));
-
-    % Update flag values 
-    init((T1{:,3}~=0)&idx_not_HF) = ismember(find(T1{idx_not_HF,3}~=0),idx_all_rejected);
-
-    % Update trial_description.txt
-    header = char(strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count))) ; 
-    add_flag_column_trials_description(fname_trial_desc, header,init);
-
+   
     % Write csv file directly into the subject dir
     % produce_report(fnameReport{1},fnameTrialDescription, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, begining_of_block,opt_balance) ; 
 
