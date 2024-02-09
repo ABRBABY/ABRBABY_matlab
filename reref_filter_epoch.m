@@ -120,7 +120,7 @@ function out_event = read_custom_events(fname, in_event)
 % Read .txt 
 my_events = readtable(fname, 'ReadVariableNames', 1);
 
-if size(my_events,2)~=3 
+if size(my_events,2)<3 
     error('Wrong number of column in file _trial_descriptions.txt');
 else
     idx_events = my_events{:,3}==1 ; 
