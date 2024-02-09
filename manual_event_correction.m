@@ -2,7 +2,7 @@
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
 indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
-subject_name = 'DVL_044_T8' ;
+subject_name = 'DVL_059_T8' ;
 
 %% Open files
 
