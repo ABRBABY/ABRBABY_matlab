@@ -107,7 +107,8 @@ reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB,
 %% ------------------- Update trial_description with manual rejection of bad trials
 % OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
 OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
-OPTION_rman.indir = indir ; 
+% OPTION_rman.indir = indir ; 
+OPTION_rman.indir = 'E:\EEG_ANALYSES\new_preprocessed_data_ERP_stepA1_stepB1' ; 
 
 % Here update the trial_desrption files in the corresponding participants
 % folder (found in initial indir) 

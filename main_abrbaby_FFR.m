@@ -70,14 +70,17 @@ tube_length = 0.27 ;
 propag_sound = 340 ; 
 suffix_stepB = '_stepB' ;
 stepA_num = 1 ;                                      %Set of stepA parameters to use for filtering
+OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;   % To choose liste of participants to process
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
 
-% % Choose subject to process
-% subj_to_process = {'DVL_003_T18'} ;
-% flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+    flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+end
 
 %Filter epoched data and prepare input for brainstem toolbox
 if sum(flag_sub_to_create_stepB)~=0

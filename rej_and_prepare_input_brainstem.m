@@ -40,7 +40,10 @@ for ii=1:length(subjects)
     
     %Set stepA file to work on
     file_stepA = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'))) ;
-    
+     
+    % Error if rfe file does not exist
+    if isempty(file_stepA) ; error('File stepA%s does not exist for subject %s', num2str(stepA), subjects{ii}); end
+ 
     %Get filepath
     filepath = file_stepA.folder ;
     
@@ -49,11 +52,7 @@ for ii=1:length(subjects)
     
     %Load the stepA .set file to work on
     EEG = pop_loadset(strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'), filepath) ; 
-    
-    % Name of the file report 
-    suf = strsplit(suffix,'_');
-    fname = fullfile(file_stepA.folder,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suf(end),num2str(count),'.csv')) ; 
-  
+
     % Select only ABR elec
     EEG = pop_select(EEG, 'channel',{'ABR'});
 
@@ -67,12 +66,52 @@ for ii=1:length(subjects)
     positive_altern = [ones_vector(:) zeros_vector(:)]';
     positive_altern = positive_altern(:);
     positive_altern_log = logical(positive_altern);
+    
+    % Read trials_description.txt file
+    fname_trial_desc = fullfile(indir,subjects{ii},strcat(subjects{ii},'_trials_description.txt'));
+    
+    if ~exist(fname_trial_desc,'file')
+        error('\nABRBABY --------- File _trials_description.txt does not exist. You must run the first part of the analysis');
+    else
+        % Read _trials_description file 
+        T1 = readtable(fname_trial_desc); 
 
-    % Reject bad trials and write a report
-    [EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,EEG.nbchan,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
- 
-    % Write csv file directly into the subject dir
-    produce_report(fname{1}, EEG, 1, bloc, win_of_interest, rej_low, rej_high, suf, count) ; 
+        %% Reject bad trials
+
+         % Get indices of the trials which were rejected (in the EEG structure referential)
+        [EEG_all,idx_rejected_all] = pop_eegthresh(EEG,1,EEG.nbchan,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1); 
+    
+         %% Identifies (flag) the automatically rejected trials
+
+        % Get indices of variable for rejection at acquisition
+        idx_rejacq = find(contains(T1.Properties.VariableNames,'rejection_acq')) ; 
+        
+        % Get indices of HF
+        idx_HF = matches(T1.condition,'HF') ;
+
+        % Get indices of trials from EEG structure in the 6000 referential
+        idx_EEG_referential = find(idx_HF.*T1{:,idx_rejacq}) ;% Retrieve indices of rejected trials on the 6000 referential
+        idx_rejected_6000_ref = idx_EEG_referential(idx_rejected_all) ;
+
+        % Init a vector 6000 trials
+        init_rejected = ones(1,height(T1));
+    
+        % Update flag values 
+        init_rejected(idx_rejected_6000_ref) = 0;
+    
+        % Update trial_description.txt
+        header = char(strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_stepA',num2str(stepA),suffix,num2str(count))) ;        
+        add_flag_column_trials_description(fname_trial_desc, header,init_rejected);
+
+
+    end
+    
+%     % Name of the file report 
+%     suf = strsplit(suffix,'_');
+%     fname = fullfile(file_stepA.folder,strcat(subjects{ii},'_infos_trials','_low_',num2str(rej_low),'_high_',num2str(rej_high),'_',suf(end),num2str(count),'.csv')) ; 
+%       
+%     % Write csv file directly into the subject dir
+%     %produce_report(fname{1}, EEG, 1, bloc, win_of_interest, rej_low, rej_high, suf, count) ; 
 
     % Compute mean FFR without rejected trials (averaged polarities)
     abr_average = mean(EEG_all.data(1,:,:),3);   %EEG.data = elec x samples x trials     ones_vector = ones(1,size(EEG.data, 3)/2);
@@ -93,7 +132,6 @@ for ii=1:length(subjects)
     
     % Add tube delay (27 cm x 340 m/s ) 
     nsample_delay = fix(EEG.srate * (tube_length / propag_sound) ) ; 
-    %abr_shifted = circshift(abr,nsample_delay) ;
     abr_averaged_add_shifted = circshift(abr_average,nsample_delay) ;
     abr_averaged_add_shifted(1:nsample_delay) = 0.00001;
     abr_averaged_sub_shifted = circshift(abr_subtracted,nsample_delay) ;
@@ -103,26 +141,6 @@ for ii=1:length(subjects)
     abr_negative_shifted = circshift(abr_negative,nsample_delay) ;
     abr_negative_shifted(1:nsample_delay) = 0.00001;
 
-%     figure ;
-%     plot(EEG.times,abr_average,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(EEG.times,abr_averaged_add_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
-%     grid on ;
-%     legend('FFR : Added polarities', 'FFR : Added polarity, shifted');
-% 
-%     figure ;
-%     plot(EEG.times,abr_subtracted,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(EEG.times,abr_averaged_sub_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
-%     grid on ;
-%     legend('FFR : Subtracted polarities', 'FFR : Subtracted polarity, shifted');
-% 
-%     figure ;
-%     plot(EEG.times,abr_positive,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(EEG.times,abr_positive_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
-%     grid on ;
-%     legend('FFR : Positive polarity', 'FFR : Positive polarity, shifted');
-% 
-%     figure ;
-%     plot(EEG.times,abr_negative,'Color',[0 0 0],'Linewidth',0.5); hold on ; plot(EEG.times,abr_negative_shifted,'Color',[1 0 0],'Linewidth',0.5); hold on; set(gca,'YDir','reverse') ;
-%     grid on ;
-%     legend('FFR : Negative polarity', 'FFR : Negative polarity, shifted');
-    
     % Create a custom history variable to keep track of OPTIONS 
     EEG.history_stepB = OPTIONS ;
     
@@ -134,10 +152,6 @@ for ii=1:length(subjects)
     pop_newset(ALLEEG, EEG, 1, 'setname', strcat(subjects{ii},'_filtered_FFR'),'savenew', fullfile(filepath, strcat(subjects{ii},'_stepA',num2str(stepA),suffix,num2str(count))),'gui','off');
 
     %% Export ABR data into .txt file
-%     fname_out = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_shifted_data_HF.txt')) ;
-%     fid = fopen(fname_out,'w');
-%     fprintf(fid,'%c\n',abr_shifted);
-%     fclose(fid);
 
     fname_out_avg = fullfile(filepath,strcat(subjects{ii},'_stepA', num2str(stepA),suffix, num2str(count),'_abr_avg_shifted_data_HF.txt')) ;
     fid = fopen(fname_out_avg,'w');
