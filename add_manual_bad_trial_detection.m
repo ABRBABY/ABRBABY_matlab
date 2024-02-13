@@ -31,7 +31,8 @@ for jj=1:length(subjects)
         fname_orig= fullfile(OPTIONS.indir,subjects{jj},strrep(fname(ff).name,'_256.set','*'));
         
         if ~isempty(dir(fname_orig))
-            EEGorig = pop_loadset(fname_orig, fname(ff).folder) ;
+            fname_orig = dir(fname_orig) ; 
+            EEGorig = pop_loadset(fname_orig.name, fname_orig.folder) ;
         else
             fname_orig = strrep(fname_orig,'_RFE','_stepA');
             fname_orig = strrep(fname_orig,'_REJ','_stepB');
@@ -89,10 +90,8 @@ for jj=1:length(subjects)
     % Save datasets 
     pop_newset(ALLEEG, EEGorig, 1, 'setname',fname_orig.name,'savenew', fullfile(fname_orig.folder,fname_orig.name),'gui','off');
 
-    end
-
     % Write a new column in the trial_description file
     add_flag_column_trials_description(fname_trial_desc, 'Manual_rejection',flag') ; 
 
-
+    end
 end
