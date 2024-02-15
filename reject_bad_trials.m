@@ -69,138 +69,64 @@ for ii=1:length(subjects)
         %% Identifies (flag) the automatically rejected trials
         idx_rejacq = find(contains(T1.Properties.VariableNames,'rejection_acq')) ; 
         
-        % Get indices of trials from EEG structure in the 6000 referential
-        idx_EEG_referential = find(idx_not_HF.*T1{:,idx_rejacq}) ;
+        % Get indices of trials wich are not HF and not rejected at
+        % acquisition
+        idx_EEG_LF_Noacqrej = find(idx_not_HF.*T1{:,idx_rejacq}) ;
 
+        if length(idx_EEG_LF_Noacqrej)~=EEG.trials
+            error('The .set file does not contain the same number of trial than in _trial_description.txt');
+        end
+        
          % Get indices of the trials which were rejected (in the EEG structure referential)
-        [~,idx_all_rejected] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
+        [~,idx_rejected] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
     
         % Retrieve indices of rejected trials on the 6000 referential
-        idx_rejected_6000_ref = idx_EEG_referential(idx_all_rejected) ;
+        idx_rejected_6000_ref = idx_EEG_LF_Noacqrej(idx_rejected) ;
 
         % Init a vector 6000 trials
-        init_rejected = ones(1,height(T1));
+        auto_rejected = ones(1,height(T1));
+        auto_rejected(~idx_not_HF) =  0 ; 
+
+        % Update flag values with trial automatically rejected 
+        auto_rejected(idx_rejected_6000_ref) = 0;
     
-        % Update flag values 
-        init_rejected(idx_rejected_6000_ref) = 0;
-    
+        % Update flag values with trial wich were rejected at acquisition
+        auto_rejected = auto_rejected.*T1{:,idx_rejacq}';
+
         % Update trial_description.txt
         header = char(strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count))) ;        
-        add_flag_column_trials_description(fname_trial_desc, header,init_rejected);
-
-        % Update table in workspace
-        T1 = readtable(fname_trial_desc); 
-
-        %% Reject previously identified events
-
-        % Get index of rejection automatic variable in table
-        idx_rejauto = find(contains(T1.Properties.VariableNames,header));
-       
-        % Get index of condition variable in table
-        idx_cond = find(contains(T1.Properties.VariableNames,'condition'));
-
-        % Get all kept events in the 6000 referential     
-        all_rej_T1 = find(idx_not_HF.*T1{:,idx_rejacq}.*T1{:,idx_rejauto}.*init_beg_bloc') ;
+        add_flag_column_trials_description(fname_trial_desc, header,auto_rejected);
 
         % Get indices of these rejected events in the EEG structure referential
-        all_rej_and_begining_bloc = find(ismember(idx_EEG_referential,all_rej_T1)) ;
+        all_rej_and_begining_bloc = auto_rejected.*init_beg_bloc ;
 
-        % Select only kept events
-        EEG_kept = pop_selectevent(EEG, 'event', all_rej_and_begining_bloc) ;
-
-        % Select trials per condition
-        [EEG_DEV1,~] = pop_selectevent(EEG_kept,'type','DEV1');
-        [EEG_DEV2,~] = pop_selectevent(EEG_kept,'type','DEV2');
-        [EEG_STD,~] = pop_selectevent(EEG_kept,'type','STD');
-
-    %% Create a custom history variable to keep track of OPTIONS in each
-    % .set saved
-    EEG_DEV1.history_stepB = OPTIONS ;
-    EEG_DEV2.history_stepB = OPTIONS ;
-    EEG_STD.history_stepB = OPTIONS ;
-     
-    DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
-    DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
-    STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
-
-    % Save datasets 
-    pop_newset(ALLEEG, EEG_DEV1, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
-    pop_newset(ALLEEG, EEG_DEV2, 1, 'setname',DEV2_fname,'savenew', fullfile(subDir, DEV2_fname),'gui','off');
-    pop_newset(ALLEEG, EEG_STD, 1, 'setname',STDD_fname,'savenew', fullfile(subDir, STDD_fname),'gui','off');
-
-    % Name of the file report 
-    fnameReport = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
-    fnameTrialDescription = fullfile(subDir,strcat(subjects{ii},'_trials_description.txt'));
+        % % Select only kept events
+        [EEG_DEV1,~] = pop_selectevent(EEG,'event', find(ismember(idx_EEG_LF_Noacqrej,find(all_rej_and_begining_bloc))),'type','DEV1');
+        [EEG_DEV2,~] = pop_selectevent(EEG,'event', find(ismember(idx_EEG_LF_Noacqrej,find(all_rej_and_begining_bloc))),'type','DEV2');
+        [EEG_STD,~] = pop_selectevent(EEG,'event', find(ismember(idx_EEG_LF_Noacqrej,find(all_rej_and_begining_bloc))),'type','STD');
     
-    % Write csv file directly into the subject dir
-    % produce_report(fnameReport{1},fnameTrialDescription, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high, begining_of_block,opt_balance) ; 
-
-    end 
+        %% Create a custom history variable to keep track of OPTIONS in each
+        % .set saved
+        EEG_DEV1.history_stepB = OPTIONS ;
+        EEG_DEV2.history_stepB = OPTIONS ;
+        EEG_STD.history_stepB = OPTIONS ;
+         
+        DEV1_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV1_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+        DEV2_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_DEV2_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+        STDD_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_STDD_',opt_balance,'_',suffix_stepA{end},suffix,num2str(count));
+    
+        % Save datasets 
+        pop_newset(ALLEEG, EEG_DEV1, 1, 'setname',DEV1_fname,'savenew', fullfile(subDir,DEV1_fname),'gui','off');
+        pop_newset(ALLEEG, EEG_DEV2, 1, 'setname',DEV2_fname,'savenew', fullfile(subDir, DEV2_fname),'gui','off');
+        pop_newset(ALLEEG, EEG_STD, 1, 'setname',STDD_fname,'savenew', fullfile(subDir, STDD_fname),'gui','off');
+    
+        % Name of the file report 
+        fnameReport = fullfile(subDir,strcat(subjects{ii},'_infos_trials','_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA(end),suffix,num2str(count),'.csv')) ; 
+        fnameTrialDescription = fullfile(subDir,strcat(subjects{ii},'_trials_description.txt'));
+        
+   end 
 end
    
-
-end
-
-%--------------------------------------------------------------
-% FUNCTION that write a report on rejected trials. Regardless to
-% conditions) -> we re-excute pop_eegthresh on all trials 
-% (we do not save .set but the report)
-%--------------------------------------------------------------
-function [] = produce_report(fname,fnameTrials, EEG, eeg_elec, bloc, win_of_interest, rej_low, rej_high,begining_of_block, opt_balance) 
-
-    NB_TRIALS = 6000 ;
-
-    if strcmp(opt_balance,'balanced')
-        warndlg('The report of trial status (rejected/not rejected) is under developement for ''balanced'' option ','Warning')
-        return
-    end
-     % Get indices of the trials which were rejected (without messing around with the relative indices)
-    [~,idx_rejected_all] = pop_eegthresh(EEG,1,eeg_elec,rej_low, rej_high, win_of_interest(1), win_of_interest(2),0,1);
-
-    % Extract variables of interest
-    trial_index = 1:EEG.trials;
-    trial_num = [EEG.event.urevent];
-    condition = {EEG.event.type} ;
-    latency = [EEG.event.latency]/EEG.srate;  
-    rejected = ismember(trial_index,unique([idx_rejected_all,begining_of_block])) ; 
-    
-    % Create table to store these information
-    list_trial_infos = table(trial_index',condition',latency', trial_num',rejected', bloc',...
-        'VariableNames', {'trial_index', 'condition', 'latency','trial_num','rejected','bloc'}) ;
-
-    % Save this table into a csv file (use function writetable)
-    writetable(list_trial_infos,fname, 'WriteVariableNames', true) ; 
-
-    % Update trial_despection
-    [~,header,~]=fileparts(fname);
- 
-    % % Create a flag vector for bad trials
-    init = zeros(1,height(T1));
-    init(T1{idx_not_HF,3}~=0) = ~rejected ;
-
-    % Edit _trial_description.txt file with new column
-    add_flag_column_trials_description(fnameTrials, header,init);
-
-end
-
-%--------------------------------------------------------------
-% FUNCTION that reads events from text file and output 
-% an EEGLAB events structure 
-%--------------------------------------------------------------
-function out_event = update_trial_description(fname, in_event) 
-
-% Read .txt 
-my_events = readtable(fname, 'ReadVariableNames', 1);
-
-if size(my_events,2)~=3 
-    error('Wrong number of column in file _trial_descriptions.txt');
-else
-    idx_events = my_events{:,2}==1 ; 
-    out_event = struct('latency', num2cell(my_events{idx_events,3}'), ...
-                    'type', my_events{idx_events,1}',...
-                    'urevent', num2cell(1:height(my_events))) ;                      
-end
-
 end
 
 %--------------------------------------------------------------
