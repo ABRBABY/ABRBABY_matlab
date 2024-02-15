@@ -31,6 +31,7 @@ for jj=1:length(subjects)
         fname_orig= fullfile(OPTIONS.indir,subjects{jj},strrep(fname(ff).name,'_256.set','*'));
         
         if ~isempty(dir(fname_orig))
+            fname_orig = dir(fname_orig) ; 
             EEGorig = pop_loadset(fname_orig, fname(ff).folder) ;
         else
             fname_orig = strrep(fname_orig,'_RFE','_stepA');
