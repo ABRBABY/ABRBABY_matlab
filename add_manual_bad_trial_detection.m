@@ -50,9 +50,13 @@ for jj=1:length(subjects)
             
        end
           
+       %% HERE handle the cases where there was no manual detection (no line in history AND case where there was several detection (sevrale lines pop_rejepoch in history) 
+
         % Get indices of manually rejected trials
         bad_trials = str2num(extractBefore(extractAfter(EEG.history,'pop_rejepoch( EEG, '),' ,0);'));
         
+        %% ASD TODO : 
+        %% HERE WARNING : Estelle please provide dataset (re-run on participant -> skip (no add_flag_column_trials_description) + display error if discrepency) 
         if EEG.trials+length(bad_trials)~=EEGorig.trials 
             fprintf('\nABRBABY --------- Process already done OR discrepency between file used to mark bad trials and automatically generated file\n');
             continue

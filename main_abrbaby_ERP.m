@@ -58,7 +58,7 @@ OPTIONS_stepA.eeg_elec = 1:16 ;
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ; 
 OPTIONS_stepA.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 % suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 suffix_stepA = '_stepA' ;
@@ -84,7 +84,7 @@ OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adu
 OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;            % indicates index of rfe set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 suffix_stepB = '_stepB' ;
 
