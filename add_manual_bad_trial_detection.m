@@ -30,7 +30,7 @@ for jj=1:length(subjects)
         
         % Find if column exists skip  subject
         if sum(strcmp('Manual_rejection',T1.Properties.VariableNames))
-             fprintf(sprintf('\nABRBABY --------- %s Process already done \n',subjects{jj}));
+             fprintf(sprintf('\nABRBABY --------- %s Process already done because Manual_rejection colum exist in trial_description \n',subjects{jj}));
              continue ; 
         end 
         
@@ -68,15 +68,18 @@ for jj=1:length(subjects)
             
        end
           
-       %% HERE handle the cases where there was no manual detection (no line in history AND case where there was several detection (sevrale lines pop_rejepoch in history) 
+       idx_poprej = strfind(EEG.history,'pop_rejepoch('); 
+       bad_trials = [];
+       for ss=1:length(idx_poprej)       
+            % Get indices of manually rejected trials
+            bad_trials = cat(2,bad_trials,str2num(extractBefore(extractAfter(EEG.history(idx_poprej(ss):end),'pop_rejepoch( EEG, '),',0);')));
+       
+       end
 
-        % Get indices of manually rejected trials
-        bad_trials = str2num(extractBefore(extractAfter(EEG.history,'pop_rejepoch( EEG, '),' ,0);'));
-        
         % Here the number of trials in the original file is different
         % than the corrected + nb trials
         if EEG.trials+length(bad_trials)~=EEGorig.trials 
-        error('ERROR : %s discrepency between file used to mark bad trials and automatically generated file\n',subjects{jj});
+            error('ERROR : %s discrepency between file used to mark bad trials and automatically generated file\n',subjects{jj});
         end 
         
         % Remove bad trials and save a new .set file
