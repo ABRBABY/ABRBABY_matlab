@@ -5,8 +5,11 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+
+% selected_subj = {'DVL_013_T24','DVL_011_T10','DVL_044_T8'};
+selected_subj = [];
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -29,10 +32,15 @@ chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.
 d = dir(indir);
 isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
-subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
+subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..te
 
 % Inititalize output parameter
 out_filenames = [] ;
+
+if ~isempty(selected_subj)
+    % Get selected subjects
+    subjects = subjects(ismember(subjects,selected_subj)) ; 
+end
 
 %Loop through subjects
 for jj=1:length(subjects)

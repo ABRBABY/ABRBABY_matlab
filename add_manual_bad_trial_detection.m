@@ -17,10 +17,28 @@ for jj=1:length(subjects)
 
     % Printout the id of the subject in console
     fprintf(strcat(subjects{jj}, '...\n'));
+    
+    % Update the (.set) file 
+    fname_trial_desc = fullfile(OPTIONS.indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt'));
+    
+    % Test if trial_description.txt exist 
+    if ~exist(fname_trial_desc,'file')
+        error('\nABRBABY --------- File _trials_description.txt does not exist. You must run the first part of the analysis');
+    else 
+        % Read _trials_description file 
+        T1 = readtable(fname_trial_desc); 
+        
+        % Find if column exists skip  subject
+        if sum(strcmp('Manual_rejection',T1.Properties.VariableNames))
+             fprintf(sprintf('\nABRBABY --------- %s Process already done because Manual_rejection colum exist in trial_description \n',subjects{jj}));
+             continue ; 
+        end 
+        
+    end
 
     % Get the manual marked .set file
     fname= dir(fullfile(OPTIONS.manualdir,subjects{jj},'*_256.set'));
-    
+
     % For all files detected for this subject
     for ff=1:length(fname) 
 
@@ -50,50 +68,48 @@ for jj=1:length(subjects)
             
        end
           
-        % Get indices of manually rejected trials
-        bad_trials = str2num(extractBefore(extractAfter(EEG.history,'pop_rejepoch( EEG, '),' ,0);'));
-        
+       idx_poprej = strfind(EEG.history,'pop_rejepoch('); 
+       bad_trials = [];
+       for ss=1:length(idx_poprej)       
+            % Get indices of manually rejected trials
+            bad_trials = cat(2,bad_trials,str2num(extractBefore(extractAfter(EEG.history(idx_poprej(ss):end),'pop_rejepoch( EEG, '),',0);')));
+       
+       end
+
+        % Here the number of trials in the original file is different
+        % than the corrected + nb trials
         if EEG.trials+length(bad_trials)~=EEGorig.trials 
-            fprintf('\nABRBABY --------- Process already done OR discrepency between file used to mark bad trials and automatically generated file\n');
-            continue
-        else 
-            % Remove bad trials and save a new .set file
-            EEGorig = pop_rejepoch( EEGorig, bad_trials ,0);
-      
-            % Update the (.set) file 
-            fname_trial_desc = fullfile(OPTIONS.indir,subjects{jj},strcat(subjects{jj},'_trials_description.txt'));
-            
-            if ~exist(fname_trial_desc,'file')
-                error('\nABRBABY --------- File _trials_description.txt does not exist. You must run the first part of the analysis');
-            else
-             
-                % Read _trials_description file 
-                T1 = readtable(fname_trial_desc); 
-    
-                conditions = {'STD','DEV1','DEV2'} ; 
-    
-                for cc=1:length(conditions)
-                    if contains(fname(ff).name,conditions{cc})
-                        
-                        idx_cond = contains(T1.condition,conditions{cc}) ; 
-                        idx_column = contains(T1.Properties.VariableNames,extractBefore(extractAfter(fname_orig.name,'_step'),'.set'));
-                        idx_autorej = T1{:,idx_column} ; 
+            error('ERROR : %s discrepency between file used to mark bad trials and automatically generated file\n',subjects{jj});
+        end 
         
-                        idx_before_manual_rej = find(idx_cond.*idx_autorej); 
-                        flag(idx_before_manual_rej(bad_trials)) = 0 ; 
-                       
-                    end
-                end
+        % Remove bad trials and save a new .set file
+        EEGorig = pop_rejepoch( EEGorig, bad_trials ,0);
+        
+        conditions = {'STD','DEV1','DEV2'} ; 
+        
+        for cc=1:length(conditions)
+            if contains(fname(ff).name,conditions{cc})
+                
+                idx_cond = contains(T1.condition,conditions{cc}) ; 
+                idx_column = contains(T1.Properties.VariableNames,extractBefore(extractAfter(fname_orig.name,'_step'),'.set'));
+                idx_autorej = T1{:,idx_column} ; 
+            
+                idx_before_manual_rej = find(idx_cond.*idx_autorej); 
+                flag(idx_before_manual_rej(bad_trials)) = 0 ; 
+               
             end
         end
-    
-    % Save datasets 
-    pop_newset(ALLEEG, EEGorig, 1, 'setname',fname_orig.name,'savenew', fullfile(fname_orig.folder,fname_orig.name),'gui','off');
-
+        
+        % Add history to the EEG file 
+        EEGorig.history_stepManualRej.rejectedtrials = bad_trials ; 
+        
+        % Save datasets 
+        pop_newset(ALLEEG, EEGorig, 1, 'setname',fname_orig.name,'savenew', fullfile(fname_orig.folder,fname_orig.name),'gui','off');
+        
     end
 
     % Write a new column in the trial_description file
     add_flag_column_trials_description(fname_trial_desc, 'Manual_rejection',flag') ; 
 
-
 end
+
