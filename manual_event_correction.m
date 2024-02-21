@@ -1,4 +1,4 @@
-% ERPs sanity check script -
+ initial trial_description file on selected partivcipanbts % ERPs sanity check script -
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
 indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;

@@ -23,8 +23,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -58,7 +58,7 @@ OPTIONS_stepA.eeg_elec = 1:16 ;
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ; 
 OPTIONS_stepA.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 % suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 suffix_stepA = '_stepA' ;
@@ -84,7 +84,7 @@ OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adu
 OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;            % indicates index of rfe set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 suffix_stepB = '_stepB' ;
 
@@ -105,10 +105,9 @@ end
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
 %% ------------------- Update trial_description with manual rejection of bad trials
-% OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
-OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
-% OPTION_rman.indir = indir ; 
-OPTION_rman.indir = 'E:\EEG_ANALYSES\new_preprocessed_data_ERP_stepA1_stepB1' ; 
+OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
+% OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
+OPTION_rman.indir = indir ; 
 
 % Here update the trial_desrption files in the corresponding participants
 % folder (found in initial indir) 
