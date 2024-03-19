@@ -20,7 +20,7 @@ list_subjects = get_subjects(indir,fullfile(indir, '')) ;
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
-ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
+ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path, BT_toolbox) ;
 
 %% ------------------- Preprocess : reref, set chan positions, filter
 OPTIONS_stepA.indir = indir;
@@ -65,8 +65,8 @@ OPTIONS_stepB.bt_toolbox = BT_toolbox ;
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.bloc = repelem(1:30,170) ;             % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
-tube_length = 0.27 ; 
-propag_sound = 340 ; 
+tube_length = 0.27 ;  % meter
+propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
 

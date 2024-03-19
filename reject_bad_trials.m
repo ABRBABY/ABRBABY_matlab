@@ -132,7 +132,7 @@ for ii=1:length(subjects)
             % Create a custom history variable to keep track of OPTIONS in each .set saved
             EEG_HF.history_stepB = OPTIONS ;
              
-            HF_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_HF_',opt_balance,'_',suffix_stepA,suffix,num2str(count));
+            HF_fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_',suffix_stepA,suffix,num2str(count));
             
             % Save datasets 
             pop_newset(ALLEEG, EEG_HF, 1, 'setname',HF_fname,'savenew', fullfile(subDir,HF_fname),'gui','off');
