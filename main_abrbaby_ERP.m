@@ -109,8 +109,7 @@ OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyD
 % OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
 OPTION_rman.indir = indir ; 
 
-% Here update the trial_desrption files in the corresponding participants
-% folder (found in initial indir) 
+% Here update the trial_description files AND .set in the corresponding participants
 % Pick any .set (without parameters constraints) and add a column to the
 % trial_description w header 'manual_rej'
 add_manual_bad_trial_detection(ALLEEG, OPTION_rman) ;
