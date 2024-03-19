@@ -1,4 +1,4 @@
-function [] = add_flag_column_trials_description(fname, header,flag)
+function [] = add_flag_column_trials_description(fname, header,flag, overwrite)
 
     % Read _trials_description file 
     T1 = readtable(fname); 
@@ -11,11 +11,13 @@ function [] = add_flag_column_trials_description(fname, header,flag)
         T2 = table(flag','VariableNames',{header});
         T1= [T1 T2]; 
         
-    else % If column exist AND is different from the existing display a WARNINIG message
+    elseif overwrite % If column exist AND is different from the existing display a WARNINIG message
         if any(T1{:,exist_column}~=flag')
             fprintf('WARNING : trial_decription was replaced by new values');
         end
         % Add or replace column values
         T1{:,exist_column}=flag';
+    else
+        T1= T1{:,exist_column}+flag'; 
     end
     writetable(T1,fname,'WriteVariableNames', true);

@@ -1,4 +1,4 @@
-function [ALLEEG] = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) 
+function [ALLEEG] = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path, BT_toolbox) 
 % Prepare the environnement : 
 % Set EEGLAB path, set ERPLAB path, install biosig
 % A.-Sophie Dubarry - 2022 
@@ -17,6 +17,9 @@ cd(eeglab_path) ;
 
 % Install biosig
 run(biosig_installer_path) ; 
+
+% Install BT_toolbox 
+addpath(genpath(BT_toolbox));
 
 % Return to initial path
 cd(tmp) ;
