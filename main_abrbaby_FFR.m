@@ -50,10 +50,9 @@ if exist(OPTIONS.file,'file')
     flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 end
 
-%Reref data, compute FFR formula, epoch, reject bad trials and produce
-%report
+%Reref data, compute FFR formula, epoch, reject bad trials and produce report
 if sum(flag_sub_to_create_stepA)~=0
-    [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+    [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
 end
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
@@ -69,7 +68,8 @@ OPTIONS_stepB.bloc = repelem(1:30,170) ;             % creates a vector of [1 1 
 tube_length = 0.27 ; 
 propag_sound = 340 ; 
 suffix_stepB = '_stepB' ;
-stepA_num = 1 ;                                      %Set of stepA parameters to use for filtering
+stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 % Test if this set of params exists and returns the files to process and
@@ -79,11 +79,15 @@ OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file')
    subj_to_process  = get_subjects(indir,OPTIONS);
-    flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+   flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
 if sum(flag_sub_to_create_stepB)~=0
+    
+    reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+
+    % The following line should only prepare input for brainstem 
     [preproc_filt_filenames] = rej_and_prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 end
 

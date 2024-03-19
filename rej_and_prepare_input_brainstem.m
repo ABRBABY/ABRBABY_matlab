@@ -41,6 +41,9 @@ for ii=1:length(subjects)
     %Set stepA file to work on
     file_stepA = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'))) ;
     
+     % Error if rfe file does not exist
+    if isempty(file_stepA) ; error('File stepA%s does not exist for subject %s', num2str(stepA), subjects{ii}); end
+  
     %Get filepath
     filepath = file_stepA.folder ;
     
@@ -57,6 +60,17 @@ for ii=1:length(subjects)
     % Select only ABR elec
     EEG = pop_select(EEG, 'channel',{'ABR'});
 
+    % Read trial_description.txt
+    fname_trial_desc = fullfile(OPTIONS.indir,subjects{ii},strcat(subjects{ii},'_trials_description.txt'));
+    
+
+
+
+
+
+
+
+    %% ASD : CLEEEEEAN below!!!
     % Get positive and negative polarities
     zeros_vector = zeros(1,size(EEG.data, 3)/2);
     ones_vector = ones(1,size(EEG.data, 3)/2);
