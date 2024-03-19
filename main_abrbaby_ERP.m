@@ -34,10 +34,10 @@ list_subjects = get_subjects(indir,[]);
 plot_dir = fullfile(custom_path, 'plot_dir');
 
 % This function sets custom path (either for Estelle or AnneSo)
-[eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
+[eeglab_path, biosig_installer_path, erplab_path,BT_toolbox] = get_custom_path();
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
-ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
+ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path,BT_toolbox) ;
 
 %%
 %% Here for first execution run automatic_trigger_detection for fixing the trigger issues (input : .bdf + ergstim.txt if ERGO was used)
@@ -109,8 +109,7 @@ OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyD
 % OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
 OPTION_rman.indir = indir ; 
 
-% Here update the trial_desrption files in the corresponding participants
-% folder (found in initial indir) 
+% Here update the trial_description files AND .set in the corresponding participants
 % Pick any .set (without parameters constraints) and add a column to the
 % trial_description w header 'manual_rej'
 add_manual_bad_trial_detection(ALLEEG, OPTION_rman) ;
