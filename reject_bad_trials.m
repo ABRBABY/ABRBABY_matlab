@@ -71,7 +71,7 @@ for ii=1:length(subjects)
         add_flag_column_trials_description(fname_trial_desc, 'begining_block',init_beg_bloc,1);
 
         % Flip flag if not HF (Condition DEV1, DEV2 or STDD)
-        if strcmp(OPTIONS.analysis,'FFR') ; flag_sequence  = ~flag_sequence ; end;
+        if strcmp(OPTIONS.analysis,'FFR') ; flag_sequence  = ~flag_sequence ; end
 
         % Identifies (flag) the automatically rejected trials
         idx_rejacq = find(contains(T1.Properties.VariableNames,'rejection_acq')) ; 
