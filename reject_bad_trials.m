@@ -66,12 +66,12 @@ for ii=1:length(subjects)
         % Get indices of Ssum(TD, DEV1, DEV2 
         flag_sequence =  ~matches(T1.condition,'HF') ; 
          
-        % Flip flag if not HF (Condition DEV1, DEV2 or STDD)
-        if strcmp(OPTIONS.analysis,'FFR') ; flag_sequence  = ~flag_sequence ; end;
-         
         % Update flag values 
         init_beg_bloc((T1{:,3}~=0)&~flag_sequence) = ~ismember(find(T1{~flag_sequence,3}~=0),begining_of_block);
         add_flag_column_trials_description(fname_trial_desc, 'begining_block',init_beg_bloc,1);
+
+        % Flip flag if not HF (Condition DEV1, DEV2 or STDD)
+        if strcmp(OPTIONS.analysis,'FFR') ; flag_sequence  = ~flag_sequence ; end;
 
         % Identifies (flag) the automatically rejected trials
         idx_rejacq = find(contains(T1.Properties.VariableNames,'rejection_acq')) ; 
