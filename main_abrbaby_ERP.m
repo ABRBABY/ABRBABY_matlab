@@ -59,8 +59,6 @@ OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ; 
 OPTIONS_stepA.analysis = 'ERP';
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
-
-% suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
 suffix_stepA = '_stepA' ;
 
 % Test if this set of params exists and returns the files to process and
@@ -78,17 +76,15 @@ end
 [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials
-OPTIONS_stepB.indir = indir ;                             % directory path
-OPTIONS_stepB.rej_low = -150 ;                            % 150 infants; 120 adults
-OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adults     
-OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
-OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;            % indicates index of rfe set of parameters to use
+OPTIONS_stepB.indir = indir ;                              % directory path
+OPTIONS_stepB.rej_low = -150 ;                             % 150 infants; 120 adults
+OPTIONS_stepB.rej_high = 150 ;                             % 150 infants; 120 adults     
+OPTIONS_stepB.bloc = repelem(1:30,30) ;                    % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
+OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;           % indicates index of rfe set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
-
 suffix_stepB = '_stepB' ;
-
-stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+stepA_num = '_stepA1' ;                                     % set of StepA parameters to use for this step
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files

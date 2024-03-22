@@ -51,9 +51,8 @@ if exist(OPTIONS.file,'file')
 end
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
-if sum(flag_sub_to_create_stepA)~=0
-    [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
-end
+[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
@@ -83,13 +82,10 @@ if exist(OPTIONS.file,'file')
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-if sum(flag_sub_to_create_stepB)~=0
-    
-    reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
-    % The following line should only prepare input for brainstem 
-    [preproc_filt_filenames] = prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
-end
+% The following line should only prepare input for brainstem 
+[preproc_filt_filenames] = prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 
 %% ------------------- Display :
 OPTIONS_disp.params = 'stepA1_stepB2';

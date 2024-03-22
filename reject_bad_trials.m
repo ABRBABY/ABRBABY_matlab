@@ -8,6 +8,12 @@ function [] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create
 %deviants, or 'unbalanced' to keep all standards that are not rejected
 %after trial rejection
 
+% Exist if there is no subjects to compute
+if sum(flag_sub_to_create)==0
+    fprintf('Nothing to compute/n');
+    return
+end
+
 %Get options
 [indir, rej_low, rej_high, bloc]= get_OPTIONS(OPTIONS) ;
 
