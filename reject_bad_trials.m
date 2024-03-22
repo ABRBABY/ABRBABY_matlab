@@ -15,7 +15,7 @@ if sum(flag_sub_to_create)==0
 end
 
 %Get options
-[indir, rej_low, rej_high, bloc]= get_OPTIONS(OPTIONS) ;
+[indir, rej_low, rej_high, begining_of_block]= get_OPTIONS(OPTIONS) ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 
@@ -63,19 +63,9 @@ for ii=1:length(subjects)
         % trial_description.txt
         header = char(strcat(subjects{ii},'_',OPTIONS.analysis,'_autorej_low_',num2str(abs(rej_low)),'_high_',num2str(rej_high),'_',suffix_stepA,suffix,num2str(count))) ;        
         
-        % Identifies (flag) the first 3 events in blocks 
-        begining_of_block = repelem((1:30:900)-1,3)+repmat(1:3,1,30); 
-        
-        % Init a vector 6000 trials
-        init_beg_bloc = ones(1,height(T1));
-        
         % Get indices of Ssum(TD, DEV1, DEV2 
         flag_sequence =  ~matches(T1.condition,'HF') ; 
-         
-        % Update flag values 
-        init_beg_bloc((T1{:,3}~=0)&~flag_sequence) = ~ismember(find(T1{~flag_sequence,3}~=0),begining_of_block);
-        add_flag_column_trials_description(fname_trial_desc, 'begining_block',init_beg_bloc,1);
-
+        
         % Flip flag if not HF (Condition DEV1, DEV2 or STDD)
         if strcmp(OPTIONS.analysis,'FFR') ; flag_sequence  = ~flag_sequence ; end
 
@@ -106,8 +96,15 @@ for ii=1:length(subjects)
         % Update flag values with trial wich were rejected at acquisition
         auto_rejected = auto_rejected.*T1{:,idx_rejacq}';
    
-        if ~strcmp(OPTIONS.analysis,'FFR')
-   
+        if strcmp(OPTIONS.analysis,'ERP')
+
+           % Init a vector 6000 trials
+            init_beg_bloc = ones(1,height(T1));
+      
+            % Update "begining of blocks" flag values in trial_description file
+            init_beg_bloc((T1{:,3}~=0)&flag_sequence) = ~ismember(find(T1{flag_sequence,3}~=0),begining_of_block);
+            add_flag_column_trials_description(fname_trial_desc, 'begining_block',init_beg_bloc,1);
+
             % Get indices of these rejected events in the EEG structure referential
             all_rej_and_begining_bloc = auto_rejected.*init_beg_bloc ;
     
@@ -161,6 +158,6 @@ function [indir, rej_low, rej_high, bloc]= get_OPTIONS(OPTIONS)
 indir = OPTIONS.indir ;
 rej_low = OPTIONS.rej_low ;
 rej_high = OPTIONS.rej_high ;
-bloc = OPTIONS.bloc ; 
-
+bloc = []; 
+if isfield(OPTIONS,'beg_bloc_to_rej'); bloc = OPTIONS.beg_bloc_to_rej ; end
 end
