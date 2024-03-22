@@ -2,6 +2,12 @@ function [out_filenames] = reref_filter_epoch(ALLEEG, OPTIONS, flag_sub_to_creat
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
+% Exist if there is no subjects to compute
+if sum(flag_sub_to_create)==0
+    fprintf('Nothing to compute/n');
+    return
+end
+
 % Get OPTIONS
 [indir, hp, lp, mastos, trig, eeg_elec, baseline, win_of_interest, conditions, chan_dir]= get_OPTIONS(OPTIONS) ;
 

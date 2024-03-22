@@ -51,9 +51,8 @@ if exist(OPTIONS.file,'file')
 end
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
-if sum(flag_sub_to_create_stepA)~=0
-    [preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
-end
+[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
@@ -64,14 +63,14 @@ OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
-OPTIONS_stepB.bloc = repelem(1:30,170) ;             % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
+OPTIONS_stepB.eeg_elec = 'ABR';
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
-
+    
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
 [flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
@@ -83,13 +82,10 @@ if exist(OPTIONS.file,'file')
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-if sum(flag_sub_to_create_stepB)~=0
-    
-    reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
-    % The following line should only prepare input for brainstem 
-    [preproc_filt_filenames] = prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
-end
+% The following line should only prepare input for brainstem 
+[preproc_filt_filenames] = prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
 
 %% ------------------- Display :
 OPTIONS_disp.params = 'stepA1_stepB2';
