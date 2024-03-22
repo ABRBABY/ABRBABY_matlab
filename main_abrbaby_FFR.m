@@ -63,6 +63,7 @@ OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
+OPTIONS_stepB.eeg_elec = 'ABR';
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;

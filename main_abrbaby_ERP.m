@@ -82,6 +82,7 @@ OPTIONS_stepB.rej_high = 150 ;                                              % 15
 OPTIONS_stepB.beg_bloc_to_rej = repelem((1:30:900)-1,3)+repmat(1:3,1,30);    % creates a vector to reject the first 3 trials of each block
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;                            % indicates index of rfe set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
+OPTIONS_stepB.eeg_elec = 1:16 ; 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA1' ;                                                      % set of StepA parameters to use for this step
