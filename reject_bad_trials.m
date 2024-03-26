@@ -10,7 +10,7 @@ function [] = reject_bad_trials(ALLEEG, OPTIONS, opt_balance, flag_sub_to_create
 
 % Exist if there is no subjects to compute
 if sum(flag_sub_to_create)==0
-    fprintf('Nothing to compute/n');
+    fprintf('Nothing to compute \n');
     return
 end
 

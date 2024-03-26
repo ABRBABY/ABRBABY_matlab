@@ -73,7 +73,7 @@ end
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
+reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials
 OPTIONS_stepB.indir = indir ;                                               % directory path

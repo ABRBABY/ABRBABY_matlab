@@ -1,4 +1,4 @@
-function [out_filenames] = prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix, RFE)
+function prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix, RFE)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -25,9 +25,6 @@ d = dir(indir);
 isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
-
-% Inititalize output parameter
-out_filenames = [] ; 
 
 suffix_stepA = strrep(RFE,'_','') ; 
 

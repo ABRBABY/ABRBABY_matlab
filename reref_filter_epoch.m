@@ -4,7 +4,7 @@ function reref_filter_epoch(ALLEEG, OPTIONS, flag_sub_to_create, count, suffix)
 
 % Exist if there is no subjects to compute
 if sum(flag_sub_to_create)==0
-    fprintf('Nothing to compute/n');
+    fprintf('Nothing to compute \n');
     return
 end
 
