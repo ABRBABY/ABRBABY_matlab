@@ -1,4 +1,4 @@
-function [out_filenames] = reref_filter_epoch(ALLEEG, OPTIONS, flag_sub_to_create, count, suffix)
+function reref_filter_epoch(ALLEEG, OPTIONS, flag_sub_to_create, count, suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 
@@ -17,9 +17,6 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
-% Inititalize output parameter
-out_filenames = [] ; 
-
 % Only keeps subjects to process
 subjects = subjects(flag_sub_to_create) ; 
 
@@ -36,7 +33,7 @@ for jj=1:length(subjects)
     [~,filename,~] = fileparts(fname.name);    
 
     % Creates resulting filename
-    out_filenames{jj} = fullfile(indir,subjects{jj}, strcat(filename,'_',OPTIONS.analysis,suffix,num2str(count),'.set'));
+    out_filenames = fullfile(indir,subjects{jj}, strcat(filename,'_',OPTIONS.analysis,suffix,num2str(count),'.set'));
             
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
@@ -111,7 +108,7 @@ for jj=1:length(subjects)
     EEG.history_stepA = OPTIONS ;
     
     %% SAVE DATASET 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames{jj},'gui','off');
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames,'gui','off');
 
 end
 end

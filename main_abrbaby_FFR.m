@@ -51,7 +51,7 @@ if exist(OPTIONS.file,'file')
 end
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
-[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
 
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
