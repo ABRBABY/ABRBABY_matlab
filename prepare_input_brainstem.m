@@ -1,11 +1,10 @@
 function prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_sub_to_create, count,suffix, RFE)
-% ERPs sanity check script - 
-% Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
-
-%%%%%%%%% TO UPDATE %%%% this comes from old code 
-
+% 
+% Converts the ABR signal into BT_toolbox readable format + optionnal display 
+% 
+% Estelle Herve, A.-Sophie Dubarry - 2024 - %80PRIME Project
+%
 % This function mainly do : 
-% Reject bad epoch based on window of rejection in OPTIONS
 % Extract positive and negative FFR separately
 % Compute mean activity (FFR) : 
 % - mean added FFR ((positive+negative) /2)
@@ -17,11 +16,8 @@ function prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_
 % Convert .txt file into .avg for BT_toolbox
 % Export timepoints from last subject
 
-% Get OPTIONS
-[indir, rej_low, rej_high, BT_toolbox, bloc, win_of_interest]= get_OPTIONS(OPTIONS) ;
-
 % Reads all folders that are in indir 
-d = dir(indir); 
+d = dir(OPTIONS.indir); 
 isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
@@ -38,7 +34,7 @@ for ii=1:length(subjects)
     fprintf(strcat(subjects{ii}, '...\n'));
     
     % Input filename
-    fname = strcat(subjects{ii},'_',OPTIONS.analysis,'_',suffix_stepA,suffix,num2str(count),'.set'); %dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'))) ;
+    fname = strcat(subjects{ii},'_FFR_',suffix_stepA,suffix,num2str(count),'.set'); %dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'))) ;
     
      % Error if rfe file does not exist
     if ~exist(fullfile(OPTIONS.indir, subjects{ii},fname),'file') ; error('File %s does not exist for subject %s', fname, subjects{ii}); end
@@ -78,8 +74,30 @@ for ii=1:length(subjects)
     abr_types = {'avg','sub','neg','pos'};
     abr = cat(2,abr_average,abr_subtracted,abr_average2,abr_average1)' ; 
 
+    if OPTIONS.display==1
+        % Display FFR sanity check 
+        fig = display_temporal_FFR(subjects{ii},EEG.times/1000,abr_average, OPTIONS.abr_disp_scale);
+
+         % Save figures 
+        if OPTIONS.savefigs == 1 
+            % Save data in vectoriel in subject folder
+            print('-dsvg',fullfile(OPTIONS.svg_folder,strcat(subjects{ii},'_FFR_sanity.svg')));
+        
+            % Save data in png (with same filename as vectoriel) but different directory
+            print('-dpng',fullfile(OPTIONS.png_folder,strcat(subjects{ii},'_FFR_sanity.png')));
+        
+            % Save data in fig (with same filename as vectoriel) but different directory
+            saveas(fig, fullfile(OPTIONS.fig_folder,strcat(subjects{ii},'_FFR_sanity.fig')));
+        end       
+
+    end
+
+    % Create a folder for files specific to BT_toolbox
+    BT_folder = fullfile(OPTIONS.indir, subjects{ii},'BT_toolbox_formatted');
+    if ~exist(BT_folder,'dir') ; mkdir(BT_folder);end
+
     for ff=1:length(abr_types) 
-        fname_out = fullfile(OPTIONS.indir,strcat(subjects{ii},'_',num2str(suffix_stepA),suffix, num2str(count),'_abr_',abr_types{ff},'_shifted_data_HF.txt')) ;
+        fname_out = fullfile(BT_folder,strcat(subjects{ii},'_',num2str(suffix_stepA),suffix, num2str(count),'_abr_',abr_types{ff},'_shifted_data_HF.txt')) ;
         fid = fopen(fname_out,'w');
         fprintf(fid,'%c\n',abr(ff,:));
         fclose(fid);
@@ -98,7 +116,7 @@ for ii=1:length(subjects)
 end
 
 %% Export times (from any subject : just timepoints)
-fname_out = fullfile(indir,'ABR_timepoints.txt') ;
+fname_out = fullfile(OPTIONS.indir,'ABR_timepoints.txt') ;
 fid = fopen(fname_out,'w');
 fprintf(fid,'%f\n',EEG.times);
 fclose(fid);
@@ -106,15 +124,82 @@ end
 
 
 %--------------------------------------------------------------
-% FUNCTION that get OPTIONS values
+% FUNCTION that displays and save FFR (temporal and spectral)
 %--------------------------------------------------------------
-function [indir, rej_low, rej_high, BT_toolbox, bloc, win_of_interest]= get_OPTIONS(OPTIONS) 
+function [fig] = display_temporal_FFR(subject, vTimes, abr, abr_scale)
 
-indir = OPTIONS.indir ;
-rej_low = OPTIONS.rej_low ;                           
-rej_high = OPTIONS.rej_high ; 
-%varhistory = OPTIONS.varhistory ;
-bloc = OPTIONS.bloc ;
-BT_toolbox = OPTIONS.bt_toolbox;
-win_of_interest = OPTIONS.win_of_interest ;
+%% Temporal display 
+
+% Plot timeseries
+fig = figure('units','normalized','position',[0,0,1,1]); 
+
+subplot(3,2, [1 2]); plot(vTimes,abr,'Color', 'r', 'Linewidth',0.5); hold on; set(gca,'YDir','reverse'); grid on; 
+
+%Add legend
+legend(strcat(subject, '_avg'), 'Interpreter', 'None');
+
+% Adjust scales (y-axis and x-axis) (transform in milliseconds)
+xlim([vTimes(1), vTimes(end)]); ylim(abr_scale) ; grid on ;
+
+%Display labels
+xlabel('Times (ms)'); ylabel('uV'); 
+
+%Add title
+title(strcat('FFR Avg'));
+
+
+%% Sprectral display 
+% Adaptation of Skoe function (bt_fftsc)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Originally developed by E.E. Skoe.  
+% Toolbox version by E.E. Skoe & T.G. Nicol
+% eeskoe@northwestern.edu tgn@northwestern.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Sampling rate
+Fs = 1 / (vTimes(2) - vTimes(1)) ; 
+FFR = abr;
+
+%******** STEP 1. CREATE VARIABLE "FFR" CORRESPONDING TO FFR PERIOD 
+numPoints = length(FFR);
+
+%**** STEP 2. FFT OF FFR
+%******** STEP 2a. CREATE and APPLY HANNING RAMP 2 msec rise, 2 msec fall
+rampMS = 4/1000; % length of ramp (on and off) in seconds
+% hanPoints = 26;  %hard coded to be the same as Biologic's settings (December 7, 2005);
+hanPoints = rampMS.*Fs; % length of ramp in points
+hanPoints = 2.*round(hanPoints/2); % force it to be nearest even.
+hanHalfPoints = round(hanPoints./2);
+numberOfOnes = numPoints - hanPoints;
+FFRhan = hann(hanPoints);  
+FFRhan = [FFRhan(1:hanHalfPoints); ones(numberOfOnes,1); FFRhan(hanHalfPoints+1:hanPoints)];
+
+% baseline, window, then baseline again
+FFR = detrend(FFR, 'constant');
+FFR = detrend(FFR.*FFRhan, 'constant');
+
+%******** STEP 2b. Perform FFT
+fftFFR = abs(fft(FFR, round(Fs)));
+fftFFR = fftFFR(1:round(round(Fs)/2));
+fftFFR = fftFFR.*(2./numPoints); % scale to peak µV
+HzScale = [0:1:round(Fs/2)]'; % frequency 'axis'
+HzScale = HzScale(1:length(fftFFR));
+
+%% Plot FFT in specific frequency windows
+subplot(3,2,3); plot(HzScale,fftFFR); grid on;
+title(["Single-Sided Amplitude Spectrum of X(t)", strrep(subject,'_','-')]);
+xlabel("Frequency (Hz)");ylabel("Amplitude (µV)");
+
+subplot(3,2,4); plot(HzScale,fftFFR); xlim([90 110]); grid on;
+title(["Single-Sided Amplitude Spectrum of X(t)", strrep(subject,'_','-')]);
+xlabel("Frequency (Hz)");ylabel("Amplitude (µV)");
+
+subplot(3,2,5); plot(HzScale,fftFFR); xlim([300 500]); grid on; 
+title(["Single-Sided Amplitude Spectrum of X(t)",strrep(subject,'_','-')]);
+xlabel("Frequency (Hz)"); ylabel("Amplitude (µV)");
+
+subplot(3,2,6); plot(HzScale,fftFFR); xlim([1100 1300]); grid on;
+title(["Single-Sided Amplitude Spectrum of X(t)", strrep(subject,'_','-')]);
+xlabel("Frequency (Hz)"); ylabel("Amplitude (µV)");
+
 end

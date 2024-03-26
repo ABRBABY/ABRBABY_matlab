@@ -64,10 +64,12 @@ OPTIONS_stepB.bt_toolbox = BT_toolbox ;
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
+
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+
 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
     
@@ -84,55 +86,56 @@ end
 %Filter epoched data and prepare input for brainstem toolbox
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
+
+%% -------------------  Prepare output for BT_Toolbox + optionnal display
+OPTIONS_abr.indir = indir ; 
+OPTIONS_abr.display = 1 ; 
+OPTIONS_abr.savefigs = 1 ; 
+OPTIONS_abr.abr_disp_scale = [-0.2, 0.2];         % scale for display ABR ave
+OPTIONS_abr.plot_dir = plot_dir ; 
+OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                          % path to save png files of plots
+OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
+OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
+
+if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
+
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+   flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+end
+
 % The following line should only prepare input for brainstem 
-prepare_input_brainstem(ALLEEG, OPTIONS_stepB,tube_length, propag_sound,flag_sub_to_create_stepB, count_stepB,suffix_stepB, stepA_num);
-
-%% ------------------- Display :
-OPTIONS_disp.params = 'stepA1_stepB2';
-OPTIONS_disp.polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
-OPTIONS_disp.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-OPTIONS_disp.indir = indir ; 
-OPTIONS_disp.plot_dir = plot_dir ; 
-OPTIONS_disp.ylim = [-0.3, 0.3] ;      % [-0.5, 0.5]
-OPTIONS_disp.fs = 16384 ; 
-% OPTIONS_disp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
-
-% Display one participant results 
-subjects_to_process = {'DVL_018_T24'} ;
-
-% Or display all subjects
-% subjects_to_process = list_subjects ;
-
-% Or choose subjects with csv file
-subjects_to_process = get_subjects(indir, []) ;
-% subjects_to_process = get_subjects(indir, OPTIONS_disp) ;
-
-display_individual_subjects_FFR(subjects_to_process, OPTIONS_disp) ;
-%to do : display number of trials kept
+prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, count_stepB,suffix_stepB, stepA_num);
 
 
-%% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA1_stepB2'; 
-OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
-OPTIONS_neural.indir= indir; 
-OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
-OPTIONS_neural.start = 0 ;
-OPTIONS_neural.stop = 169 ;
-OPTIONS_neural.lagstart = 3 ;
-OPTIONS_neural.lagstop = 10 ;
-OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
-OPTIONS_neural.chan =1 ;
-OPTIONS_neural.chancomp =1 ;
-OPTIONS_neural.BT_toolbox = BT_toolbox ;
-OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
-OPTIONS_neural.grpB = {'_T18','_T24'};
+%% TODO : edit this part of code such that the neural lag table includes all abr
+% (negative, positive, mean, subtraction) 
 
-subjects_to_process = get_subjects(indir, '') ;
+% %% -------------------Compute neural lag for all subject and write a table
+% OPTIONS_neural.params = 'stepA1_stepB2'; 
+% OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
+% OPTIONS_neural.indir= indir; 
+% OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+% OPTIONS_neural.start = 0 ;
+% OPTIONS_neural.stop = 169 ;
+% OPTIONS_neural.lagstart = 3 ;
+% OPTIONS_neural.lagstop = 10 ;
+% OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
+% OPTIONS_neural.chan =1 ;
+% OPTIONS_neural.chancomp =1 ;
+% OPTIONS_neural.BT_toolbox = BT_toolbox ;
+% OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
+% OPTIONS_neural.grpB = {'_T18','_T24'};
+% 
+% subjects_to_process = get_subjects(indir, '') ;
+% 
+% compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
+% 
 
-compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
+
 
 %% -------------------Compute SNRs and save in table
-
 % Notes ASD : 
 % stim f0 = 100.4 Hz
 % n = 80 -> 95.4 (delta = 15.4)
@@ -153,14 +156,26 @@ OPTIONS_SNR.winSignal = [95:1:105];
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
 OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
 
-% Or choose subjects with csv file
-subjects_to_process = get_subjects(indir, []) ;
 
-snr = FFR_analysis_get_SNR_freq(subjects_to_process, OPTIONS_SNR) ; 
 
-% Write a table with SNR info
-SNR_all = table(subjects_to_process, snr', 'VariableNames', {'suject_ID', 'SNR'}) ;
-writetable(SNR_all,fullfile(OPTIONS_SNR.indir,strcat('all_SNRs_F0s_', OPTIONS_SNR.ffr_polarity, '_ffr_', num2str(OPTIONS_SNR.timew_F0(1)), '_', num2str(OPTIONS_SNR.timew_F0(2)), 'tw_', OPTIONS_SNR.params,'.csv')), 'WriteVariableNames', true) ;
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+   flag_sub_to_create_ffr = (contains(list_subjects,subj_to_process))';
+end
+
+%Filter epoched data and prepare input for brainstem toolbox
+compute_ffr(OPTIONS_FFR, flag_sub_to_create_ffr) ; 
+
+% 
+% % Or choose subjects with csv file
+% subjects_to_process = get_subjects(indir, []) ;
+% 
+% snr = FFR_analysis_get_SNR_freq(subjects_to_process, OPTIONS_SNR) ; 
+% 
+% % Write a table with SNR info
+% SNR_all = table(subjects_to_process, snr', 'VariableNames', {'suject_ID', 'SNR'}) ;
+% writetable(SNR_all,fullfile(OPTIONS_SNR.indir,strcat('all_SNRs_F0s_', OPTIONS_SNR.ffr_polarity, '_ffr_', num2str(OPTIONS_SNR.timew_F0(1)), '_', num2str(OPTIONS_SNR.timew_F0(2)), 'tw_', OPTIONS_SNR.params,'.csv')), 'WriteVariableNames', true) ;
 
 %% -------------------Export infos on rejection : create a csv to summarize the number of trials rejected by subject
 OPTIONS_rejinfo.indir = indir ;

@@ -1,5 +1,11 @@
-
 function [] = compute_neural_lag_report(subjects_to_process, OPTIONS)
+% 
+% Converts the ABR signal into BT_toolbox readable format + optionnal display 
+% 
+% Estelle Herve, A.-Sophie Dubarry - 2024 - %80PRIME Project
+%
+% This function mainly computes neurl lab based on BT toolbox function
+% bt_xcorrelation2_abrbaby and create a csv table 
 
 addpath(OPTIONS.BT_toolbox);
 
