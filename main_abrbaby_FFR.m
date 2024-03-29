@@ -165,7 +165,7 @@ if exist(OPTIONS.file,'file')
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-compute_ffr(OPTIONS_FFR, flag_sub_to_create_ffr) ; 
+compute_spectral_snr(OPTIONS_FFR, flag_sub_to_create_ffr) ; 
 
 % 
 % % Or choose subjects with csv file
