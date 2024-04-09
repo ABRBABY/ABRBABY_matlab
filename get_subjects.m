@@ -19,7 +19,7 @@ if ~isempty(OPTIONS)
     
         % Reads a .csv file that contains list of subjects to process
         d = readtable(OPTIONS.file, 'Delimiter','space','ReadVariableNames',false);
-        subjects = table2array(d) ;
+        subjects = subjects(find(ismember(subjects,table2array(d)))) ;
     
     end
 

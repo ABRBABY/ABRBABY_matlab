@@ -112,26 +112,27 @@ prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_t
 %% TODO : edit this part of code such that the neural lag table includes all abr
 % (negative, positive, mean, subtraction) 
 
-% %% -------------------Compute neural lag for all subject and write a table
-% OPTIONS_neural.params = 'stepA1_stepB2'; 
-% OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
-% OPTIONS_neural.indir= indir; 
-% OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
-% OPTIONS_neural.start = 0 ;
-% OPTIONS_neural.stop = 169 ;
-% OPTIONS_neural.lagstart = 3 ;
-% OPTIONS_neural.lagstop = 10 ;
-% OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
-% OPTIONS_neural.chan =1 ;
-% OPTIONS_neural.chancomp =1 ;
+%% -------------------Compute neural lag for all subject and write a table
+OPTIONS_neural.params = 'stepA1_stepB1'; 
+OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
+OPTIONS_neural.indir= indir; 
+OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+OPTIONS_neural.start = 0 ;      % first time point in the simulti to compute neural lag 
+OPTIONS_neural.stop = 169 ;     % last time point in the simulti to compute neural lag 
+OPTIONS_neural.lagstart = 3 ;   % first time point to search for neural lag
+OPTIONS_neural.lagstop = 10 ;   % last time point to search for neural lag
+OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
-% OPTIONS_neural.grpA = {'_T3','_T6','_T8','_T10'};
-% OPTIONS_neural.grpB = {'_T18','_T24'};
-% 
-% subjects_to_process = get_subjects(indir, '') ;
-% 
-% compute_neural_lag_report(subjects_to_process, OPTIONS_neural) ; 
-% 
+% OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
+
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file')
+   subj_to_process  = get_subjects(indir,OPTIONS);
+   flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+end
+
+% Computes the neural lag
+neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ; 
 
 
 
@@ -145,7 +146,7 @@ prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_t
 % s = 95 -> 105
 % n = 105 -> 120
 
-OPTIONS_SNR.params = 'stepA1_stepB2';
+OPTIONS_SNR.params = 'stepA1_stepB1';
 OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_SNR.indir = indir ; 
 OPTIONS_SNR.plot_dir = plot_dir ; 
@@ -156,8 +157,6 @@ OPTIONS_SNR.winSignal = [95:1:105];
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
 OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
 
-
-
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file')
    subj_to_process  = get_subjects(indir,OPTIONS);
@@ -165,7 +164,7 @@ if exist(OPTIONS.file,'file')
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-compute_spectral_snr(OPTIONS_FFR, flag_sub_to_create_ffr) ; 
+spectral_snr = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
 
 % 
 % % Or choose subjects with csv file
