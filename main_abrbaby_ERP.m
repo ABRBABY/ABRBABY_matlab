@@ -34,10 +34,10 @@ list_subjects = get_subjects(indir,[]);
 plot_dir = fullfile(custom_path, 'plot_dir');
 
 % This function sets custom path (either for Estelle or AnneSo)
-[eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
+[eeglab_path, biosig_installer_path, erplab_path,BT_toolbox] = get_custom_path();
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
-ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
+ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path,BT_toolbox) ;
 
 %%
 %% Here for first execution run automatic_trigger_detection for fixing the trigger issues (input : .bdf + ergstim.txt if ERGO was used)
@@ -58,9 +58,7 @@ OPTIONS_stepA.eeg_elec = 1:16 ;
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ; 
 OPTIONS_stepA.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
-
-% suffix_stepA = strcat('_',OPTIONS_stepA.analysis,'_stepA') ;
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 suffix_stepA = '_stepA' ;
 
 % Test if this set of params exists and returns the files to process and
@@ -75,20 +73,19 @@ end
 
 % Reref filter epoch erp : only apply to subjects which were not already
 % computed with this set of parameters (as defined by flag_sub_to_create) ;
-[preproc_filenames] = reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
+reref_filter_epoch(ALLEEG, OPTIONS_stepA,flag_sub_to_create_stepA, count_stepA, suffix_stepA) ;
 
 %% ------------------- Preprocess : Select trials per condition and reject BAD trials
-OPTIONS_stepB.indir = indir ;                             % directory path
-OPTIONS_stepB.rej_low = -150 ;                            % 150 infants; 120 adults
-OPTIONS_stepB.rej_high = 150 ;                            % 150 infants; 120 adults     
-OPTIONS_stepB.bloc = repelem(1:30,30) ;                   % creates a vector of [1 1 1 1 (30 times) 2 2 2 2 (30 times) etc. up to 30]
-OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;            % indicates index of rfe set of parameters to use
+OPTIONS_stepB.indir = indir ;                                               % directory path
+OPTIONS_stepB.rej_low = -150 ;                                              % 150 infants; 120 adults
+OPTIONS_stepB.rej_high = 150 ;                                              % 150 infants; 120 adults     
+OPTIONS_stepB.beg_bloc_to_rej = repelem((1:30:900)-1,3)+repmat(1:3,1,30);    % creates a vector to reject the first 3 trials of each block
+OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;                            % indicates index of rfe set of parameters to use
 OPTIONS_stepB.analysis = 'ERP';
-OPTIONS.file = fullfile(indir,'participants_to_process.csv') ;
-
+OPTIONS_stepB.eeg_elec = 1:16 ; 
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 suffix_stepB = '_stepB' ;
-
-stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+stepA_num = '_stepA1' ;                                                      % set of StepA parameters to use for this step
 
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -106,12 +103,11 @@ reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB,
 
 %% ------------------- Update trial_description with manual rejection of bad trials
 % OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
-OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
-% OPTION_rman.indir = indir ; 
-OPTION_rman.indir = 'E:\EEG_ANALYSES\new_preprocessed_data_ERP_stepA1_stepB1' ; 
+OPTION_rman.manualdir = 'F:\EEG_ANALYSES\manually_marked';
+% OPTION_rman.indir = indir ;
+OPTION_rman.indir = 'F:\EEG_ANALYSES\preprocessed_data_stepA1_setpB1_norman';
 
-% Here update the trial_desrption files in the corresponding participants
-% folder (found in initial indir) 
+% Here update the trial_description files AND .set in the corresponding participants
 % Pick any .set (without parameters constraints) and add a column to the
 % trial_description w header 'manual_rej'
 add_manual_bad_trial_detection(ALLEEG, OPTION_rman) ;
