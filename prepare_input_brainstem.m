@@ -36,7 +36,7 @@ for ii=1:length(subjects)
     % Input filename
     fname = strcat(subjects{ii},'_FFR_',suffix_stepA,suffix,num2str(count),'.set'); %dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_FFR_stepA',num2str(stepA),'.set'))) ;
     
-     % Error if rfe file does not exist
+    % Error if rfe file does not exist
     if ~exist(fullfile(OPTIONS.indir, subjects{ii},fname),'file') ; error('File %s does not exist for subject %s', fname, subjects{ii}); end
   
     %Load the stepA .set file to work on
@@ -96,6 +96,7 @@ for ii=1:length(subjects)
     BT_folder = fullfile(OPTIONS.indir, subjects{ii},'BT_toolbox_formatted');
     if ~exist(BT_folder,'dir') ; mkdir(BT_folder);end
 
+    % SAVE DATASETS
     for ff=1:length(abr_types) 
         fname_out = fullfile(BT_folder,strcat(subjects{ii},'_',num2str(suffix_stepA),suffix, num2str(count),'_abr_',abr_types{ff},'_shifted_data_HF.txt')) ;
         fid = fopen(fname_out,'w');
@@ -133,7 +134,7 @@ function [fig] = display_temporal_FFR(subject, vTimes, abr, abr_scale)
 % Plot timeseries
 fig = figure('units','normalized','position',[0,0,1,1]); 
 
-subplot(3,2, [1 2]); plot(vTimes,abr,'Color', 'r', 'Linewidth',0.5); hold on; set(gca,'YDir','reverse'); grid on; 
+subplot(3,2, [1 2]); plot(vTimes,abr,'Color', 'r', 'Linewidth',0.5); hold on; grid on; 
 
 %Add legend
 legend(strcat(subject, '_avg'), 'Interpreter', 'None');

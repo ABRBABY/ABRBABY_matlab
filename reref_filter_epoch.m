@@ -94,7 +94,7 @@ for jj=1:length(subjects)
     EEG.orig_events = EEG.urevent ; EEG.urevent = EEG.event;
 
     %% FILTERS the data with ERPLab
-    EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
+    EEG  = pop_basicfilter(EEG, 1:EEG.nbchan , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
 
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); EEG = eeg_checkset( EEG );
 

@@ -65,8 +65,6 @@ OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
 
-tube_length = 0.27 ;  % meter
-propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
 
@@ -87,6 +85,8 @@ reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB,
 
 
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
+% indir = 'F:\sauvegarde_data_16042024\DEVLANG_data';
+% list_subjects = get_subjects(indir,fullfile(indir, '')) ;
 OPTIONS_abr.indir = indir ; 
 OPTIONS_abr.display = 1 ; 
 OPTIONS_abr.savefigs = 1 ; 
@@ -95,6 +95,14 @@ OPTIONS_abr.plot_dir = plot_dir ;
 OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                          % path to save png files of plots
 OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
 OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
+suffix_stepB = '_stepB' ;
+stepA_num = '_stepA1' ;  
+
+count_stepB = 1 ;
+
+tube_length = 0.27 ;  % meter
+propag_sound =  340 ; % vitesse propagation son meter / sec
 
 if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
@@ -102,14 +110,13 @@ if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end
 if exist(OPTIONS.file,'file')
    subj_to_process  = get_subjects(indir,OPTIONS);
    flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+else
+    subj_to_process  = get_subjects(indir,'');
+   flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
 end
 
 % The following line should only prepare input for brainstem 
 prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, count_stepB,suffix_stepB, stepA_num);
-
-
-%% TODO : edit this part of code such that the neural lag table includes all abr
-% (negative, positive, mean, subtraction) 
 
 %% -------------------Compute neural lag for all subject and write a table
 OPTIONS_neural.params = 'stepA1_stepB1'; 
@@ -131,7 +138,10 @@ if exist(OPTIONS.file,'file')
 end
 
 % Computes the neural lag
-neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ; 
+neural_lag_BTtoolbox = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
+
+%% TODO : edit this part of code such that the neural lag table includes all abr
+% (negative, positive, mean, subtraction) 
 
 
 
@@ -163,7 +173,10 @@ if exist(OPTIONS.file,'file')
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-spectral_snr = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
+% spectral_snr = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
+
+% TEMPORARY
+neural_lag_carles = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) 
 
 % 
 % % Or choose subjects with csv file
