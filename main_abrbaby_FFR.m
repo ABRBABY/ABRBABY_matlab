@@ -94,7 +94,7 @@ OPTIONS_abr.plot_dir = plot_dir ;
 OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                          % path to save png files of plots
 OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
 OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
-
+ 
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 
@@ -130,7 +130,7 @@ if exist(OPTIONS.file,'file')
 end
 
 % Computes the neural lag
-neural_lag_BTtoolbox = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) 
+neural_lag_BTtoolbox = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
 
 %% TODO : edit this part of code such that the neural lag table includes all abr
 % (negative, positive, mean, subtraction) 

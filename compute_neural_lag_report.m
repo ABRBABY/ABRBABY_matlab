@@ -27,8 +27,10 @@ for ss=1:length(subjects_to_process) %for each subject
     fname_avg = fullfile(BT_folder,strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
     
     % Computes the neural lag 
-    [neural_lag(ss), maxmincor, all_corrs, all_lags] = bt_xcorrelation2_abrbaby(fname_avg, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, CHAN , CHANCOMP) ; 
-
+    [neural_lag(ss), idx_neural_lag, maxmincor, all_corrs, all_lags] = bt_xcorrelation2_abrbaby(fname_avg, OPTIONS.stim, OPTIONS.start, OPTIONS.stop, OPTIONS.lagstart, OPTIONS.lagstop, OPTIONS.polarity, CHAN , CHANCOMP) ; 
+    
+    figure; plot(all_lags,all_corrs,'r') ; hold on ; plot(all_lags(idx_neural_lag),all_corrs(idx_neural_lag),'*b') ; title(strrep(subjects_to_process{ss},'_','-')) ; grid on ; xlabel('Neural lag (ms)'); ylabel('Pearsons correlation') ; 
+    legend('All correlations (time shifted)','Neural lag','Fontsize',12);
 end
 
 % % Write a table with all lags 
