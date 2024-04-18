@@ -29,8 +29,16 @@ sti.signalfiltered = filter(B,1,sti.signal); % Stimulus filtered
 
 tran = [10 55];  % Time window of the stimulus consonant transition(ms)  
 cons = [55 170]; % Time windows of the stimulus constant portion(ms)
-tota = [10 170]; % Time winodws of the stimulus entire duration (ms)
-pres = [-40 0];  % Prestimulus time windows (ms)
+baseline = [-40 0];  % Prestimulus time windows (ms)
+
+sigSpectralWin = 10; % Frequency windows in which the spectral amplitude of the F0 and HH will be computed. ±5 Hz around each individual peak. (Hz) 
+noiseSpectralWin = 15.4; % Frequency windows in which the spectral amplitude of the noise at each side of the sigSpectralWin will be computed. (Hz)
+
+% Defines F0 and harmonics
+fund_freq = 100.3; % Fundamental frequency (F0)(Hz)
+nbHarm = 13; % Number of the harmonics (HH) below 1500 that will be analyzed (Hz)
+freq_int = fund_freq.*(1:nbHarm+1); % Row vector with all the harmonics that will be analyzed (Hz)
+Ngap = 0 ; % Separation (optional gap) in Hz between signal and noise
 
 for ss=1:length(subjects_to_process) %for each subject
     
@@ -42,66 +50,87 @@ for ss=1:length(subjects_to_process) %for each subject
     % Loads FFR rsponse 
     ffr_response = openavg(fname_avg);
 
-
     %% NOTE TO OURSELF : WE STOP HERE : the neural lags as comoputed by us (input neural_lag are not the same as the ones obtained with Carles function (below)) 
     % The whole time window
     stim = sti.signalfiltered ; 
     ffr = ffr_response.signal ; 
 
-    [r,l,rmax,lmax(ss)] = nbffr_cc(stim,ffr,ffr_response.rate, [0 sti.xmax],[3 13],vTime(1));
-    lmax(ss) = lmax(ss)+3;
+    % Time window to analyse
+    transitionWin = tran + neural_lag(ss) ;    % Time windows of the CV transition (ms)
+    steadyWin = cons + neural_lag(ss);       % Time windows of the steady portion (vowel) (ms)
+    aWin = {transitionWin; steadyWin; baseline};
+    
+    % Get number of window
+    nbWin = length(aWin);
+    
+    % Creating the variables of each of the FFR parameters that will be computed.
+    rms = ones(nbWin,1); 
+    SNR_TD = ones(nbWin,1);
+    SNR_power = ones(nbWin,nbHarm+1);
+    SNR_power_Norm = ones(nbWin,nbHarm+1);
+    SNR_amp = ones(nbWin,nbHarm+1);
 
-    % 
-    % % CV transition 
-    % [r,l,rmax,lmax] = nbffr_cc(sti.signalfiltered,ffr_response.signal,ffr_response.rate,[10, 55],[3, 10],offset);
-    % 
-    % % Vowel 
-    % [r,l,rmax,lmax] = nbffr_cc(sti.signalfiltered,ffr_response.signal,ffr_response.rate,[55,170],[3, 10],offset);
+    % Loop through the time window to analyse
+   for vWin = 1:nbWin 
+
+    % Time to data points
+    winSamples = round(((aWin{vWin}+abs(baseline(1)))/1000)*sti.rate)+1;
+    time_samples = winSamples(1):winSamples(2);
+    winSamples_pres = round(((baseline+abs(baseline(1)))/1000)*sti.rate)+1;
+    time_samples_pres = winSamples_pres(1):winSamples_pres(2); % 534 data points
+    
+    % Root Mean Square (rms)
+    rms(vWin) = sqrt(mean(ffr(time_samples).^2));
+    
+    % Compute pwelch
+    [pow_spect_density,freqs] = pwelch(ffr(time_samples)-mean(ffr(time_samples)),length(time_samples_pres),542,sti.rate,sti.rate,'power'); % 497 samples corresponds to 33 ms which is equivalent to 82.5% of 40 ms
+   
+    spectral_total_amp = (sqrt(pow_spect_density)); % olvidar el rollo de dividir y multiplicar por dos. Directamente pasamos de power a amplitud haciendo la raiz cuadrada de los valores obtenidos.
+    
+   for vHarm = 1:length(freq_int)
+        
+       pow_spectral_density(vWin,vHarm) = mean(pow_spect_density(and(freqs>freq_int(vHarm)-sigSpectralWin/2,freqs<freq_int(vHarm)+sigSpectralWin/2))); % Promedio de power en la ventana de frecuencias referida a la señal.
+
+       amp_spectral(vWin,vHarm) = mean(spectral_total_amp(and(freqs>freq_int(vHarm)-sigSpectralWin/2,freqs<freq_int(vHarm)+sigSpectralWin/2))); % Promedio de amplitud en la ventana de frecuencias referida a la señal.
+
+        % vF= freqs<500;
+        % figure ; plot(freqs(vF), pow_spect_density(vF))
+
+        %  SNR (SNR_FD)
+        Tw = [freq_int(vHarm)-sigSpectralWin/2,freq_int(vHarm)+sigSpectralWin/2]; % Extremos de la ventana de frecuencias de la señal, localizados a una distancia de 5 Hz arriba y abajo de la frecuencia de interes (f).
+        Tw_bool = and(freqs<=Tw(2),freqs>=Tw(1)); % Cada una de las frecuencias que componen la ventana de frecuencias de la señal. 
+        Nw_low = [Tw(1) - Ngap - noiseSpectralWin, Tw(1) - Ngap]; % Extremos de la ventana de frecuencias del ruido inferior, localizada por debajo de la ventana de frecuencias de la señal.
+        Nw_low_bool = and(freqs<=Nw_low(2),freqs>=Nw_low(1)); % Cada una de las frecuencias que componen la ventana de ruido inferior. 
+        Nw_high = [Tw(2) + Ngap, Tw(2) + Ngap + noiseSpectralWin]; % Extremos de la ventana de frecuencias del ruido superior, localizada por encima de la ventana de frecuencias de la señal.
+        Nw_high_bool = and(freqs<=Nw_high(2),freqs>=Nw_high(1)); % Cada una de las frecuencias que componen la ventana de ruido superior. 
+        Nw_all = or(Nw_low_bool,Nw_high_bool); % Con el "or" incluimos las dos ventanas de ruido
+        
+        mean_pow_uV2(vWin,vHarm) = mean(pow_spect_density(Tw_bool)); % Extraemos el promedio de power correspondiente a la ventana de frecuencias de la señal.
+        noise_pow_uV2 (vWin,vHarm) = mean(pow_spect_density(Nw_all)); % Extraemos el promedio de power correspondiente a las dos ventanas de ruido, a la inferior y a la superior.
+        SNR_power(vWin,vHarm) = mean_pow_uV2(vWin,vHarm)/noise_pow_uV2(vWin,vHarm); % Dividir la ventana de power correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a les dos ventanas de ruido.
+        SNR_power_Norm(vWin,vHarm) = 10*log10(SNR_power(vWin,vHarm)); % Passar a dB el SNR_power
+       
+        %mean_amp_uV(vWin,vHarm) = mean(2*(sqrt((pow_spect_density(Tw_bool))/2)));% Extraer el promedio de amplitud espectral correspondiente a la ventana de frecuencias de la señal.
+        mean_amp_uV(vWin,vHarm) = mean((sqrt((pow_spect_density(Tw_bool)))));
+        %noise_amp_uV(vWin,vHarm) = mean(2*(sqrt((pow_spect_density(Nw_all))/2))); % Extraer el promedio de amplitud espectral correspondiente a las dos ventanas de ruido, a la inferior y a la superior.
+        noise_amp_uV(vWin,vHarm) = mean((sqrt((pow_spect_density(Nw_all)))));
+        SNR_amp(vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
+        % SNR_amp_Norm(vWin,vHarm) = 20*log10(SNR_amp(vWin,vHarm));
+         % Recordar que el SNR obtenido con amplitud y con frecuencias
+         % no puede ser el mismo porque al pasar la potencia a amplitud
+         % y aplicar el cuadrado, estamos calculando el promedio y
+         % despues a ese promedio le aplicamos el cuadrado. Pero no es
+         % lo mismo que la suma de elementos elevados al cuadrado
+         % (producto notable). Por tanto, decidimos quedarnos con el
+         % SNR_power_Norm
+   end
+
    
 end
 
+figure ; plot(SNR_amp(1,:),'r*'); hold on ; plot(SNR_amp(2,:),'b*');plot(SNR_amp(3,:),'m*'); legend('transition','steady','baseline'); grid on ;
+title(strrep(subjects_to_process{ss},'_','-'));
+
 end
 
-%--------------------------------------------------------------------------------------------------------
-% Function from Carles Escera (extracted from
-% NBFFR_Analysis_Welch_Amplitude.m)
-% stim : stim signal 
-% ffr : EEG FFR response 
-% FS : sampling rate (they are both the same 16384Hz)
-% StimWin : Stimulus time windows in which the cross-correlation with the response will be computed (Carles default = [0 169.80]
-% lags_win :  % Time windows in which the neural lag will be computed. BE CAREFULL! The last value should be the value + the first value;
-%                        % a limit of 10 ms we should write 13 (10 + 3).
-% OUTPUT 
-% r : the r value shows the pearson's correlation between the stimulus and the response for each of the delay applied to the response. 
-% rmax : rmax is the max. correlation value and index is the data point number that contains rmax.
-% lmax : lmax is the delay expressed in ms that corresponds to the max. correlation value (rmax).
-%--------------------------------------------------------------------------------------------------------
-function [r,l,rmax,lmax] = nbffr_cc(stim,ffr,FS,StimWin,lags_win,offset)
-
-E = stim-mean(stim); % Stimulus demeaned
-E = E(round(StimWin(1)*FS/1000)+1:round(StimWin(2)*FS/1000)+1); % % Fragmento del estímulo seleccionado expresado en data points
-L = length(E); % % Longitud del fragmento seleccionado del stim expresado en data points
-R = ffr-mean(ffr); % Registro demeaned
-lags_win = round(FS*(lags_win+abs(offset))/1000)+1; % Data points equivalente a los ms. que corresponderían al primer delay que se retrasa el estimulo(derivado de sumar al valor que determina el inicio del fragmento del estimulo seleccionado, el valor minimo de delay considerado. Ej: inicio fragmento estimulo: 57 ms + valor minimo de delay: 3 ms = 60 ms) y el último permitido (derivado de sumar al valor que determina el inicio del fragmento del estimulo seleccionado, el valor maximo de delay considerado. Ej: inicio fragmento estimulo: 57 ms + valor minimo de delay: 10 ms = 67 ms) sumandoles a ambos valores el offset(para que los data points seleccionados sean sumados al data point correspondiente a 0 ms).
-lags_win = lags_win(1):lags_win(2); % Todos los data points existentes comprendidos entre el minimo delay permitido y el máximo.
-
-r = zeros(1,length(lags_win));
-
-for i = 1:length(lags_win)  % Vector que contiene cada uno de los retrasos aplicados a la respuesta
-    c1 = sum(E.*E);         % Sumatorio de todos los data points elevados al cuadrado incluidos en la region del estimulo seleccionado.
-    c2 = sum(R(lags_win(i):lags_win(i)+L-1).*R(lags_win(i):lags_win(i)+L-1)); % Sumatorio de todos los data points elevados al cuadrado incluidos en el fragmento de respuesta por cada uno de los delays aplicado a la respuesta.
-    cc = sum(E.*R(lags_win(i):lags_win(i)+L-1)); % Sumatorio del producto de cada uno de los data points del estimulo por cada uno de los data points de la respuesta por cada uno de los delays aplicado a la respuesta.
-    if and(c1~=0,c2~=0)
-        r(i) = cc/sqrt(c1*c2); % cada uno de los valores del vector r equivaldrá al valor de correlacion entre estimulo y respuesta obtenido por cada delay aplicado a la respuesta.
-    else
-        fprintf('toto');
-        r(i) = -999;
-    end
-end
-l = 1000*([0:length(lags_win)-1])/FS; % longitud de la ventana temporal expresada en data points.
-
-% figure ; plot(r)
-
-[rmax,index] = max(abs(r)); % El primer output indica el valor de máxima correlacion y el segundo su localización, es decir, el data point que contiene el valor de máxima correlación.
-lmax = l(index); % Extraemos el delay expresado en ms que corresponde a la máxima correlacion encontrada entre estimulo y respuesta.
 end
