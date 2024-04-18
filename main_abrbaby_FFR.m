@@ -5,11 +5,12 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+custom_path = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
 % custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
 % custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_data') ;
+indir = custom_path; fullfile(custom_path,'DEVLANG_data') ;
 
 plot_dir = fullfile(custom_path, 'plot_dir');
 
@@ -30,7 +31,7 @@ OPTIONS_stepA.abr= {'Left','Right'};                        %Label of abr channe
 OPTIONS_stepA.conditions = {'HF'} ; 
 OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline
 OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
-OPTIONS_stepA.eeg_elec = 1:16 ;                             %Cortical electrodes (to get cortical FFRs)
+OPTIONS_stepA.eeg_elec = 19 ;                             %Cortical electrodes (to get cortical FFRs)
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value = 80
 OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
@@ -65,10 +66,8 @@ OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
 
-tube_length = 0.27 ;  % meter
-propag_sound =  340 ; % vitesse propagation son meter / sec
 suffix_stepB = '_stepB' ;
-stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+stepA_num = '_stepA2' ;              % set of RFE parameters to use for this step
 
 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
@@ -96,6 +95,9 @@ OPTIONS_abr.plot_dir = plot_dir ;
 OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                          % path to save png files of plots
 OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
 OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
+ 
+tube_length = 0.27 ;  % meter
+propag_sound =  340 ; % vitesse propagation son meter / sec
 
 if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
@@ -109,11 +111,8 @@ end
 prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, count_stepB,suffix_stepB, stepA_num);
 
 
-%% TODO : edit this part of code such that the neural lag table includes all abr
-% (negative, positive, mean, subtraction) 
-
 %% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA1_stepB1'; 
+OPTIONS_neural.params = 'stepA2_stepB1'; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir; 
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
@@ -132,8 +131,7 @@ if exist(OPTIONS.file,'file')
 end
 
 % Computes the neural lag
-neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ; 
-
+neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
 
 
 %% -------------------Compute SNRs and save in table
@@ -146,7 +144,7 @@ neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
 % s = 95 -> 105
 % n = 105 -> 120
 
-OPTIONS_SNR.params = 'stepA1_stepB1';
+OPTIONS_SNR.params = 'stepA2_stepB1';
 OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_SNR.indir = indir ; 
 OPTIONS_SNR.plot_dir = plot_dir ; 
@@ -165,6 +163,7 @@ end
 
 %Filter epoched data and prepare input for brainstem toolbox
 spectral_snr = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
+
 
 % 
 % % Or choose subjects with csv file

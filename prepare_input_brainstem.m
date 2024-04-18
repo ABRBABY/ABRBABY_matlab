@@ -52,7 +52,7 @@ for ii=1:length(subjects)
     abr_trials = squeeze(EEG.data) ; 
 
     % Shift
-    abr_trials = circshift(abr_trials,nsample_delay,1);
+    abr_trials = circshift(abr_trials,-nsample_delay,1);
 
     % Computes the average of ABR signal 
     abr_average = mean(abr_trials,2) ; 

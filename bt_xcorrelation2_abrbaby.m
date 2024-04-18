@@ -1,4 +1,4 @@
-function [LAG_atmaxmin, maxmincor, all_corrs, all_lags] = bt_xcorrelation2_abrbaby(filename, comparison, start, stop, lagstart, lagstop, polarity, chan, chancomp)
+function [LAG_atmaxmin, index, maxmincor, all_corrs, all_lags] = bt_xcorrelation2_abrbaby(filename, comparison, start, stop, lagstart, lagstop, polarity, chan, chancomp)
 
 %% This function calculates the maximum correlation (maxmincor) value and its
 %% respective lag (LAG) over an imputted lag range, for a specified portion of a
