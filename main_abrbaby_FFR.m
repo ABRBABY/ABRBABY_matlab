@@ -54,6 +54,9 @@ end
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
 reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
 
+% Prints out message on progress
+fprintf('JUST FINISHED STEP A\n');
+
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
@@ -68,7 +71,6 @@ OPTIONS_stepB.eeg_elec = 'ABR';
 
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA2' ;              % set of RFE parameters to use for this step
-
 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
     
@@ -85,6 +87,8 @@ end
 %Filter epoched data and prepare input for brainstem toolbox
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
+% Prints out message on progress
+fprintf('JUST FINISHED STEP B\n');
 
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
 OPTIONS_abr.indir = indir ; 
@@ -131,7 +135,7 @@ if exist(OPTIONS.file,'file')
 end
 
 % Computes the neural lag
-neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
+neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_create_abr) ;
 
 
 %% -------------------Compute SNRs and save in table
