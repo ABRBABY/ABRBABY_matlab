@@ -5,11 +5,11 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+custom_path = 'D:\EEG\DATA';
 
-% selected_subj = {'DVL_013_T24','DVL_011_T10','DVL_044_T8'};
-selected_subj = [];
+selected_subj = {'DVL_061_T8'};
+% selected_subj = [];
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -19,10 +19,10 @@ list_subjects = get_subjects(indir,[]);
 plot_dir = fullfile(custom_path, 'plot_dir');
 
 % This function sets custom path (either for Estelle or AnneSo)
-[eeglab_path, biosig_installer_path, erplab_path,~] = get_custom_path();
+[eeglab_path, biosig_installer_path, erplab_path,bt_toolbox] = get_custom_path();
 
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
-ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path) ;
+ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path, bt_toolbox) ;
 
 trig = {'Erg1'};
 TRIG_MODALITY = '_ergstim.txt';

@@ -11,20 +11,29 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
 % Get files to average according to options
 for ii = 1:length(subjects)
+
+    % Printout the id of the subject in console
+    fprintf(strcat(subjects{ii}, '...\n'));
+    
     for cc = 1:length(conditions)
-       
-        tmp = conditions{cc}  ; 
-        if contains(conditions{cc},'STD') ;  
+
+        if contains(conditions{cc},'STD')
                conditions{cc} = 'STD*'; 
         end 
         
         filename = dir(fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,'_',conditions{cc},'_',opt_balance,'_',param,'*.set'))) ; 
-        outname = fullfile(indir,subjects{ii},strcat(subjects{ii},'_',OPTIONS.analysis,'_',tmp,'_',opt_balance,'_',param,'_',OPTIONS.keyword,'.set')) ; 
-
-        if size(filename,1) > 1
-            rman = contains({filename.name},'rman') ;
-            filename = filename(rman,1) ;
+        
+        if size(filename,1) >1
+            if contains([filename.name], OPTIONS.keyword)
+                %Skip file if gd avg already done
+                continue
+            else
+                error('More than one .set file for participant %s, condition %s.', subjects{ii}, conditions{cc})
+            end
         end
+        
+        outname = fullfile(filename.folder, strrep(filename.name, '.set', strcat('_', OPTIONS.keyword, '.set'))) ;
+
         fname = filename.name ;
         filepath = filename.folder ;
         EEG = pop_loadset(fname, filepath) ;

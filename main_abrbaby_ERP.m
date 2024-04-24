@@ -23,8 +23,8 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
+custom_path = 'D:\EEG\DATA';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -102,8 +102,8 @@ end
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
 %% ------------------- Update trial_description with manual rejection of bad trials
-OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
-% OPTION_rman.manualdir = 'E:\EEG_ANALYSES\manually_marked';
+% OPTION_rman.manualdir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/manually_marked';
+OPTION_rman.manualdir = 'D:\EEG\DATA\manually_marked';
 OPTION_rman.indir = indir ; 
 
 % Here update the trial_description files AND .set in the corresponding participants
@@ -113,14 +113,13 @@ add_manual_bad_trial_detection(ALLEEG, OPTION_rman) ;
 
 %% ------------------- Create grand averages per condition per subject
 OPTIONS_average.indir = indir;                                  % directory path of files to process
-% spl = split(OPTIONS_average.indir, '\') ;
-% OPTIONS_average.param = num2str(cell2mat(spl(end))) ;
 OPTIONS_average.param = 'stepA1_stepB1' ;
 OPTIONS_average.opt_balance = 'unbalanced' ;
-OPTIONS_average.conditions = {'STD1', 'DEV1', 'DEV2'} ;
+OPTIONS_average.conditions = {'STD', 'DEV1', 'DEV2'} ;
 OPTIONS_average.srate = 256 ; 
 OPTIONS_average.keyword = 'gd_avg' ; 
 OPTIONS_average.analysis = 'ERP';
+
 compute_and_save_grand_averages(ALLEEG, OPTIONS_average) ;
 
 %% ------------------- Display results at individual level

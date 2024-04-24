@@ -6,11 +6,11 @@
 
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
-custom_path = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
+% custom_path = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
 % custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-% custom_path = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+custom_path = 'D:\EEG\DATA';
 
-indir = custom_path; fullfile(custom_path,'DEVLANG_data') ;
+indir = fullfile(custom_path,'DEVLANG_data') ;
 
 plot_dir = fullfile(custom_path, 'plot_dir');
 

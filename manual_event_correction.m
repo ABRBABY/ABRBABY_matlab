@@ -1,8 +1,8 @@
- initial trial_description file on selected partivcipanbts % ERPs sanity check script -
+% initial trial_description file on selected participants % ERPs sanity check script -
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
-indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data' ;
-subject_name = 'DVL_059_T8' ;
+indir = 'D:\EEG\DATA\DEVLANG_data' ;
+subject_name = 'DVL_045_T10' ;
 
 %% Open files
 
@@ -45,7 +45,7 @@ EEG = pop_biosig(fullfile(indir, subject_name, fname_bdf.name));
 trials_descr = readtable(fullfile(fname_txt.folder, fname_txt.name)) ;
 
 % Save description file with new name
-writetable(trials_descr, fullfile(fname_txt.folder, strrep(fname_txt.name,'trials_description', 'OLD_trials_description_')), 'WriteVariableNames',true) ;
+writetable(trials_descr, fullfile(fname_txt.folder, strrep(fname_txt.name,'trials_description', 'OLD_trials_description')), 'WriteVariableNames',true) ;
 
 % Add filepath in EEG structure for detect_and_create_report function
 EEG.filepath = fname_txt.folder ;
