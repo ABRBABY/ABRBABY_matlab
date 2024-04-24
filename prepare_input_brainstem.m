@@ -133,7 +133,7 @@ function [fig] = display_temporal_FFR(subject, vTimes, abr, abr_scale)
 % Plot timeseries
 fig = figure('units','normalized','position',[0,0,1,1]); 
 
-subplot(3,2, [1 2]); plot(vTimes,abr,'Color', 'r', 'Linewidth',0.5); hold on; set(gca,'YDir','reverse'); grid on; 
+subplot(3,2, [1 2]); plot(vTimes,abr,'Color', 'r', 'Linewidth',0.5); hold on; grid on; 
 
 %Add legend
 legend(strcat(subject, '_avg'), 'Interpreter', 'None');

@@ -50,7 +50,7 @@ for jj=1:length(subjects)
         
         if ~isempty(dir(fname_orig))
             fname_orig = dir(fname_orig) ; 
-            EEGorig = pop_loadset(fname_orig, fname(ff).folder) ;
+            EEGorig = pop_loadset(fname_orig.name, fname_orig.folder) ;
         else
             fname_orig = strrep(fname_orig,'_RFE','_stepA');
             fname_orig = strrep(fname_orig,'_REJ','_stepB');
@@ -91,9 +91,8 @@ for jj=1:length(subjects)
             if contains(fname(ff).name,conditions{cc})
                 
                 idx_cond = contains(T1.condition,conditions{cc}) ; 
-                idx_column = contains(T1.Properties.VariableNames,extractBefore(extractAfter(fname_orig.name,'_step'),'.set'));
+                idx_column = contains(T1.Properties.VariableNames,strcat('ERP_autorej_low_',num2str(EEGorig.history_stepB.rej_high)));
                 idx_autorej = T1{:,idx_column} ; 
-            
                 idx_before_manual_rej = find(idx_cond.*idx_autorej); 
                 flag(idx_before_manual_rej(bad_trials)) = 0 ; 
                
