@@ -5,14 +5,14 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
-% custom_path = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
-% custom_path = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-custom_path = 'D:\EEG\DATA';
+% indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
+indir = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
+% indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
+% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
 
-indir = fullfile(custom_path,'DEVLANG_data') ;
+[data_pathname,rawdata_fname,~] = fileparts(indir);
 
-plot_dir = fullfile(custom_path, 'plot_dir');
+plot_dir = fullfile(fileparts(indir),strcat('plot_dir_',rawdata_fname));
 
 % list_subjects = get_subjects(indir,fullfile(indir, 'participants_included.xlsx')) ;
 list_subjects = get_subjects(indir,fullfile(indir, '')) ;

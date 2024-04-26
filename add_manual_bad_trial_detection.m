@@ -93,7 +93,6 @@ for jj=1:length(subjects)
                 idx_cond = contains(T1.condition,conditions{cc}) ; 
                 idx_column = contains(T1.Properties.VariableNames,strcat('ERP_autorej_low_',num2str(EEGorig.history_stepB.rej_high)));
                 idx_autorej = T1{:,idx_column} ; 
-            
                 idx_before_manual_rej = find(idx_cond.*idx_autorej); 
                 flag(idx_before_manual_rej(bad_trials)) = 0 ; 
                
