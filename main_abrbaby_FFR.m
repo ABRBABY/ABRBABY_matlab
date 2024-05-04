@@ -6,9 +6,9 @@
 
 % DATA directory 
 % indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
-indir = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
+% indir = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
 % indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+indir = 'E:\EEG\DATA\DEVLANG_data';
 
 [data_pathname,rawdata_fname,~] = fileparts(indir);
 

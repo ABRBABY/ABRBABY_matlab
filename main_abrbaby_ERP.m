@@ -24,7 +24,7 @@
 % DATA directory 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
 % custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = 'D:\EEG\DATA';
+custom_path = 'E:\EEG\DATA';
 
 indir = fullfile(custom_path,'DEVLANG_data');
 
@@ -147,9 +147,9 @@ display_individual_subjects(subjects_to_process, OPTIONS_disp) ;
 
 
 %% ------------------- Display results at GROUP level
-OPTIONS_disp_contrast.params = 'stepA1_stepB1' ;                            % option of preprocess to consider
+OPTIONS_disp_contrast.params = 'stepA1_stepB1' ;                       % option of preprocess to consider
 OPTIONS_disp_contrast.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
-% OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
+OPTIONS_disp_contrast.indir = indir ;                                  % directory path of files to process
 OPTIONS_disp_contrast.diff_display = 1 ;                               % 1 to display difference wave (MMN), 0 to not display
 OPTIONS_disp_contrast.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_disp_contrast.ylim = [-5, 5] ;                                 % limits of y axis
@@ -159,21 +159,13 @@ OPTIONS_disp_contrast.fig_folder = strrep(OPTIONS_disp_contrast.png_folder,'png'
 OPTIONS_disp_contrast.writecsv = 0 ;
 OPTIONS_disp_contrast.savefigs = 0 ; 
 
-OPTIONS_disp_contrast.indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
-indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
-
 if OPTIONS_disp_contrast.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
-% subjects_to_process_grp1 = {'DVL_013_T10','DVL_005_T18'} ;
-% subjects_to_process_grp2 = {'DVL_013_T10','DVL_005_T18'} ;
-
 OPTIONS.suffix = {'_T6','_T8','_T10'} ;
-% OPTIONS.suffix = {'_T6','_T8','_T10','_T18','_T24'} ;
 subjects_to_process_grp1 = get_subjects(indir,OPTIONS) ;
 
-% OPTIONS.suffix = {'_T18','_T24'} ;
+OPTIONS.suffix = {'_T18','_T24'} ;
 subjects_to_process_grp2 = get_subjects(indir,OPTIONS) ;
-% subjects_to_process_grp2 = subjects_to_process_grp1 ;
 
 % Remove subjects based on number of trial rejected 
 thresh = 0.33; %(20 DEV kept in each condtion)
@@ -186,8 +178,7 @@ display_group_comparison(subjects_to_process_grp1, subjects_to_process_grp2, OPT
 %% ------------------- MMN search
 OPTIONS_mmn.params = 'stepA1_stepB1';                            % option of preprocess to consider
 OPTIONS_mmn.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};   % electrodes to display
-% OPTIONS_mmn.indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA' ;                                  % directory path of files to process
-OPTIONS_mmn.indir = indir % 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
+OPTIONS_mmn.indir = indir ; 
 OPTIONS_mmn.plot_dir = plot_dir ;                            % path to save png files of plots
 OPTIONS_mmn.balance_STD = 'unbalanced';                      % 'balanced' or 'unbalanced' number of STD
 OPTIONS_mmn.ylim = [-15,15] ;                                % limits of y axis
@@ -200,16 +191,14 @@ OPTIONS_mmn.file = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-
 if OPTIONS_mmn.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 % Lookk for local peak at group then individual level 
-% subjects_to_process = {'DVL_012_T24'} ;
-% subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
-subjects_to_process = get_subjects(OPTIONS_mmn.indir,OPTIONS_mmn) ;
+subjects_to_process = get_subjects(OPTIONS_mmn.indir,[]) ;
 
 % Comment ASD : for structuring the code it would be better to have two
 % functions : 
 % search et detect gr dmoyenne 
 % search et detect accross subject 
 
-OPTIONS_mmn.win_gd_mmn = [150, 250] ; 
+OPTIONS_mmn.win_gd_mmn = [200, 350] ; 
 OPTIONS_mmn.win_mmn = [-120, 120] ; 
 OPTIONS_mmn.keyword = 'gd_avg' ; 
 
@@ -223,11 +212,38 @@ plot_violin(all_amp, {'r','m'}, '', 'Peak amplitude', {'COND1', 'COND2'}) ;
 hold on ; subplot(1,3,3);
 plot_violin(all_auc, {'r','m'}, '', 'AUC (Area Under the Curve)', {'COND1', 'COND2'}) ;
 
+% Search mmn for group 1
+OPTIONS.suffix = {'T6', 'T8', 'T10'} ;
+subjects_gr1 = get_subjects(indir, OPTIONS) ;
+
+% Search mmn for group 2 {'T18', 'T24'}
+[all_lat, all_amp, all_auc] = search_for_mmn(subjects_gr1, OPTIONS_mmn) ; 
+
+% Display violin plot
+figure; subplot(1,3,1);
+plot_violin(all_lat, {'r','m'}, '', 'Peak latency', {'COND1', 'COND2'}) ;
+hold on ; subplot(1,3,2);
+plot_violin(all_amp, {'r','m'}, '', 'Peak amplitude', {'COND1', 'COND2'}) ;
+hold on ; subplot(1,3,3);
+plot_violin(all_auc, {'r','m'}, '', 'AUC (Area Under the Curve)', {'COND1', 'COND2'}) ;
+
+% Search mmn for group 2
+OPTIONS.suffix = {'T18', 'T24'} ;
+subjects_gr2 = get_subjects(indir, OPTIONS) ;
+
+% Search mmn for group 2 {'T18', 'T24'}
+[all_lat, all_amp, all_auc] = search_for_mmn(subjects_gr2, OPTIONS_mmn) ; 
+
+% Display violin plot
+figure; subplot(1,3,1);
+plot_violin(all_lat, {'r','m'}, '', 'Peak latency', {'COND1', 'COND2'}) ;
+hold on ; subplot(1,3,2);
+plot_violin(all_amp, {'r','m'}, '', 'Peak amplitude', {'COND1', 'COND2'}) ;
+hold on ; subplot(1,3,3);
+plot_violin(all_auc, {'r','m'}, '', 'AUC (Area Under the Curve)', {'COND1', 'COND2'}) ;
+
 % figure ; plot(1,all_amp(:,1),'r*') ; hold on ; plot(1,all_amp(:,2),'b*') ; 
 
 %% BRAINSTORM PROC
 % Call Brainstorm and populate database 
-% indir = 'E:\EEG_ANALYSES\EEGdata_CF_revised_byparticipant_all' ;
-indir = 'E:\EEG_ANALYSES\to_add_in_bst' ;
-ABRBABY_populate_BST_DB_averages('RFE1_REJ1','unbalanced',indir)
-
+ABRBABY_populate_BST_DB_averages('stepA1_stepB1','unbalanced',indir)
