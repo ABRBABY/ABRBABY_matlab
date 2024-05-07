@@ -16,6 +16,12 @@ function prepare_input_brainstem(ALLEEG, OPTIONS,tube_length, propag_sound,flag_
 % Convert .txt file into .avg for BT_toolbox
 % Export timepoints from last subject
 
+% Exist if there is no subjects to compute
+if sum(flag_sub_to_create)==0
+    fprintf('Nothing to compute \n');
+    return
+end
+
 % Reads all folders that are in indir 
 d = dir(OPTIONS.indir); 
 isub = [d(:).isdir]; % returns logical vector if is folder
