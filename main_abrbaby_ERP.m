@@ -19,19 +19,14 @@
 % - Participant ID must have the following format: "STUDYCODE_PARTICIPANTNUMBER_AGE"
 
 %% ------------------- Set environment 
-% Variables to enter manually before running the code
+% Reads initial database directory 
+indir = fileread('indir.txt');
+[data_pathname,rawdata_fname,~] = fileparts(indir);
 
-% DATA directory 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-% custom_path = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-custom_path = 'E:\EEG\DATA';
+plot_dir = fullfile(fileparts(indir),strcat('plot_dir_',rawdata_fname));
 
-indir = fullfile(custom_path,'DEVLANG_data');
-
-%Get list of subjects in indir
-list_subjects = get_subjects(indir,[]);
-
-plot_dir = fullfile(custom_path, 'plot_dir');
+% Get the list of subjects in the databse
+list_subjects = get_subjects(indir,fullfile(indir, '')) ;
 
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path,BT_toolbox] = get_custom_path();
