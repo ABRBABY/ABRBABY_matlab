@@ -41,7 +41,7 @@ OPTIONS.indir = INDIR ;
 OPTIONS.params = set_params ;
 OPTIONS.opt_balance = opt_balance ;
 OPTIONS.writecsv = 0 ;
-conditionsMMN = { 'DEV1-STD1', 'DEV2-STD1'} ; 
+conditionsMMN = { 'DEV1-STD', 'DEV2-STD'} ; 
 vTime = [-0.200012207, 0.4999389648] ; 
 sGroups{1} = ["_T6","_T8","_T10"] ; 
 sGroups{2} = ["_T18","_T24"] ; 
@@ -53,9 +53,9 @@ subjects_list = {d(isub).name}';
 subjects_list(ismember(subjects_list,{'.','..'})) = []; % Removes . and ..
 
 % Choose subjects to process
-choose_subj = readtable('\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_ok.csv', 'Delimiter', 'Space', 'ReadVariableNames',0) ;
-subjects = table2array(choose_subj) ;
-% subjects = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
+% choose_subj = readtable('\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\ffr_participants_ok.csv', 'Delimiter', 'Space', 'ReadVariableNames',0) ;
+% subjects = table2array(choose_subj) ;
+subjects = get_subjects(INDIR, '') ;           % get subjects in OPTIONS_rej.file
 
 
 % % Remove subjects based on number of trial rejected 
@@ -78,8 +78,7 @@ process_group_analysis(conditionsMMN, vTime, sGroups) ;
 %-----------------------------------------------------------------------------
 function [] = process_pipeline(INDIR, SubjectName, set_params,opt_balance)
 
-%Conditions = {'DEV1', 'DEV2', 'STD1', 'STD2'};
-Conditions = {'DEV1', 'DEV2', 'STD1'};
+Conditions = {'DEV1', 'DEV2', 'STD'};
 
 % Input files
 sFiles = [];
@@ -96,7 +95,7 @@ panel_protocols('UpdateTree'); % Update the Protocol in GUI
 % Loop through conditions 
 for cc=1:length(Conditions)
     
-   RawFile = dir(fullfile(INDIR,SubjectName,strcat(SubjectName,'_',Conditions{cc},'*_gd_avg_', opt_balance, '_*',set_params,'*.set'))) ; 
+    RawFile = dir(fullfile(INDIR,SubjectName,strcat(SubjectName,'_ERP_',Conditions{cc}, '*_',opt_balance, '_',set_params,'_gd_avg.set'))) ; 
    if size(RawFile,1) > 1
         rman = find(contains({RawFile.name}, 'rman')) ;
         RawFile = RawFile(rman,1) ;
@@ -132,10 +131,10 @@ for cc=1:length(Conditions)
 end
 
 % Subtract DEV1-STD1
-sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV1')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD1')));
+sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV1')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD')));
 
 % Subtract DEV2-STD2
-sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV2')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD1')));
+sFiles = bst_process('CallProcess', 'process_diff_ab', sFilesAvg(contains({sFilesAvg.FileName}, 'DEV2')), sFilesAvg(contains({sFilesAvg.FileName}, 'STD')));
 
 % % Save and display report
 % ReportFile = bst_report('Save', sFiles);

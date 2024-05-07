@@ -37,7 +37,7 @@ for jj=1:length(subjects)
     end
 
     % Get the manual marked .set file
-    fname= dir(fullfile(OPTIONS.manualdir,subjects{jj},'*_256.set'));
+    fname= dir(fullfile(OPTIONS.manualdir,subjects{jj},'*_256*.set'));
 
     % For all files detected for this subject
     for ff=1:length(fname) 
