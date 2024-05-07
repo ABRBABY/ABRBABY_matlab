@@ -42,9 +42,9 @@ OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 [flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA,'') ; 
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file')
+if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-    flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+   flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 end
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
@@ -73,7 +73,7 @@ stepA_num = '_stepA2' ;              % set of RFE parameters to use for this ste
 [flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file')
+if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
    flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 end
@@ -100,7 +100,9 @@ propag_sound =  340 ; % vitesse propagation son meter / sec
 if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file')
+flag_sub_to_create_abr = test_existance_of_BT_toolbox(OPTIONS_abr) ; 
+
+if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
    flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
 end
@@ -126,27 +128,20 @@ OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation v
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file')
+flag_sub_to_compute_nlag = ~test_existance_of_BT_toolbox(OPTIONS_abr) ; 
+
+if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+   flag_sub_to_compute_nlag  = (contains(list_subjects,subj_to_process))';
 end
 
 % Computes the neural lag
-neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_create_abr) ;
+neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
 
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
 %% -------------------Compute SNRs and save in table
-% Notes ASD : 
-% stim f0 = 100.3 Hz
-% n = 80 -> 95.4 (delta = 15.4)
-% s = 95.4 -> 105.4 
-% n= 105.4 -> 120.8 (delat =15.4)
-% n = 80 ->95
-% s = 95 -> 105
-% n = 105 -> 120
-
 OPTIONS_SNR.params = 'stepA2_stepB1';
 OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
 OPTIONS_SNR.indir = indir ; 
@@ -154,18 +149,21 @@ OPTIONS_SNR.plot_dir = plot_dir ;
 OPTIONS_SNR.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
 OPTIONS_SNR.ffr_polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
 OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120); 
-OPTIONS_SNR.winSignal = [95:1:105];
+OPTIONS_SNR.winSignal = 95:1:105;
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
 OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
+OPTIONS_SNR.display = 0 ; 
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file')
+flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_abr) ; 
+
+if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_ffr = (contains(list_subjects,subj_to_process))';
+   flag_sub_to_create_ffr  = (contains(list_subjects,subj_to_process))';
 end
 
 %Filter epoched data and prepare input for brainstem toolbox
-spectral_snr = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
+[spectral_snr,aWin,freq_harmonics] = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
 
 
 % 
