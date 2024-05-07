@@ -2,22 +2,16 @@
 % Estelle Herve, A.-Sophie Dubarry - 2023 - %80PRIME Project
 
 %% ------------------- Set environment 
-% Variables to enter manually before running the code
-
-% DATA directory 
-% indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/';
-% indir = '/Users/annesophiedubarry/Nextcloud/Shared/Projet-ABRbaby/Data/PROCESSING_DATABASE';
-% indir = '/Users/annesophiedubarry/Documents/0_projects/in_progress/ABRBABY_cfrancois/data';
-indir = 'E:\EEG\DATA\DEVLANG_data';
-
+% Reads initial database directory 
+indir = fileread('indir.txt');
 [data_pathname,rawdata_fname,~] = fileparts(indir);
 
 plot_dir = fullfile(fileparts(indir),strcat('plot_dir_',rawdata_fname));
 
-% list_subjects = get_subjects(indir,fullfile(indir, 'participants_included.xlsx')) ;
+% Get the list of subjects in the databse
 list_subjects = get_subjects(indir,fullfile(indir, '')) ;
 
-% This function sets custom path (either for Estelle or AnneSo)
+% This function sets custom path 
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
 
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
@@ -203,7 +197,7 @@ OPTIONS_rej.ffr_polarity = 'avg' ;                             % which FFR polar
 OPTIONS_rej.polarity = 'ABSOLUTE' ;                            % which correlation value for neural lag to use
 % OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
 % OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\FFR_rej_Ntrials_SNR_F0.csv';
-OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\participants_rejFFR_corrected_sure.csv';
+OPTIONS_rej.file = fullfile(indir,'participants_rejFFR_corrected_sure.csv');
 
 % Choose subjects to analyse
 subjects_to_analyse = get_subjects(indir, '') ;                      % get all subjects
