@@ -20,6 +20,8 @@ list_subjects = get_subjects(indir,fullfile(indir, '')) ;
 % This function sets custom path (either for Estelle or AnneSo)
 [eeglab_path, biosig_installer_path, erplab_path, BT_toolbox] = get_custom_path();
 
+OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
+
 % Load path and start Matlab : returns ALLEEG (EEGLAB structure)
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path, BT_toolbox) ;
 
@@ -54,6 +56,9 @@ end
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
 reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
 
+% Prints out message on progress
+fprintf('JUST FINISHED STEP A\n');
+
 %%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
 
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
@@ -68,9 +73,6 @@ OPTIONS_stepB.eeg_elec = 'ABR';
 
 suffix_stepB = '_stepB' ;
 stepA_num = '_stepA2' ;              % set of RFE parameters to use for this step
-
-
-OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
     
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -85,6 +87,8 @@ end
 %Filter epoched data and prepare input for brainstem toolbox
 reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
 
+% Prints out message on progress
+fprintf('JUST FINISHED STEP B\n');
 
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
 OPTIONS_abr.indir = indir ; 
@@ -110,6 +114,9 @@ end
 % The following line should only prepare input for brainstem 
 prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, count_stepB,suffix_stepB, stepA_num);
 
+% Prints out message on progress
+fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
+
 
 %% -------------------Compute neural lag for all subject and write a table
 OPTIONS_neural.params = 'stepA2_stepB1'; 
@@ -131,12 +138,14 @@ if exist(OPTIONS.file,'file')
 end
 
 % Computes the neural lag
-neural_lag = compute_neural_lag_report(OPTIONS_neural,flag_sub_to_create_abr) ;
+neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_create_abr) ;
 
+% Prints out message on progress
+fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
 %% -------------------Compute SNRs and save in table
 % Notes ASD : 
-% stim f0 = 100.4 Hz
+% stim f0 = 100.3 Hz
 % n = 80 -> 95.4 (delta = 15.4)
 % s = 95.4 -> 105.4 
 % n= 105.4 -> 120.8 (delat =15.4)

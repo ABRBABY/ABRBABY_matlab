@@ -1,4 +1,4 @@
-function [neural_lag] = compute_neural_lag_report(OPTIONS, flag_sub_to_create)
+function [neural_lag] = compute_neural_lag(OPTIONS, flag_sub_to_create)
 % 
 % Converts the ABR signal into BT_toolbox readable format + optionnal display 
 % 
