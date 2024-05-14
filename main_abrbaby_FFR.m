@@ -167,6 +167,16 @@ end
 fprintf('JUST FINISHED COMPUTE SNR\n');
 
 
+%% ------------------- Display SNR violin
+OPTIONS_display_violin.groups = {{'_T6','_T8','_T10'},{'_T18','_T24'}};
+% OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T10'},{'_T18','_T24'}};
+OPTIONS_display_violin.indir = indir ; 
+
+% Here calls with index :
+% 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
+% 2) of the harmonics 1- f0 - then others
+plot_violin(OPTIONS_display_violin, subj_to_process(flag_sub_to_create_ffr), spectral_snr(:,1,1));
+
 % 
 % % Or choose subjects with csv file
 % subjects_to_process = get_subjects(indir, []) ;
