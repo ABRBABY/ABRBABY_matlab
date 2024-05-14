@@ -1,4 +1,4 @@
-function [SNR_amp, aWin,freq_harmonics] = compute_spectral_snr(OPTIONS,flag_sub_to_create, neural_lag)
+function [SNR_power_Norm_allsubj, aWin,freq_harmonics] = compute_spectral_snr(OPTIONS,flag_sub_to_create, neural_lag)
 % 
 % Converts the ABR signal into BT_toolbox readable format + optionnal display 
 % 
@@ -48,6 +48,7 @@ nplot = [1,3,5];
 % normalize and may be impacted by the 1/f effect
 % forman_classif_tran = {[100.3];[520 715];[]}; 
 % forman_classif_cons = {[100.3];[713];[]}; 
+SNR_power_Norm_allsubj = ones(length(subjects_to_process), 3,nbHarm+1);
 
 for ss=1:length(subjects_to_process) %for each subject
     
@@ -75,7 +76,7 @@ for ss=1:length(subjects_to_process) %for each subject
     rms = ones(nbWin,1); 
     SNR_TD = ones(nbWin,1);
     SNR_power = ones(nbWin,nbHarm+1);
-    SNR_power_Norm = ones(nbWin,nbHarm+1);
+    SNR_power_Norm = ones(nbWin,nbHarm+1);  
     SNR_amp = ones(nbWin,nbHarm+1);
 
     % Creates SNR summary figure 
@@ -175,7 +176,10 @@ for ss=1:length(subjects_to_process) %for each subject
             noise_amp_uV(vWin,vHarm) = mean((sqrt((pow_spect_density(Nw_all)))));
             
             %% DEBUG HERE vWin should not exceed 3!!
-            SNR_amp(ss,vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
+            SNR_amp(vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
+
+            SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm(vWin,vHarm) ; 
+
             % SNR_amp_Norm(vWin,vHarm) = 20*log10(SNR_amp(vWin,vHarm));
              % Recordar que el SNR obtenido con amplitud y con frecuencias
              % no puede ser el mismo porque al pasar la potencia a amplitud
@@ -190,12 +194,13 @@ for ss=1:length(subjects_to_process) %for each subject
 end
 
 if OPTIONS.display
+    
     set(h_psd,'ylim',[0 max_psd],'Parent', h_figsnr);
     
     % Link the x axis of the two axes together
     linkaxes(h_psd, 'xy')
     
-    h_snr = subplot(3,2,[2 4 6]) ; plot(SNR_amp(1,:),'r*'); hold on ; plot(SNR_amp(2,:),'b*');plot(SNR_amp(3,:),'m*'); legend('transition','steady','baseline'); grid on ;
+    h_snr = subplot(3,2,[2 4 6]) ; plot(SNR_power_Norm(1,:),'r*'); hold on ; plot(SNR_power_Norm(2,:),'b*');plot(SNR_power_Norm(3,:),'m*'); legend('transition','steady','baseline'); grid on ;
     title(strrep(subjects_to_process{ss},'_','-'));
     set(h_snr,'XTick',1:length(freq_harmonics),'XTickLabel', string(freq_harmonics),'Fontsize',FONTSZ); grid on ; 
     xlabel('Harmonics') ; ylabel('SNR'); ylim([0 10]);

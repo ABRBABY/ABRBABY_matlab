@@ -70,7 +70,7 @@ stepA_num = '_stepA2' ;              % set of RFE parameters to use for this ste
     
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
-[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, strcat('_stepA',num2str(stepA_num))) ; 
+[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, stepA_num) ; 
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
@@ -122,7 +122,7 @@ OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;      % first time point in the simulti to compute neural lag 
 OPTIONS_neural.stop = 169 ;     % last time point in the simulti to compute neural lag 
 OPTIONS_neural.lagstart = 3 ;   % first time point to search for neural lag
-OPTIONS_neural.lagstop = 10 ;   % last time point to search for neural lag
+OPTIONS_neural.lagstop = 13 ;   % last time point to search for neural lag
 OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
