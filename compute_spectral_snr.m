@@ -111,9 +111,9 @@ for ss=1:length(subjects_to_process) %for each subject
                 % Display only frequencies <1500 Hz
                 vF= freqs<1500;
                 
-                % Set current figure to SNR display 
-                set(0,'CurrentFigure',h_figsnr)
-        
+                % % Set current figure to SNR display 
+                % set(0,'CurrentFigure',h_figsnr)
+                % 
                 % Displays power spectal density for this window 
                 h_psd(vWin)=subplot(3,2,nplot(vWin),'Parent', h_figsnr) ; 
                 plot(freqs(vF), pow_spect_density(vF)) ; 
@@ -151,9 +151,10 @@ for ss=1:length(subjects_to_process) %for each subject
             % Display Noise/SIgnal for 1st harmonic, steadyWin 
             if OPTIONS.display && (vHarm==1) && (vWin==2)
              
-                % Creates figure 
-                h_fig_spect = figure('Units','Normalized','Position',[0.3,0,0.5,1]) ; 
+                % % Creates figure 
+                % h_fig_spect = figure('Units','Normalized','Position',[0.3,0,0.5,1]) ; 
                 
+                subplot(3,2,2);
                 % PLot signal (red) and noise (blue) 
                 h_spect = plot(find(Nw_all),pow_spect_density(Nw_all),'b*'); hold on ; 
                 plot(find(Tw_bool),pow_spect_density(Tw_bool),'r*') ;
@@ -200,10 +201,11 @@ if OPTIONS.display
     % Link the x axis of the two axes together
     linkaxes(h_psd, 'xy')
     
-    h_snr = subplot(3,2,[2 4 6]) ; plot(SNR_power_Norm(1,:),'r*'); hold on ; plot(SNR_power_Norm(2,:),'b*');plot(SNR_power_Norm(3,:),'m*'); legend('transition','steady','baseline'); grid on ;
+    h_snr = subplot(3,2,[4 6]) ; hp(1) = plot(SNR_power_Norm(1,:),'r+'); hold on ; hp(2) = plot(SNR_power_Norm(2,:),'b*'); hp(3) = plot(SNR_power_Norm(3,:),'mX'); legend('transition','steady','baseline'); grid on ;
+    set(hp,'MarkerSize',12,'LineWidth',1.5);
     title(strrep(subjects_to_process{ss},'_','-'));
     set(h_snr,'XTick',1:length(freq_harmonics),'XTickLabel', string(freq_harmonics),'Fontsize',FONTSZ); grid on ; 
-    xlabel('Harmonics') ; ylabel('SNR'); ylim([0 10]);
+    xlabel('Harmonics') ; ylabel('SNR'); ylim([-10 10]);
 end
 
 end
