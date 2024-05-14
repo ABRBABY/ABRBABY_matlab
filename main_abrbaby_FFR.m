@@ -152,7 +152,7 @@ OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120);
 OPTIONS_SNR.winSignal = 95:1:105;
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
 OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_SNR.display = 0 ; 
+OPTIONS_SNR.display = 1 ; 
 
 %Subjects to process : when whant to choose
 flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_abr) ; 
@@ -164,6 +164,7 @@ end
 
 %Filter epoched data and prepare input for brainstem toolbox
 [spectral_snr,aWin,freq_harmonics] = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
+fprintf('JUST FINISHED COMPUTE SNR\n');
 
 
 % 
