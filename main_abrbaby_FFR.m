@@ -168,14 +168,20 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 
 
 %% ------------------- Display SNR violin
-OPTIONS_display_violin.groups = {{'_T6','_T8','_T10'},{'_T18','_T24'}};
+% With the piece of code you can modulate how many viollin plot to display,
+% you can combien differently the groups, all depends on the content of the
+% filed .groups (and colors must be the colors accordingly tothe groups) 
+
+OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T8','_T24'},{'_T10'}};
+OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
 % OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T10'},{'_T18','_T24'}};
 OPTIONS_display_violin.indir = indir ; 
+OPTIONS_display_violin.title = {'Contrats between blablabla SNR? Neural lag?'} ; 
 
 % Here calls with index :
 % 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
 % 2) of the harmonics 1- f0 - then others
-plot_violin(OPTIONS_display_violin, subj_to_process(flag_sub_to_create_ffr), spectral_snr(:,1,1));
+plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
 
 % 
 % % Or choose subjects with csv file
