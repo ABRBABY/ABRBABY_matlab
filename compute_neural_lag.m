@@ -33,7 +33,7 @@ for ss=1:length(subjects_to_process) %for each subject
         figure; plot(all_lags,all_corrs,'r') ; hold on ; plot(all_lags(idx_neural_lag),all_corrs(idx_neural_lag),'*b') ; title(strrep(subjects_to_process{ss},'_','-')) ; grid on ; xlabel('Neural lag (ms)'); ylabel('Pearsons correlation') ; 
         legend('All correlations (time shifted)','Neural lag','Fontsize',12);
         % Save figure
-         print('-dpng',fullfile('E:\EEG\DATA\plot_dir_DEVLANG_data\png_folder\ffr_neural_lags_r_pearsons', strcat(subjects{ss},'_FFR_',OPTIONS.params, '_', num2str(OPTIONS.lagstart),'_', num2str(OPTIONS.lagstop)))); 
+         print('-dpng',fullfile(OPTIONS.plot_dir, 'png_folder', strcat('n_lag_distrib_',subjects{ss},'_FFR_',OPTIONS.params, '_', num2str(OPTIONS.lagstart),'_', num2str(OPTIONS.lagstop)))); 
     end
 
 end
