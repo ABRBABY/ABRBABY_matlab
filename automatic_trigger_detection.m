@@ -4,11 +4,8 @@
 % Variables to enter manually before running the code
 
 % DATA directory 
-% indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data/EEG_data_revised_by_participant_rejA'; 
-indir = '/Users/annesophiedubarry/Library/CloudStorage/SynologyDrive-NAS/0_projects/in_progress/ABRBABY_cfrancois/data'; 
-% indir = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data';
+indir = fileread('indir.txt');
 
-% selected_subj = {'DVL_013_T24','DVL_011_T10','DVL_044_T8'};
 selected_subj = [];
 
 %Get list of subjects in indir
