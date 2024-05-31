@@ -18,7 +18,6 @@
 %
 % - Participant ID must have the following format: "STUDYCODE_PARTICIPANTNUMBER_AGE"
 
-
 %% ------------------- Set environment 
 % Reads initial database directory 
 indir = fileread('indir.txt');
