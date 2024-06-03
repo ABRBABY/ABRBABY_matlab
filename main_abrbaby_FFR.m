@@ -66,7 +66,7 @@ OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
 
 suffix_stepB = '_stepB' ;
-stepA_num = '_stepA2' ;              % set of RFE parameters to use for this step
+stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
     
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -115,20 +115,23 @@ fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
 
 
 %% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA2_stepB1'; 
+OPTIONS_neural.params = 'stepA1_stepB1'; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
-OPTIONS_neural.indir= indir; 
+OPTIONS_neural.indir= indir;
+OPTIONS_neural.plot_dir = plot_dir ;
 OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_neural.start = 0 ;      % first time point in the simulti to compute neural lag 
 OPTIONS_neural.stop = 169 ;     % last time point in the simulti to compute neural lag 
 OPTIONS_neural.lagstart = 3 ;   % first time point to search for neural lag
-OPTIONS_neural.lagstop = 13 ;   % last time point to search for neural lag
+OPTIONS_neural.lagstop = 10 ;   % last time point to search for neural lag
 OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
+OPTIONS_neural.display = 1 ;         % 1 to display r pearson correlation distribution
+OPTIONS_neural.table = 0 ;         % 1 to save table with all neural lags 
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
 
 %Subjects to process : when whant to choose
-flag_sub_to_compute_nlag = ~test_existance_of_BT_toolbox(OPTIONS_abr) ; 
+flag_sub_to_compute_nlag = ~test_existance_of_BT_toolbox(OPTIONS_neural) ; 
 
 if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
@@ -142,20 +145,21 @@ neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
 %% -------------------Compute SNRs and save in table
-OPTIONS_SNR.params = 'stepA2_stepB1';
-OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};
-OPTIONS_SNR.indir = indir ; 
-OPTIONS_SNR.plot_dir = plot_dir ; 
-OPTIONS_SNR.ylim = [-0.5, 0.5] ;      % [-0.5, 0.5]
-OPTIONS_SNR.ffr_polarity = 'avg' ;                             % polarity of the FFR: ('avg', 'pos' or 'neg')
-OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120); 
-OPTIONS_SNR.winSignal = 95:1:105;
-OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;
-OPTIONS_SNR.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_SNR.display = 1 ; 
+OPTIONS_SNR.params = 'stepA1_stepB1';                       % parameters to run
+% OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};  % electrode subset for cortical FFR
+OPTIONS_SNR.indir = indir ;                                 % indir
+OPTIONS_SNR.plot_dir = plot_dir ;                           % path to plots folder
+OPTIONS_SNR.ylim = [-0.5, 0.5] ;                            % [-0.5, 0.5] 
+OPTIONS_SNR.ffr_polarity = 'avg' ;                          % polarity of the FFR: ('avg', 'pos' or 'neg')
+OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120);            % windows for noise and signal
+OPTIONS_SNR.winSignal = 95:1:105;                           % timewindow +/- 5 around F0
+OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;                % epoch limits
+OPTIONS_SNR.timew_F0 = [55 200] ;                           % timewindow of FFR on which to compute F0 (in ms)
+OPTIONS_SNR.display = 1 ;                                   % 1 if want to display SNR plots
+OPTIONS_SNR.savefig = 1 ;                                   % 1 if want to save figures
 
 %Subjects to process : when whant to choose
-flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_abr) ; 
+flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_SNR) ; 
 
 if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
@@ -172,7 +176,7 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 % you can combien differently the groups, all depends on the content of the
 % filed .groups (and colors must be the colors accordingly tothe groups) 
 
-OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T8','_T24'},{'_T10'}};
+OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
 % OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T10'},{'_T18','_T24'}};
 OPTIONS_display_violin.indir = indir ; 

@@ -208,6 +208,12 @@ if OPTIONS.display
     xlabel('Harmonics') ; ylabel('SNR'); ylim([-10 10]);
 end
 
+if OPTIONS.savefig == 1 && OPTIONS.display == 1
+    % Save figure
+    print('-dpng',fullfile(OPTIONS.plot_dir, 'png_folder', strcat('spectral_SNR_',subjects{ss},'_FFR_',OPTIONS.params))); 
 end
+
+end
+
 
 end
