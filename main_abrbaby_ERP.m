@@ -238,7 +238,10 @@ hold on ; subplot(1,3,3);
 plot_violin(all_auc, {'r','m'}, '', 'AUC (Area Under the Curve)', {'COND1', 'COND2'}) ;
 
 % figure ; plot(1,all_amp(:,1),'r*') ; hold on ; plot(1,all_amp(:,2),'b*') ; 
+% % 
+% % %% BRAINSTORM PROC
+% % % Call Brainstorm and populate database 
+% % ABRBABY_populate_BST_DB_averages('stepA1_stepB1','unbalanced',indir)
 
-%% BRAINSTORM PROC
-% Call Brainstorm and populate database 
-ABRBABY_populate_BST_DB_averages('stepA1_stepB1','unbalanced',indir)
+%% FT cluster based analysis 
+

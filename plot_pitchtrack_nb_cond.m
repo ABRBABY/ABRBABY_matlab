@@ -1,4 +1,4 @@
-function [] = plot_violin_variable_nb_cond(OPTIONS, flag_sub_to_create, snr) 
+function [] = plot_pitchtrack_nb_cond(OPTIONS, flag_sub_to_create, data) 
 
 % This function mainly do : 
 % Reads all folders that are in indir 
@@ -14,13 +14,11 @@ FONTSZ = 12 ;
 
 figure('Units','normalized','Position',[0,0.4,0.6,0.6]) ; 
 hplot = gca; 
-violin_shift = 3 ;
-count_violin = 0 ; 
-patches = [] ; 
 
 for iGrp=1:length(OPTIONS.groups)
 
-    flag_grp = contains(subjects,OPTIONS.groups{iGrp});
+    flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
+    
     [hplot,p1,p2,p3,p4] = plot_patch_violin(hplot,snr(flag_grp),OPTIONS.colors{iGrp},count_violin, OPTIONS.groups{iGrp});
     ticklabels(iGrp) = count_violin; 
     count_violin = count_violin + violin_shift; 

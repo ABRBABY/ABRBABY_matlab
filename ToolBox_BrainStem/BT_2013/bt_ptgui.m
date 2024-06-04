@@ -302,7 +302,7 @@ close(hwaitbar)
 %% Populate output figure
 
 % open and prep output figure 
-OutputFig = openfig([cd, '\programFiles\', 'bt_ptgui_out.fig']);
+OutputFig = openfig(strrep([cd, '\programFiles\', 'bt_ptgui_out.fig'],'\','/'));
 orient landscape
 handles = guihandles(OutputFig);
 guidata(OutputFig, handles);
