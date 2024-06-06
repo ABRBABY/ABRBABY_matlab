@@ -125,7 +125,7 @@ OPTIONS_neural.stop = 169 ;     % last time point in the simulti to compute neur
 OPTIONS_neural.lagstart = 3 ;   % first time point to search for neural lag
 OPTIONS_neural.lagstop = 10 ;   % last time point to search for neural lag
 OPTIONS_neural.polarity = 'ABSOLUTE' ;                %sign of max correlation value ('POSITIVE', 'NEGATIVE', or 'ABSOLUTE')
-OPTIONS_neural.display = 1 ;         % 1 to display r pearson correlation distribution
+OPTIONS_neural.display = 0 ;         % 1 to display r pearson correlation distribution
 OPTIONS_neural.table = 0 ;         % 1 to save table with all neural lags 
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
@@ -144,7 +144,7 @@ neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
-%% -------------------Compute SNRs and save in table
+%% -------------------Compute SNRs 
 OPTIONS_SNR.params = 'stepA1_stepB1';                       % parameters to run
 % OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};  % electrode subset for cortical FFR
 OPTIONS_SNR.indir = indir ;                                 % indir
@@ -166,6 +166,10 @@ if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
    flag_sub_to_create_ffr  = (contains(list_subjects,subj_to_process))';
 end
 
+% tran = [10 55];  % Time window of the stimulus consonant transition(ms)  
+% cons = [55 170]; % Time windows of the stimulus constant portion(ms)
+% baseline = [-40 0];  % Prestimulus time windows (ms)
+
 %Filter epoched data and prepare input for brainstem toolbox
 [spectral_snr,aWin,freq_harmonics] = compute_spectral_snr(OPTIONS_SNR, flag_sub_to_create_ffr, neural_lag) ; 
 fprintf('JUST FINISHED COMPUTE SNR\n');
@@ -176,18 +180,69 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 % you can combien differently the groups, all depends on the content of the
 % filed .groups (and colors must be the colors accordingly tothe groups) 
 
-OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
+% OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
+% OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T18'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
-% OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T10'},{'_T18','_T24'}};
 OPTIONS_display_violin.indir = indir ; 
-OPTIONS_display_violin.title = {'Contrats between blablabla SNR? Neural lag?'} ; 
+OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
 
 % Here calls with index :
 % 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
 % 2) of the harmonics 1- f0 - then others
 plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
 
+
+%% ------------------- Compute Pitch tracking 
+OPTIONS_pitch.indir = indir; 
+OPTIONS_pitch.blocksz = 40 ; 
+OPTIONS_pitch.step= 1 ; 
+OPTIONS_pitch.startSTIM = 55 ; 
+OPTIONS_pitch.endSTIM = 169 ; 
+OPTIONS_pitch.expectedNeuralag= 10 ; 
+OPTIONS_pitch.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+OPTIONS_pitch.BT_toolbox = BT_toolbox; 
+
+OPTIONS_pitch.minFrequencyR = 0; 
+OPTIONS_pitch.maxFrequencyR = 120; 
+OPTIONS_pitch.minFrequency_stim = 80; 
+OPTIONS_pitch.maxFrequency_stim = 120; 
+
+[PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_ffr); 
+
 % 
+% %% ------------------- Display Pitch violin
+% OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
+% OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
+% OPTIONS_display_violin.indir = indir ; 
+% OPTIONS_display_violin.title = {'Pitch errors'} ; 
+% 
+
+%% One subject display 
+ss=1 ; figure ; subplot(2,1,1) ; plot(vTime(ss,:),vFreqFFT(ss,:),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(ss,:),vFreqFFT_stim, 'k', 'LineWidth', 2); subplot(2,1,2) ; plot(vTime(ss,:),vFreqAC(ss,:),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(ss,:),vFreqAC_stim, 'k', 'LineWidth', 2);
+
+%% Mean group display 
+figure ; plot(vTime(1,:),mean(vFreqAC,1),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(1,:),mean(vFreqAC_stim,1), 'k', 'LineWidth', 2);
+
+%% TODOS next : subplot by group (same nb of subplot than groups) 
+% OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
+% OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T18'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.groups = {{'_T8','_T24','_T10','T24'}};
+% OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
+OPTIONS_display_violin.indir = indir ; 
+OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
+plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
+
+% 
+%% ------------------- Display Pitch violin
+OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
+OPTIONS_display_violin.indir = indir ; 
+OPTIONS_display_violin.title = {'Pitch errors'} ; 
+plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_ERROR_AC');
+plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_SRCORR');
+
 % % Or choose subjects with csv file
 % subjects_to_process = get_subjects(indir, []) ;
 % 
