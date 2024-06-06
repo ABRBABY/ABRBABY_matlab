@@ -14,6 +14,18 @@ maxFrequency = OPTIONS.maxFrequencyR ;
 
 startRESP = startSTIM + neural_lag;
 
+
+PITCH_ERROR_AC = [];
+PITCH_ERROR_FFT = [];
+PITCH_STRENGTH2 = []; 
+PITCH_SRCORR = [];
+vTime = []; 
+vFreqAC = [];
+vFreqFFT = []; 
+vTime_stim = []; 
+vFreqAC_stim = []; 
+vFreqFFT_stim = []; 
+
 % This function mainly do : 
 % Reads all folders that are in indir 
 d = dir(OPTIONS.indir); 

@@ -144,7 +144,7 @@ neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
-%% -------------------Compute SNRs and save in table
+%% -------------------Compute SNRs 
 OPTIONS_SNR.params = 'stepA1_stepB1';                       % parameters to run
 % OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};  % electrode subset for cortical FFR
 OPTIONS_SNR.indir = indir ;                                 % indir
@@ -208,7 +208,7 @@ OPTIONS_pitch.maxFrequencyR = 120;
 OPTIONS_pitch.minFrequency_stim = 80; 
 OPTIONS_pitch.maxFrequency_stim = 120; 
 
-[PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_abr); 
+[PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_ffr); 
 
 % 
 % %% ------------------- Display Pitch violin
@@ -225,7 +225,15 @@ ss=1 ; figure ; subplot(2,1,1) ; plot(vTime(ss,:),vFreqFFT(ss,:),'s', 'color',  
 figure ; plot(vTime(1,:),mean(vFreqAC,1),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(1,:),mean(vFreqAC_stim,1), 'k', 'LineWidth', 2);
 
 %% TODOS next : subplot by group (same nb of subplot than groups) 
-% plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_ERROR_AC');
+% OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
+% OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T18'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.groups = {{'_T8','_T24','_T10','T24'}};
+% OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
+OPTIONS_display_violin.indir = indir ; 
+OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
+plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
+
 % 
 %% ------------------- Display Pitch violin
 OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};

@@ -176,7 +176,6 @@ for ss=1:length(subjects_to_process) %for each subject
             mean_amp_uV(vWin,vHarm) = mean((sqrt((pow_spect_density(Tw_bool)))));
             noise_amp_uV(vWin,vHarm) = mean((sqrt((pow_spect_density(Nw_all)))));
             
-            %% DEBUG HERE vWin should not exceed 3!!
             SNR_amp(vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
 
             SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm(vWin,vHarm) ; 
