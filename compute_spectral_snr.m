@@ -178,7 +178,7 @@ for ss=1:length(subjects_to_process) %for each subject
             
             SNR_amp(vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
 
-            SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm(vWin,vHarm) ; 
+            SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm(:,:) ; 
 
             % SNR_amp_Norm(vWin,vHarm) = 20*log10(SNR_amp(vWin,vHarm));
              % Recordar que el SNR obtenido con amplitud y con frecuencias
