@@ -1,4 +1,4 @@
-function [] = plot_variable_nb_cond(OPTIONS, flag_sub_to_create, snr, neural_lag) 
+function [] = plot_subplot_nb_cond(OPTIONS, flag_sub_to_create, snr, neural_lag) 
 
 % Reads all folders that are in indir 
 d = dir(OPTIONS.indir); 
@@ -11,19 +11,27 @@ subjects_to_process = subjects(flag_sub_to_create) ;
 
 FONTSZ = 12 ; 
 
-figure('Units','normalized','Position',[0,0.4,0.6,0.6]) ; 
+figure('Units','normalized','Position',[0,0.4,0.6,1]) ; 
 hplot = gca; 
+
+neural_lag(snr<0) = [] ; 
+subjects_to_process = subjects_to_process(snr>0) ; 
+snr(snr<0) = [] ; 
 
 for iGrp=1:length(OPTIONS.groups)
 
-    flag_grp = contains(subjects,OPTIONS.groups{iGrp});
+    flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
     % [hplot,p1,p2,p3,p4] = plot_patch_violin(hplot,snr(flag_grp),OPTIONS.colors{iGrp},count_violin, OPTIONS.groups{iGrp});
-    plot(hplot,snr(flag_grp),neural_lag(flag_grp),'*','MarkerFaceColor',OPTIONS.colors{iGrp}, 'MarkerSize',12) ; hold on ; 
+    subplot(length(OPTIONS.groups),1,iGrp) ; 
+    plot(snr(flag_grp),neural_lag(flag_grp),'*','MarkerEdgeColor',OPTIONS.colors{iGrp},'MarkerFaceColor',OPTIONS.colors{iGrp},'MarkerSize',12 ) ; 
     % [X,N] = hist(hplot,snr(flag_grp),10); hold on ; 
     % h = bar(N,X);
     % h.FaceColor = OPTIONS.colors{iGrp}; 
     % h.FaceAlpha = 0.2;
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
+    title(conditions{iGrp}) ;
+    xlim([0,3]);
+    grid on
 end
 % 
 % % add legend and title
@@ -34,9 +42,9 @@ end
 % 
 
 % legend([p1 p2 p3 p4],conditions) ;
-legend(conditions) ;
-title(OPTIONS.title);
-grid on 
+
+% title(OPTIONS.title);
+
 % set(hplot,'XTick',ticklabels, 'XTickLabels',groups_names, 'FontSize',FONTSZ) ; 
 % xtickangle(hplot,40) ; 
 

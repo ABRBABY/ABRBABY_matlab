@@ -155,7 +155,7 @@ OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120);            % windows for noise 
 OPTIONS_SNR.winSignal = 95:1:105;                           % timewindow +/- 5 around F0
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;                % epoch limits
 OPTIONS_SNR.timew_F0 = [55 200] ;                           % timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_SNR.display = 0 ;                                   % 1 if want to display SNR plots
+OPTIONS_SNR.display = 1 ;                                   % 1 if want to display SNR plots
 OPTIONS_SNR.savefig = 0 ;                                   % 1 if want to save figures
 
 %Subjects to process : when whant to choose
@@ -192,8 +192,10 @@ OPTIONS_display_violin.title = {'Contrats between SNR : f0, baseline'} ;
 % Here calls with index :
 % 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
 % 2) of the harmonics 1- f0 - then others
-plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,3,1));
-% plot_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
+% plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,3,1));
+plot_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
+% plot_hist_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
+% plot_subplot_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
 
 
 %% ------------------- Compute Pitch tracking 
@@ -206,7 +208,7 @@ OPTIONS_pitch.expectedNeuralag= 10 ;
 OPTIONS_pitch.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
 OPTIONS_pitch.BT_toolbox = BT_toolbox; 
 
-OPTIONS_pitch.minFrequencyR = 0; 
+OPTIONS_pitch.minFrequencyR = 100; 
 OPTIONS_pitch.maxFrequencyR = 120; 
 OPTIONS_pitch.minFrequency_stim = 80; 
 OPTIONS_pitch.maxFrequency_stim = 120; 
@@ -231,11 +233,14 @@ OPTIONS_pitch.maxFrequency_stim = 120;
 % OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
 % OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T18'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.groups = {{'_T8','_T24','_T10','T24'}};
+OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T10'},{'_T18'},{'_T24'}};
+
 % OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
 OPTIONS_display_violin.indir = indir ; 
 OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
 plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
+% plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqFFT, vTime_stim(1,:),vFreqFFT_stim);
 
 % 
 %% ------------------- Display Pitch violin
