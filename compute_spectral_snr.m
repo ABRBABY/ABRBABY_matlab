@@ -52,6 +52,7 @@ SNR_power_Norm_allsubj = ones(length(subjects_to_process), 3,nbHarm+1);
 
 for ss=1:length(subjects_to_process) %for each subject
     
+ 
     % Create a folder for files specific to BT_toolbox
     BT_folder = fullfile(OPTIONS.indir, subjects_to_process{ss},'BT_toolbox_formatted');
     fname_avg = fullfile(BT_folder,strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
@@ -129,11 +130,6 @@ for ss=1:length(subjects_to_process) %for each subject
         % For all harmonics (13)
         for vHarm = 1:length(freq_harmonics)
             
-           pow_spectral_density(vWin,vHarm) = mean(pow_spect_density(and(freqs>freq_harmonics(vHarm)-sigSpectralWin/2,freqs<freq_harmonics(vHarm)+sigSpectralWin/2))); % Promedio de power en la ventana de frecuencias referida a la señal.
-    
-           amp_spectral(vWin,vHarm) = mean(spectral_total_amp(and(freqs>freq_harmonics(vHarm)-sigSpectralWin/2,freqs<freq_harmonics(vHarm)+sigSpectralWin/2))); % Promedio de amplitud en la ventana de frecuencias referida a la señal.
-    
-           
             %  SNR (SNR_FD)
             Tw = [freq_harmonics(vHarm)-sigSpectralWin/2,freq_harmonics(vHarm)+sigSpectralWin/2]; % Extremos de la ventana de frecuencias de la señal, localizados a una distancia de 5 Hz arriba y abajo de la frecuencia de interes (f).
             Tw_bool = and(freqs<=Tw(2),freqs>=Tw(1)); % Cada una de las frecuencias que componen la ventana de frecuencias de la señal. 
@@ -167,8 +163,9 @@ for ss=1:length(subjects_to_process) %for each subject
                 
                 % General documentation (titla grid legend)
                 grid on ; legend('noise','signal');
-                title(sprintf('%s, WINDOW --> [%1.1f ; %1.1f] ms ; Harmonic : %1.1f',strrep(subjects_to_process{ss},'_','-'),aWin{vWin}(1),aWin{vWin}(2),freq_harmonics(vHarm)));
-        
+                [~,idx_max] = max(pow_spect_density(Tw_bool|Nw_all)) ; 
+                title(sprintf('%s, WINDOW --> [%1.1f ; %1.1f] ms ; Harmonic : %1.1f ; MAX = %1.1f Hz',strrep(subjects_to_process{ss},'_','-'),aWin{vWin}(1),aWin{vWin}(2),freq_harmonics(vHarm),freqs(idx_max+find(Tw_bool|Nw_all,1))));
+                
             end
     
             SNR_power_Norm(vWin,vHarm) = 10*log10(SNR_power(vWin,vHarm)); % Passar a dB el SNR_power
@@ -178,8 +175,7 @@ for ss=1:length(subjects_to_process) %for each subject
             
             SNR_amp(vWin,vHarm) = mean_amp_uV(vWin,vHarm)/noise_amp_uV(vWin,vHarm); % Dividir la ventana de amplitud espectral correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a las dos ventanas de ruido.
 
-            SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm(vWin,vHarm) ; 
-
+           
             % SNR_amp_Norm(vWin,vHarm) = 20*log10(SNR_amp(vWin,vHarm));
              % Recordar que el SNR obtenido con amplitud y con frecuencias
              % no puede ser el mismo porque al pasar la potencia a amplitud
@@ -188,10 +184,10 @@ for ss=1:length(subjects_to_process) %for each subject
              % lo mismo que la suma de elementos elevados al cuadrado
              % (producto notable). Por tanto, decidimos quedarnos con el
              % SNR_power_Norm
-   end
+        end %end of vWin
 
-   
-end
+    end % end of vHarm
+ SNR_power_Norm_allsubj(ss,:,:) = SNR_power_Norm ; 
 
 if OPTIONS.display
     
