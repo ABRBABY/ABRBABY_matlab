@@ -16,7 +16,7 @@ hplot = gca;
 
 for iGrp=1:length(OPTIONS.groups)
 
-    flag_grp = contains(subjects,OPTIONS.groups{iGrp});
+    flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
     % [hplot,p1,p2,p3,p4] = plot_patch_violin(hplot,snr(flag_grp),OPTIONS.colors{iGrp},count_violin, OPTIONS.groups{iGrp});
     plot(hplot,snr(flag_grp),neural_lag(flag_grp),'*','MarkerFaceColor',OPTIONS.colors{iGrp}, 'MarkerSize',12) ; hold on ; 
     

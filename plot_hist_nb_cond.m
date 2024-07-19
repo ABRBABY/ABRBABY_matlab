@@ -19,7 +19,7 @@ patches = [] ;
 
 for iGrp=1:length(OPTIONS.groups)
 
-    flag_grp = contains(subjects,OPTIONS.groups{iGrp});
+    flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
     subplot(length(OPTIONS.groups),1,iGrp) ; 
    
     % [X,N] = hist(snr(flag_grp),10);
