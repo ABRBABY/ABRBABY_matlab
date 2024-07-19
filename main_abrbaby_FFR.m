@@ -198,7 +198,6 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 spectral_snr_to_proc = spectral_snr(:,1,1); 
 write_FFR_result_in_csv(OPTIONS_neural, flag_sub_to_create_ffr, spectral_snr_to_proc', 'snr.csv') ;
 
-
 %% ------------------- Display SNR violin
 % With the piece of code you can modulate how many viollin plot to display,
 % you can combien differently the groups, all depends on the content of the
@@ -217,7 +216,6 @@ OPTIONS_display_violin.title = {'My Title'} ;
 % size(flag_sub_to_disp) --> nb subjects in the whole database
 % sum(flag_sub_to_disp) --> nb subjects which will be processed from this point
 idx_ffr= find(flag_sub_to_create_ffr==1) ; flag_sub_to_disp = flag_sub_to_create_ffr ;
-
 
 % Filter by max_psd
 select_disp= (max_psd>100.3-4)&(max_psd<100.3+4); 
