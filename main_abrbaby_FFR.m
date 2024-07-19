@@ -38,7 +38,8 @@ OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
 % Update for Clem : now just use this suffix for output (overwrite if
 % exist, otherwise creates new one)
-output_suffix = '_stepA1';
+output_suffix = '_stepA2'; % change this name to create new dataset with different parameters WARNING : Estelle has generated A1 (do not overwrite?)
+
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
@@ -68,7 +69,7 @@ OPTIONS_stepB.eeg_elec = 'ABR';
  
 % Update for Clem : now just use this suffix for output (overwrite if
 % exist, otherwise creates new one)
-output_suffix = '_stepA1_stepB1';
+output_suffix = '_stepA1_stepB2'; % change this name to create new dataset with different parameters WARNING : Estelle has generated A1_B1 (do not overwrite?)
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
@@ -80,7 +81,7 @@ end
 flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 
 %Filter epoched data and prepare input for brainstem toolbox
-reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, str2num(output_suffix(end)), '_stepB',strcat('_',strtok(stepA_num,'_'))) ; 
+reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, str2num(output_suffix(end)), '_stepB',strcat('_',strtok(output_suffix,'_'))) ; 
 
 % Prints out message on progress
 fprintf('JUST FINISHED STEP B\n');
@@ -101,22 +102,23 @@ propag_sound =  340 ; % vitesse propagation son meter / sec
 if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
 
 %Subjects to process : when whant to choose
-flag_sub_to_create_abr = test_existance_of_BT_toolbox(OPTIONS_abr) ; 
-
-if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
+if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+else 
+   subj_to_process  = get_subjects(indir,[]);
 end
 
+flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+
 % The following line should only prepare input for brainstem 
-prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, count_stepB,suffix_stepB, stepA_num);
+prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(output_suffix(end)),'_stepB', strcat('_',strtok(output_suffix,'_')));
 
 % Prints out message on progress
 fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
 
 
 %% -------------------Compute neural lag for all subject and write a table
-OPTIONS_neural.params = 'stepA1_stepB1'; 
+OPTIONS_neural.params = 'stepA1_stepB2'; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir;
 OPTIONS_neural.plot_dir = plot_dir ;
