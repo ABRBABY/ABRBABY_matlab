@@ -196,7 +196,7 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 
 %% ------------------- This section is meant for writing any results in a table with the participants id 
 spectral_snr_to_proc = spectral_snr(:,1,1); 
-write_FFR_result_in_csv(OPTIONS_neural, flag_sub_to_create_ffr, spectral_snr_to_proc', 'snr.csv') ;
+write_FFR_result_in_csv(OPTIONS_SNR, flag_sub_to_create_ffr, spectral_snr_to_proc', 'snr.csv') ;
 
 %% ------------------- Display SNR violin
 % With the piece of code you can modulate how many viollin plot to display,
