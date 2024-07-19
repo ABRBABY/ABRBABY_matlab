@@ -33,22 +33,23 @@ OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value 
 OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
-suffix_stepA = '_stepA';
 OPTIONS_stepA.analysis = 'FFR';
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
-% Test if this set of params exists and returns the files to process and
-% counter to use to name the saved files
-[flag_sub_to_create_stepA, count_stepA]= test_existance_of_params_in_db(OPTIONS_stepA, suffix_stepA,'') ; 
-
+% Update for Clem : now just use this suffix for output (overwrite if
+% exist, otherwise creates new one)
+output_suffix = '_stepA1';
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
+if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+else 
+   subj_to_process  = get_subjects(indir,[]);
 end
 
+flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
+
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
-reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, count_stepA,suffix_stepA) ;
+reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, str2num(output_suffix(end)),output_suffix(1:end-1)) ;
 
 % Prints out message on progress
 fprintf('JUST FINISHED STEP A\n');
@@ -64,22 +65,22 @@ OPTIONS_stepB.bt_toolbox = BT_toolbox ;
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
-
-suffix_stepB = '_stepB' ;
-stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
-    
-% Test if this set of params exists and returns the files to process and
-% counter to use to name the saved files
-[flag_sub_to_create_stepB, count_stepB]= test_existance_of_params_in_db(OPTIONS_stepB, suffix_stepB, stepA_num) ; 
+ 
+% Update for Clem : now just use this suffix for output (overwrite if
+% exist, otherwise creates new one)
+output_suffix = '_stepA1_stepB1';
 
 %Subjects to process : when whant to choose
-if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
+if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+else 
+   subj_to_process  = get_subjects(indir,[]);
 end
 
+flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
+
 %Filter epoched data and prepare input for brainstem toolbox
-reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, count_stepB, suffix_stepB,stepA_num) ; 
+reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, str2num(output_suffix(end)), '_stepB',strcat('_',strtok(stepA_num,'_'))) ; 
 
 % Prints out message on progress
 fprintf('JUST FINISHED STEP B\n');
@@ -189,13 +190,22 @@ OPTIONS_display_violin.indir = indir ;
 % OPTIONS_display_violin.title = {'Contrats between SNR : f0, vowel'} ; 
 OPTIONS_display_violin.title = {'Contrats between SNR : f0, baseline'} ; 
 
+% Exclude some participant based on max_psd 
+% size(flag_sub_to_disp) --> nb subjects in the whole database
+% sum(flag_sub_to_disp) --> nb subjects which will be processed from this point
 flag_sub_to_disp = (max_psd>100.3-4)&(max_psd<100.3+4) ; 
 
-% Here calls with index :
-% 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
-% 2) of the harmonics 1- f0 - then others
+% Here spectral_snr dimension is nSubj x time window (3) x spectral bin (f0+n) 
+% Dim 1 : nSubject
+% Dim 2 : window (1=transition, 2=vowel , 3=baseline)
+% Dim 3 : harmonics (1=f0, 2= next, etc.) 
+% Ex : spectral_snr(:,2,1) : all subjects vowel f0
+% Ex : spectral_snr(:,1,2) : all subjects transition, 2nd harmonic
+spectral_snr_to_proc = spectral_snr(:,1,1); 
+
+% BELOW some different displays (comment/uncomment the one you prefer) 
 % plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,3,1));
-plot_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_disp, spectral_snr(:,1,1), neural_lag);
+plot_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_disp, spectral_snr_to_proc, neural_lag);
 % plot_hist_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
 % plot_subplot_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
 
@@ -241,7 +251,7 @@ OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T10'},{'_T18'},{'_T24'}};
 % OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0], [0.5,1,0]}; 
 OPTIONS_display_violin.indir = indir ; 
-OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
+OPTIONS_display_violin.title = {'ADAPT THIS TITLE'} ; 
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqFFT, vTime_stim(1,:),vFreqFFT_stim);
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
@@ -264,83 +274,3 @@ plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PIT
 % % Write a table with SNR info
 % SNR_all = table(subjects_to_process, snr', 'VariableNames', {'suject_ID', 'SNR'}) ;
 % writetable(SNR_all,fullfile(OPTIONS_SNR.indir,strcat('all_SNRs_F0s_', OPTIONS_SNR.ffr_polarity, '_ffr_', num2str(OPTIONS_SNR.timew_F0(1)), '_', num2str(OPTIONS_SNR.timew_F0(2)), 'tw_', OPTIONS_SNR.params,'.csv')), 'WriteVariableNames', true) ;
-
-%% -------------------Export infos on rejection : create a csv to summarize the number of trials rejected by subject
-OPTIONS_rejinfo.indir = indir ;
-OPTIONS_rejinfo.params = 'stepA1_stepB2';
-subjects_rejinfo = get_subjects(indir, '') ;
-
-export_rejection_infos_FFR(subjects_rejinfo,OPTIONS_rejinfo) ;
-
-%% -------------------Reject bad participants and compute group analyses
-% Set options to reject bad participants based on number of trials rejected and neural lag
-OPTIONS_rej.indir = indir ;
-OPTIONS_rej.threshold = 3000 ;                                 % minimum number of artifact-free trials to keep a participant
-OPTIONS_rej.suffix_csv = '_infos_trials_low_-25_high_25' ;     % suffix for CVS file containing trial rejection info
-OPTIONS_rej.param = '_stepB2';                                 % suffix for set of parameters to process
-OPTIONS_rej.visu = 1 ;                                         % 1 to display rejection rates, otherwise 0
-OPTIONS_rej.neural_lag = 3 ;                                   % neural lag threshold : under this value, subjects are rejected
-OPTIONS_rej.ffr_polarity = 'avg' ;                             % which FFR polarity to use
-OPTIONS_rej.polarity = 'ABSOLUTE' ;                            % which correlation value for neural lag to use
-% OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Analyses\ffr_participants_todecide.csv';
-% OPTIONS_rej.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\FFR_rej_Ntrials_SNR_F0.csv';
-OPTIONS_rej.file = fullfile(indir,'participants_rejFFR_corrected_sure.csv');
-
-% Choose subjects to analyse
-subjects_to_analyse = get_subjects(indir, '') ;                      % get all subjects
-% subjects_to_analyse = get_subjects(indir, OPTIONS_rej) ;           % get subjects in OPTIONS_rej.file
-
-% % Reject bad participants based on number of trials rejected and neural lag
-% all_subjects = get_subjects(indir, '') ;
-% [subjects_to_analyse] = reject_participants_FFR(all_subjects, OPTIONS_rej) ;
-% ----- OR -------
-% % Reject bad participants based on visualization
-% participants_to_reject = {'DVL_008_T10','DVL_010_T24', 'DVL_021_T18','DVL_032_T10','DVL_034_T18'} ;
-% subjects_to_analyse(contains(subjects_to_analyse,participants_to_reject)) = [] ;
-
-% Set options to compute group analyses
-OPTIONS_analysis.indir = indir ;
-OPTIONS_analysis.params = 'stepA1_stepB2';
-grpA.suffix = {'_T6','_T8','_T10'};
-grpB.suffix = {'_T18','_T24'};
-OPTIONS_analysis.groups = {grpA, grpB} ;
-OPTIONS_analysis.srate = 16384 ;
-OPTIONS_analysis.win_of_interest = [-0.04, 0.2] ;
-OPTIONS_analysis.neural_lag = OPTIONS_rej.neural_lag ;
-OPTIONS_analysis.ffr_polarity = OPTIONS_rej.ffr_polarity ; 
-OPTIONS_analysis.polarity = OPTIONS_rej.polarity  ;
-OPTIONS_analysis.plot_dir = plot_dir ; 
-OPTIONS_analysis.plot_FFT = 0 ;   % display FFT for eachs subject (1 to display, 0 to not) 
-OPTIONS_analysis.stim_avg = 'C:\Users\herve\Documents\GitHub\ABRBABY_matlab\ToolBox_BrainStem\BT_2013\da_170_kraus_16384_LP3000_HP80.avg' ;
-OPTIONS_analysis.woi_F0 = [90 110];   %add option to search F0 amplitude in woi (in Hz) or no -> []
-OPTIONS_analysis.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_analysis.nlag_filename = strcat('all_neural_lags_avg_ffr_ABSOLUTE_corr_3_10_', OPTIONS_analysis.params,'.csv') ;
-
-% Run FFR analysis only on kept subjects
-FFR_analysis(subjects_to_analyse,OPTIONS_analysis);
-% FFR_analysis_freq(subjects_to_analyse,OPTIONS_analysis);
-
-%% -------------------Group display
-
-OPTIONS_gpdisp.file = '\\Filer\home\Invites\herve\Mes documents\These\EEG\Data\DEVLANG_data\participants_rejFFR_90_maybe_rejectmore.csv';
-OPTIONS_gpdisp.indir = indir ;
-OPTIONS_gpdisp.params = 'stepA1_stepB2';
-grpA.suffix = {'_T6','_T8','_T10'};
-grpB.suffix = {'_T18','_T24'};
-OPTIONS_gpdisp.groups = {grpA, grpB} ;
-OPTIONS_gpdisp.srate = 16384 ;
-OPTIONS_gpdisp.win_of_interest = [-0.04, 0.2] ;
-OPTIONS_gpdisp.ffr_polarity = 'avg' ; 
-OPTIONS_gpdisp.polarity = 'POSITIVE'  ;
-OPTIONS_gpdisp.plot_dir = plot_dir ; 
-OPTIONS_gpdisp.plot_FFT = 0 ;   % display FFT for eachs subject (1 to display, 0 to not) 
-OPTIONS_gpdisp.timew_F0 = [55 200] ; %timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_gpdisp.nlag_filename = strcat('all_neural_lags_avg_ffr_POSITIVE_corr_3_10_', OPTIONS_gpdisp.params,'.csv') ;
-OPTIONS_gpdisp.savefig = 0 ;      % 1 to save figures, 0 otherwise
-
-% Choose subjects to analyse
-% subjects_to_display = get_subjects(indir, '') ;                      % get all subjects
-subjects_to_display = get_subjects(indir, OPTIONS_gpdisp) ;           % get subjects in OPTIONS_rej.file
-
-% Run FFR analysis only on kept subjects
-FFR_group_display(subjects_to_display,OPTIONS_gpdisp);
