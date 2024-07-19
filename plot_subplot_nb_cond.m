@@ -30,23 +30,10 @@ for iGrp=1:length(OPTIONS.groups)
     % h.FaceAlpha = 0.2;
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
     title(conditions{iGrp}) ;
+    xlabel('SNR'); ylabel('Neural Lag');
     xlim([0,3]);
     grid on
 end
-% 
-% % add legend and title
-% groups_names = conditions ; 
-% conditions{end+1} = 'IQR' ;
-% conditions{end+1} = 'Mean' ;
-% conditions{end+1} = 'Median' ;
-% 
-
-% legend([p1 p2 p3 p4],conditions) ;
-
-% title(OPTIONS.title);
-
-% set(hplot,'XTick',ticklabels, 'XTickLabels',groups_names, 'FontSize',FONTSZ) ; 
-% xtickangle(hplot,40) ; 
 
 end
 

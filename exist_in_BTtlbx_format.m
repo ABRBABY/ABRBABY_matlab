@@ -1,4 +1,4 @@
-function [flag_sub_to_create] = test_existance_of_BT_toolbox(OPTIONS,output_suffix)
+function [flag_sub_to_create] = exist_in_BTtlbx_format(OPTIONS,output_suffix)
 % ERPs sanity check script - 
 % Estelle Herve, A.-Sophie Dubarry - 2023 - %80PRIME Project
 
