@@ -8,6 +8,12 @@ isub = [d(:).isdir]; % returns logical vector if is folder
 subjects = {d(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 
+% Initialize outputs
+flag_sub_to_create = []; counter = [] ;
+
+% SHow an error if indir does not contains any directory (or is not found)
+if isempty(subjects); fprintf('No subjects in database.... NOTHING TO process....\n'); return; end
+
 %Loop through subjects
 for jj=1:length(subjects) 
 

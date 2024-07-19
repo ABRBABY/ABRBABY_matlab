@@ -1,4 +1,4 @@
-function [SNR_power_Norm_allsubj, aWin,freq_harmonics] = compute_spectral_snr(OPTIONS,flag_sub_to_create, neural_lag)
+function [SNR_power_Norm_allsubj, aWin,freq_harmonics, max_psd] = compute_spectral_snr(OPTIONS,flag_sub_to_create, neural_lag)
 % 
 % Converts the ABR signal into BT_toolbox readable format + optionnal display 
 % 
@@ -144,6 +144,13 @@ for ss=1:length(subjects_to_process) %for each subject
             
             SNR_power(vWin,vHarm) = sig_pow_uV2(vWin,vHarm)/noise_pow_uV2(vWin,vHarm); % Dividir la ventana de power correspondiente a la ventana de frecuencias de la señal entre la ventana de power correspondiente a les dos ventanas de ruido.
            
+             % Extract ax of the psd in Hz
+            [~,idx_max] = max(pow_spect_density(Tw_bool|Nw_all)) ; 
+            
+            if (vHarm==1) && (vWin==2)
+                max_psd(ss) = freqs(idx_max+find(Tw_bool|Nw_all,1)) ; 
+            end
+
             % Display Noise/SIgnal for 1st harmonic, steadyWin 
             if OPTIONS.display && (vHarm==1) && (vWin==2)
              
@@ -206,9 +213,10 @@ end
 if OPTIONS.savefig == 1 && OPTIONS.display == 1
     % Save figure
     print('-dpng',fullfile(OPTIONS.plot_dir, 'png_folder', strcat('spectral_SNR_',subjects{ss},'_FFR_',OPTIONS.params))); 
+    
 end
 
-end
 
+end
 
 end

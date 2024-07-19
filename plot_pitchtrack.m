@@ -11,7 +11,7 @@ subjects_to_process = subjects(flag_sub_to_create) ;
 
 FONTSZ = 12 ; 
 
-figure('Units','normalized','Position',[0,0.4,0.6,0.6]) ; 
+figure('Units','normalized','Position',[0,0.4,0.2,1]) ; 
 hplot = gca; 
 nPlots = length(OPTIONS.groups); 
 
@@ -24,9 +24,10 @@ for iGrp=1:length(OPTIONS.groups)
     legend('Response', 'F0') ;
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
     title(conditions{iGrp});
+    grid on ;
 end
 
-ylim(hplots,[80 120]);
+ylim(hplots,[80 120]); 
 % 
 % set(hplot,'XTick',ticklabels, 'XTickLabels',groups_names, 'FontSize',FONTSZ) ; 
 % xtickangle(hplot,40) ; 
