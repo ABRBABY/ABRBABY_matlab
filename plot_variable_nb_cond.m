@@ -19,26 +19,23 @@ for iGrp=1:length(OPTIONS.groups)
     flag_grp = contains(subjects,OPTIONS.groups{iGrp});
     % [hplot,p1,p2,p3,p4] = plot_patch_violin(hplot,snr(flag_grp),OPTIONS.colors{iGrp},count_violin, OPTIONS.groups{iGrp});
     plot(hplot,snr(flag_grp),neural_lag(flag_grp),'*','MarkerFaceColor',OPTIONS.colors{iGrp}, 'MarkerSize',12) ; hold on ; 
+    
+    % HERE YOU CAN DISPLAY WHATEVER YOU WANT BY GROUP using flag_grp to
+    % restrict to the current group in the loop
+
     % [X,N] = hist(hplot,snr(flag_grp),10); hold on ; 
     % h = bar(N,X);
     % h.FaceColor = OPTIONS.colors{iGrp}; 
     % h.FaceAlpha = 0.2;
+
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
+
 end
-% 
-% % add legend and title
-% groups_names = conditions ; 
-% conditions{end+1} = 'IQR' ;
-% conditions{end+1} = 'Mean' ;
-% conditions{end+1} = 'Median' ;
-% 
 
 % legend([p1 p2 p3 p4],conditions) ;
 legend(conditions) ;
 title(OPTIONS.title);
 grid on 
-% set(hplot,'XTick',ticklabels, 'XTickLabels',groups_names, 'FontSize',FONTSZ) ; 
-% xtickangle(hplot,40) ; 
 
 end
 

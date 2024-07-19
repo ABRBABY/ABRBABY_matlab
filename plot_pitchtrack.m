@@ -17,7 +17,7 @@ nPlots = length(OPTIONS.groups);
 
 % For each group
 for iGrp=1:length(OPTIONS.groups)
-    flag_grp = contains(subjects,OPTIONS.groups{iGrp});
+    flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
     hplots(iGrp) = subplot(nPlots,1,iGrp) ; 
     plot(vTime,mean(data(flag_grp,:),1),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; 
     hold on ; plot(vTime_stim, mean(data_stim(flag_grp,:),1), 'k', 'LineWidth', 2); 

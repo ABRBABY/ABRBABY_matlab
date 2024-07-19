@@ -198,7 +198,7 @@ for ss=1:length(subjects_to_process) %for each subject
 
 if OPTIONS.display
     
-    set(h_psd,'ylim',[0 max_psd],'Parent', h_figsnr);
+    set(h_psd,'ylim',[0 max_psd(ss)],'Parent', h_figsnr);
     
     % Link the x axis of the two axes together
     linkaxes(h_psd, 'xy')
