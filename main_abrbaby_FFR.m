@@ -198,7 +198,6 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 spectral_snr_to_proc = spectral_snr(:,1,1); 
 write_FFR_result_in_csv(OPTIONS_SNR, flag_sub_to_create_ffr, spectral_snr_to_proc', 'snr.csv') ;
 
-
 %% ------------------- Display SNR violin
 % With the piece of code you can modulate how many viollin plot to display,
 % you can combien differently the groups, all depends on the content of the
@@ -219,7 +218,8 @@ OPTIONS_display_violin.title = {'My Title'} ;
 idx_ffr= find(flag_sub_to_create_ffr==1) ; flag_sub_to_disp = flag_sub_to_create_ffr ;
 
 % Filter by max_psd
-flag_sub_to_disp(idx_ffr) = (max_psd>100.3-4)&(max_psd<100.3+4);
+select_disp= (max_psd>100.3-4)&(max_psd<100.3+4); 
+flag_sub_to_disp(idx_ffr) = select_disp;
 
 % Here spectral_snr dimension is nSubj x time window (3) x spectral bin (f0+n) 
 % Dim 1 : nSubject
@@ -227,7 +227,7 @@ flag_sub_to_disp(idx_ffr) = (max_psd>100.3-4)&(max_psd<100.3+4);
 % Dim 3 : harmonics (1=f0, 2= next, etc.) 
 % Ex : spectral_snr(:,2,1) : all subjects vowel f0
 % Ex : spectral_snr(:,1,2) : all subjects transition, 2nd harmonic
-spectral_snr_to_proc = spectral_snr(flag_sub_to_disp==1,1,1); 
+spectral_snr_to_proc = spectral_snr(select_disp,1,1); 
 
 % BELOW some different displays (comment/uncomment the one you prefer) 
 plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr_to_proc);
