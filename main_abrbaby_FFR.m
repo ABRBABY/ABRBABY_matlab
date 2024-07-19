@@ -133,16 +133,26 @@ OPTIONS_neural.table = 0 ;         % 1 to save table with all neural lags
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
 
-%Subjects to process : when whant to choose
-flag_sub_to_compute_nlag = ~test_existance_of_BT_toolbox(OPTIONS_neural) ; 
+output_suffix = '_stepA1_stepB1'; 
 
-if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
+%Subjects to process : when whant to choose
+flag_sub_to_compute_nlag = ~test_existance_of_BT_toolbox(OPTIONS_neural,output_suffix) ; 
+
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_compute_nlag  = (contains(list_subjects,subj_to_process))';
+else 
+   subj_to_process  = get_subjects(indir,[]);
 end
 
-% Computes the neural lag
-neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
+flag_sub_to_compute_nlag = flag_sub_to_compute_nlag|(contains(list_subjects,subj_to_process))';
+
+if sum(flag_sub_to_compute_nlag)~=0
+    % Computes the neural lag
+    neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
+else
+    fprintf('No files to computes (please prepare_input_brainstem)\n');
+end
 
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
@@ -162,12 +172,16 @@ OPTIONS_SNR.display = 0 ;                                   % 1 if want to displ
 OPTIONS_SNR.savefig = 0 ;                                   % 1 if want to save figures
 
 %Subjects to process : when whant to choose
-flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_SNR) ; 
+flag_sub_to_create_ffr = ~test_existance_of_BT_toolbox(OPTIONS_SNR, output_suffix) ; 
 
-if exist(OPTIONS.file,'file') && isempty(fileread(OPTIONS.file))
+%Subjects to process : when whant to choose
+if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
-   flag_sub_to_create_ffr  = (contains(list_subjects,subj_to_process))';
+else 
+   subj_to_process  = get_subjects(indir,[]);
 end
+
+flag_sub_to_create_ffr = flag_sub_to_create_ffr|(contains(list_subjects,subj_to_process))';
 
 % tran = [10 55];  % Time window of the stimulus consonant transition(ms)  
 % cons = [55 170]; % Time windows of the stimulus constant portion(ms)
