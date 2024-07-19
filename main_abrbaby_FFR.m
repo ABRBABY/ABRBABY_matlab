@@ -95,7 +95,10 @@ OPTIONS_abr.plot_dir = plot_dir ;
 OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                          % path to save png files of plots
 OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
 OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
- 
+  
+% Suffix to use to prepare the files for the BT_toolbox
+input_suffix = '_stepA1_stepB1'; 
+
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 
@@ -111,7 +114,7 @@ end
 flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
 
 % The following line should only prepare input for brainstem 
-prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(output_suffix(end)),'_stepB', strcat('_',strtok(output_suffix,'_')));
+prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(input_suffix(end)),'_stepB', strcat('_',strtok(input_suffix,'_')));
 
 % Prints out message on progress
 fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
