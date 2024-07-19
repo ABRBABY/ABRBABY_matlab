@@ -20,6 +20,10 @@ OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 ALLEEG = prep_and_start_environement(eeglab_path, biosig_installer_path, erplab_path, BT_toolbox) ;
 
 %% ------------------- Preprocess : reref, set chan positions, filter
+
+% Set a suffix to create (or overwrite new datsets in database) 
+OUT_SUFFIX = '_stepA2'; % WARNING : Estelle has generated A1 (if you don't want to overwrtie use a different suffix)
+
 OPTIONS_stepA.indir = indir;
 OPTIONS_stepA.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};   %Labels of the mastoids electrodes
 OPTIONS_stepA.trig = {'Erg1'};                              %Label of trigger channel
@@ -36,10 +40,6 @@ OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
 OPTIONS_stepA.analysis = 'FFR';
 OPTIONS.file = fullfile(indir,'force_rerun_participants.csv') ;
 
-% Update for Clem : now just use this suffix for output (overwrite if
-% exist, otherwise creates new one)
-output_suffix = '_stepA2'; % change this name to create new dataset with different parameters WARNING : Estelle has generated A1 (do not overwrite?)
-
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
    subj_to_process  = get_subjects(indir,OPTIONS);
@@ -50,14 +50,16 @@ end
 flag_sub_to_create_stepA = (contains(list_subjects,subj_to_process))';
 
 %Reref data, compute FFR formula, epoch, reject bad trials and produce report
-reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, str2num(output_suffix(end)),output_suffix(1:end-1)) ;
+reref_filter_epoch(ALLEEG, OPTIONS_stepA, flag_sub_to_create_stepA, str2num(OUT_SUFFIX(end)),OUT_SUFFIX(1:end-1)) ;
 
 % Prints out message on progress
 fprintf('JUST FINISHED STEP A\n');
 
-%%/!\ some improvement to make -> add possibility to compute FFR on cortical electrodes %%
-
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
+
+% Set a suffix to create (or overwrite new datsets in database) 
+OUT_SUFFIX = '_stepA1_stepB2'; % WARNING : Estelle has generated A1_B1 (if you don't want to overwrtie use a different suffix)
+
 OPTIONS_stepB.indir = indir ;
 OPTIONS_stepB.analysis = 'FFR' ;
 OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
@@ -67,9 +69,6 @@ OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
  
-% Update for Clem : now just use this suffix for output (overwrite if
-% exist, otherwise creates new one)
-output_suffix = '_stepA1_stepB2'; % change this name to create new dataset with different parameters WARNING : Estelle has generated A1_B1 (do not overwrite?)
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
@@ -81,14 +80,18 @@ end
 flag_sub_to_create_stepB = (contains(list_subjects,subj_to_process))';
 
 %Filter epoched data and prepare input for brainstem toolbox
-reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, str2num(output_suffix(end)), '_stepB',strcat('_',strtok(output_suffix,'_'))) ; 
+reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB, str2num(OUT_SUFFIX(end)), '_stepB',strcat('_',strtok(OUT_SUFFIX,'_'))) ; 
 
 % Prints out message on progress
 fprintf('JUST FINISHED STEP B\n');
 
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
+
+% Suffix to use to prepare the files to use with Brainstem_toolbox
+IN_SUFFIX = '_stepA1_stepB1'; 
+
 OPTIONS_abr.indir = indir ; 
-OPTIONS_abr.display = 1 ; 
+OPTIONS_abr.display = 0 ; 
 OPTIONS_abr.savefigs = 1 ; 
 OPTIONS_abr.abr_disp_scale = [-0.2, 0.2];         % scale for display ABR ave
 OPTIONS_abr.plot_dir = plot_dir ; 
@@ -96,13 +99,13 @@ OPTIONS_abr.png_folder = fullfile(plot_dir,'png_folder');                       
 OPTIONS_abr.svg_folder =  fullfile(plot_dir,'svg_folder');
 OPTIONS_abr.fig_folder = fullfile(plot_dir,'fig_folder');
   
-% Suffix to use to prepare the files for the BT_toolbox
-input_suffix = '_stepA1_stepB1'; 
-
 tube_length = 0.27 ;  % meter
 propag_sound =  340 ; % vitesse propagation son meter / sec
 
 if OPTIONS_abr.savefigs ==1 ; create_plot_dirs_if_does_not_exist(plot_dir); end 
+
+%Subjects to process : when whant to choose
+flag_sub_to_create_abr = ~exist_in_BTtlbx_format(OPTIONS_abr,IN_SUFFIX ) ; 
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
@@ -111,17 +114,21 @@ else
    subj_to_process  = get_subjects(indir,[]);
 end
 
-flag_sub_to_create_abr = (contains(list_subjects,subj_to_process))';
+flag_sub_to_create_abr =  flag_sub_to_create_abr | (contains(list_subjects,subj_to_process))';
 
 % The following line should only prepare input for brainstem 
-prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(input_suffix(end)),'_stepB', strcat('_',strtok(input_suffix,'_')));
+prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(IN_SUFFIX(end)),'_stepB', strcat('_',strtok(IN_SUFFIX,'_')));
 
 % Prints out message on progress
 fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
 
 
 %% -------------------Compute neural lag for all subject and write a table
-% OPTIONS_neural.params = 'stepA1_stepB2'; 
+% Suffix to use to compute neural lag (must exist in BT_toolbox_formatted folder)
+IN_SUFFIX = '_stepA1_stepB1'; 
+
+% Init paramas for neural lag comutation
+OPTIONS_neural.params = IN_SUFFIX; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir;
 OPTIONS_neural.plot_dir = plot_dir ;
@@ -136,10 +143,8 @@ OPTIONS_neural.table = 0 ;         % 1 to save table with all neural lags
 % OPTIONS_neural.BT_toolbox = BT_toolbox ;
 % OPTIONS_neural.grp = [{'_T3','_T6','_T8','_T10'},{'_T18','_T24'}];
 
-output_suffix = '_stepA1_stepB2'; 
-
 %Subjects to process : when whant to choose
-flag_sub_to_compute_nlag = test_existance_of_BT_toolbox(OPTIONS_neural,output_suffix) ; 
+flag_sub_to_compute_nlag = exist_in_BTtlbx_format(OPTIONS_neural,IN_SUFFIX ) ; 
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
@@ -148,7 +153,7 @@ else
    subj_to_process  = get_subjects(indir,[]);
 end
 
-flag_sub_to_compute_nlag = flag_sub_to_compute_nlag&(contains(list_subjects,subj_to_process))';
+flag_sub_to_compute_nlag = flag_sub_to_compute_nlag | (contains(list_subjects,subj_to_process))';
 
 if sum(flag_sub_to_compute_nlag)~=0
     % Computes the neural lag
@@ -175,7 +180,7 @@ OPTIONS_SNR.display = 0 ;                                   % 1 if want to displ
 OPTIONS_SNR.savefig = 0 ;                                   % 1 if want to save figures
 
 %Subjects to process : when whant to choose
-flag_sub_to_create_ffr = test_existance_of_BT_toolbox(OPTIONS_SNR, output_suffix) ; 
+flag_sub_to_create_ffr = exist_in_BTtlbx_format(OPTIONS_SNR, OUT_SUFFIX) ; 
 
 %Subjects to process : when whant to choose
 if exist(OPTIONS.file,'file') && ~isempty(fileread(OPTIONS.file))
