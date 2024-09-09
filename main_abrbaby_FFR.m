@@ -34,7 +34,7 @@ OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
 OPTIONS_stepA.eeg_elec = 19 ;                             %Cortical electrodes (to get cortical FFRs)
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value = 80
-OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
+OPTIONS_stepA.lp = 1500 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
 OPTIONS_stepA.analysis = 'FFR';
@@ -58,12 +58,12 @@ fprintf('JUST FINISHED STEP A\n');
 %% ------------------- Preprocess : Reject bad trials and Prepare input for BTtoolbox
 
 % Set a suffix to create (or overwrite new datsets in database) 
-OUT_SUFFIX = '_stepA1_stepB2'; % WARNING : Estelle has generated A1_B1 (if you don't want to overwrtie use a different suffix)
+OUT_SUFFIX = '_stepA2_stepB2'; % WARNING : Estelle has generated A1_B1 (if you don't want to overwrtie use a different suffix)
 
 OPTIONS_stepB.indir = indir ;
 OPTIONS_stepB.analysis = 'FFR' ;
-OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
-OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
+OPTIONS_stepB.rej_low = -30 ;                         %initial value = -45                               
+OPTIONS_stepB.rej_high = 30 ;                         %initial value = 45
 OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
