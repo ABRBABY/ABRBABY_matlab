@@ -88,7 +88,7 @@ fprintf('JUST FINISHED STEP B\n');
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
 
 % Suffix to use to prepare the files to use with Brainstem_toolbox
-IN_SUFFIX = 'stepA1_stepB1'; 
+IN_SUFFIX = 'stepA2_stepB2'; 
 
 OPTIONS_abr.indir = indir ; 
 OPTIONS_abr.display = 0 ; 
@@ -117,7 +117,7 @@ end
 flag_sub_to_create_abr =  flag_sub_to_create_abr & (contains(list_subjects,subj_to_process))';
 
 % The following line should only prepare input for brainstem 
-prepare_input_brainstem(ALLEEG, OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(IN_SUFFIX(end)),'_stepB', strcat('_',strtok(IN_SUFFIX,'_')));
+prepare_input_brainstem([], OPTIONS_abr,tube_length, propag_sound,flag_sub_to_create_abr, str2num(IN_SUFFIX(end)),'_stepB', strcat('_',strtok(IN_SUFFIX,'_')));
 
 % Prints out message on progress
 fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');

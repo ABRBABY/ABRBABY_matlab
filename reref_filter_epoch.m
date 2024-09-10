@@ -42,7 +42,8 @@ for jj=1:length(subjects)
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));
       
     % Save a first dataset in EEGLAB 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
+    [ALLEEG, EEG, CURRENTSET] = pop_newset([], EEG, 1,'setname',filename,'gui','off');
+% [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname',filename,'gui','off');
 
     % Compute ABR (to computed before reref)
     [abr_signal, id_left] = compute_ABR(EEG) ; 
@@ -99,7 +100,8 @@ for jj=1:length(subjects)
     %% FILTERS the data with ERPLab
     EEG  = pop_basicfilter(EEG,  eeg_elec , 'Boundary', 'boundary', 'Cutoff', [hp lp], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2, 'RemoveDC', 'on' );
 
-    [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); EEG = eeg_checkset( EEG );
+    % [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); 
+    EEG = eeg_checkset( EEG );
 
     %% Extract ALL conditions epochs
     EEG = pop_epoch(EEG, conditions, win_of_interest, 'newname', strcat(filename,'_ALL'), 'epochinfo', 'yes');
@@ -111,7 +113,11 @@ for jj=1:length(subjects)
     EEG.history_stepA = OPTIONS ;
     
     %% SAVE DATASET 
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames,'gui','off');
+    % [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames,'gui','off');
+    pop_newset([], EEG, CURRENTSET, 'setname', strcat(filename,'_reref_filtered_epoched_',OPTIONS.analysis),'savenew', out_filenames,'gui','off');
+
+    d=whos;
+    d.bytes
 
 end
 end
