@@ -11,7 +11,7 @@ function wav2avg(filename, fs)
 %
 % Dependencies wavread, resample, writeavg
 
-[y OldFS] = wavread(filename);
+[y OldFS] = audioread(filename);
 y = y(:,1);
 newy = resample(y,fs,OldFS);
 
