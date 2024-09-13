@@ -125,7 +125,7 @@ fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
 
 %% -------------------Compute neural lag for all subject and write a table
 % Suffix to use to compute neural lag (must exist in BT_toolbox_formatted folder)
-IN_SUFFIX = 'stepA1_stepB1'; 
+% IN_SUFFIX = 'stepA1_stepB2'; 
 
 % Init paramas for neural lag comutation
 OPTIONS_neural.params = IN_SUFFIX; 
@@ -150,21 +150,30 @@ end
 
 flag_sub_to_compute_nlag = (contains(list_subjects,subj_to_process))';
 
+% ICI modifier si on veut re-executer avec un stim different (e.g. lp 15000)
+
 if sum(flag_sub_to_compute_nlag)~=0
     % Computes the neural lag
     neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
 else
     fprintf('No files to computes (please prepare_input_brainstem)\n');
 end
+
+
+%% ICI cree un tab_results avec id subj, group, age, etc.. 
+SubjectName = subj_to_process;
+Neural_lag = neural_lag';
+T = table(SubjectName,Neural_lag) ; 
+writetable(T,fullfile(fileparts(indir),'output','results_FFR.csv')); 
+
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
-%% ------------------- This section is meant for writing any results in a table with the participants id 
-write_FFR_result_in_csv(OPTIONS_neural, flag_sub_to_compute_nlag, neural_lag, 'neural_lags.csv') ;
-
+% %% ------------------- This section is meant for writing any results in a table with the participants id 
+% write_FFR_result_in_csv(OPTIONS_neural, flag_sub_to_compute_nlag, neural_lag, 'neural_lags.csv') ;
 
 %% -------------------Compute SNRs 
-OPTIONS_SNR.params = 'stepA1_stepB1';                       % parameters to run
+OPTIONS_SNR.params = IN_SUFFIX;                       % parameters to run
 % OPTIONS_SNR.elec_subset = {'F3','Fz','F4';'C3','Cz','C4'};  % electrode subset for cortical FFR
 OPTIONS_SNR.indir = indir ;                                 % indir
 OPTIONS_SNR.plot_dir = plot_dir ;                           % path to plots folder
@@ -218,8 +227,8 @@ OPTIONS_display_violin.title = {'My Title'} ;
 idx_ffr= find(flag_sub_to_create_ffr==1) ; flag_sub_to_disp = flag_sub_to_create_ffr ;
 
 % Filter by max_psd
-select_disp= (max_psd>100.3-4)&(max_psd<100.3+4); 
-flag_sub_to_disp(idx_ffr) = select_disp;
+% select_disp= (max_psd>100.3-4)&(max_psd<100.3+4); 
+% flag_sub_to_disp(idx_ffr) = select_disp;
 
 % Here spectral_snr dimension is nSubj x time window (3) x spectral bin (f0+n) 
 % Dim 1 : nSubject
@@ -227,7 +236,8 @@ flag_sub_to_disp(idx_ffr) = select_disp;
 % Dim 3 : harmonics (1=f0, 2= next, etc.) 
 % Ex : spectral_snr(:,2,1) : all subjects vowel f0
 % Ex : spectral_snr(:,1,2) : all subjects transition, 2nd harmonic
-spectral_snr_to_proc = spectral_snr(select_disp,1,1); 
+
+% % spectral_snr_to_proc = spectral_snr(select_disp,1,1); 
 
 % BELOW some different displays (comment/uncomment the one you prefer) 
 plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr_to_proc);
