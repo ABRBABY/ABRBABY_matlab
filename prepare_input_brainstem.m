@@ -99,7 +99,7 @@ for ii=1:length(subjects)
     end
 
     % Create a folder for files specific to BT_toolbox
-    BT_folder = fullfile(OPTIONS.indir, subjects{ii},'BT_toolbox_formatted');
+    BT_folder = fullfile(OPTIONS.indir, subjects{ii}, strcat('BT_toolbox_formatted_', OPTIONS.params));
     if ~exist(BT_folder,'dir') ; mkdir(BT_folder);end
 
     for ff=1:length(abr_types) 

@@ -1,8 +1,8 @@
 % initial trial_description file on selected participants % ERPs sanity check script -
 % Estelle Herve, A.-Sophie Dubarry - 2022 - %80PRIME Project
 clear all ;
-indir = 'D:\EEG\DATA\DEVLANG_data' ;
-subject_name = 'DVL_045_T10' ;
+indir = 'E:\EEG\DATA\DATA_issues' ;
+subject_name = 'DVL_061_T8' ;
 
 %% Open files
 

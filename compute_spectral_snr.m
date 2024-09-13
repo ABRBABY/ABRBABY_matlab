@@ -54,7 +54,7 @@ for ss=1:length(subjects_to_process) %for each subject
     
  
     % Create a folder for files specific to BT_toolbox
-    BT_folder = fullfile(OPTIONS.indir, subjects_to_process{ss},'BT_toolbox_formatted');
+    BT_folder = fullfile(OPTIONS.indir, subjects_to_process{ss},strcat('BT_toolbox_formatted_', OPTIONS.params));
     fname_avg = fullfile(BT_folder,strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
     
     % Loads FFR rsponse 

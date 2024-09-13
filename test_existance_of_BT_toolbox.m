@@ -11,6 +11,6 @@ subjects(ismember(subjects,{'.','..'})) = []; % Removes . and ..
 %Loop through subjects
 for jj=1:length(subjects) 
 
-    flag_sub_to_create(jj) = ~exist(fullfile(OPTIONS.indir,subjects{jj},'BT_toolbox_formatted'),'dir'); 
+    flag_sub_to_create(jj) = ~exist(fullfile(OPTIONS.indir,subjects{jj},strcat('BT_toolbox_formatted_',OPTIONS.params)),'dir'); 
       
 end

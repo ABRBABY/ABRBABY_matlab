@@ -23,7 +23,7 @@ subjects_to_process = subjects(flag_sub_to_create) ;
 for ss=1:length(subjects_to_process) %for each subject
     
     % Create a folder for files specific to BT_toolbox
-    BT_folder = fullfile(OPTIONS.indir, subjects_to_process{ss},'BT_toolbox_formatted');
+    BT_folder = fullfile(OPTIONS.indir, subjects_to_process{ss},strcat('BT_toolbox_formatted_', OPTIONS.params));
     fname_avg = fullfile(BT_folder,strcat(subjects_to_process{ss},'_',OPTIONS.params,'_abr_',OPTIONS.ffr_polarity,'_shifted_data_HF.avg')) ;
     
     % Computes the neural lag 
@@ -44,4 +44,7 @@ if OPTIONS.table == 1
     writetable(neural_lags,fullfile(OPTIONS.indir,strcat('all_neural_lags_',OPTIONS.ffr_polarity, '_ffr_',OPTIONS.polarity,'_corr_', num2str(OPTIONS.lagstart),'_',num2str(OPTIONS.lagstop),'_',OPTIONS.params, '.csv')), 'WriteVariableNames', true) ;
     % Display end message
     warning('Neural lag table is saved.') ;
+else
+    % Display end message
+    warning('Neural lag table is NOT saved.') ;
 end

@@ -1,13 +1,14 @@
 %function display_raw_plot(indir,subject_of_interest)
 %%Script for opening bdf files and display plot of raw data
 
-indir = fileread('indir.txt');
-
+%indir = fileread('indir.txt');
+% indir = 'E:\EEG\DATA\new_data' ;
+indir = 'E:\EEG\DATA\DATA_issues' ;
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 display_erg_channel = 0 ;    % 1 if want to display ERG channel, 0 otherwise
 
-subject_of_interest = {'DVL_061_T10'} ;
+subject_of_interest = {'DVL_061_T8'} ;
 
 % Reads all folders that are in indir 
 d = dir(indir); 

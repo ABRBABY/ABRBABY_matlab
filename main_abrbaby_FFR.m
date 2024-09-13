@@ -43,12 +43,12 @@ OPTIONS_stepA.mastos = {'Lmon','Rmon','MASTOG','MASTOD'};   %Labels of the masto
 OPTIONS_stepA.trig = {'Erg1'};                              %Label of trigger channel
 OPTIONS_stepA.abr= {'Left','Right'};                        %Label of abr channels for formula 
 OPTIONS_stepA.conditions = {'HF'} ; 
-OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline
-OPTIONS_stepA.win_of_interest = [-0.04, 0.2] ;              %Epoching window
+OPTIONS_stepA.baseline = [-39, 0] ;                         %Baseline. Default: [-39, 0]
+OPTIONS_stepA.win_of_interest = [-0.04, 0.18] ;              %Epoching window. Default: [-0.04, 0.2]
 OPTIONS_stepA.eeg_elec = 19 ;                             %Cortical electrodes (to get cortical FFRs)
 OPTIONS_stepA.chan_dir = fullfile(eeglab_path,'plugins/dipfit/standard_BEM/elec/standard_1005.elc') ; 
 OPTIONS_stepA.hp = 80 ;                          % high-pass (Hz) initial value = 80
-OPTIONS_stepA.lp = 3000 ;                        % low-pass (Hz) initial value = 3000
+OPTIONS_stepA.lp = 1500 ;                        % low-pass (Hz) initial value = 3000
 OPTIONS_stepA.bloc = repelem(1:30,170) ; % creates a vector of [1 1 1 1 (170 times) 2 2 2 2 (170 times) etc. up to 30]
 OPTIONS_stepA.varhistory = 'EEG.history_stepA' ;
 suffix_stepA = '_stepA';
@@ -78,13 +78,13 @@ OPTIONS_stepB.indir = indir ;
 OPTIONS_stepB.analysis = 'FFR' ;
 OPTIONS_stepB.rej_low = -25 ;                         %initial value = -45                               
 OPTIONS_stepB.rej_high = 25 ;                         %initial value = 45
-OPTIONS_stepB.bt_toolbox = BT_toolbox ; 
+OPTIONS_stepB.bt_toolbox = BT_toolbox ;
 OPTIONS_stepB.varhistory = 'EEG.history_stepB' ;
 OPTIONS_stepB.win_of_interest = [-0.04, 0.2] ;       %Epoching window
 OPTIONS_stepB.eeg_elec = 'ABR';
 
 suffix_stepB = '_stepB' ;
-stepA_num = '_stepA1' ;              % set of RFE parameters to use for this step
+stepA_num = '_stepA2' ;              % set of RFE parameters to use for this step
     
 % Test if this set of params exists and returns the files to process and
 % counter to use to name the saved files
@@ -103,7 +103,8 @@ reject_bad_trials(ALLEEG, OPTIONS_stepB, 'unbalanced', flag_sub_to_create_stepB,
 fprintf('JUST FINISHED STEP B\n');
 
 %% -------------------  Prepare output for BT_Toolbox + optionnal display
-OPTIONS_abr.indir = indir ; 
+OPTIONS_abr.indir = indir ;
+OPTIONS_abr.params = 'stepA2_stepB1' ;
 OPTIONS_abr.display = 1 ; 
 OPTIONS_abr.savefigs = 1 ; 
 OPTIONS_abr.abr_disp_scale = [-0.2, 0.2];         % scale for display ABR ave
@@ -172,8 +173,8 @@ OPTIONS_SNR.ffr_polarity = 'avg' ;                          % polarity of the FF
 OPTIONS_SNR.winNoise = cat(2,80:1:95,105:1:120);            % windows for noise and signal
 OPTIONS_SNR.winSignal = 95:1:105;                           % timewindow +/- 5 around F0
 OPTIONS_SNR.win_of_interest = [-0.04, 0.2] ;                % epoch limits
-OPTIONS_SNR.timew_F0 = [55 200] ;                           % timewindow of FFR on which to compute F0 (in ms)
-OPTIONS_SNR.display = 1 ;                                   % 1 if want to display SNR plots
+OPTIONS_SNR.timew_F0 = [55 180] ;                           % timewindow of FFR on which to compute F0 (in ms)
+OPTIONS_SNR.display = 0 ;                                   % 1 if want to display SNR plots
 OPTIONS_SNR.savefig = 0 ;                                   % 1 if want to save figures
 
 %Subjects to process : when whant to choose
@@ -210,10 +211,10 @@ OPTIONS_display_violin.title = {'Contrats between SNR : f0, baseline'} ;
 % Here calls with index :
 % 1) of the window : 1 - transition, 2 : vowel , 3 - baseline
 % 2) of the harmonics 1- f0 - then others
-% plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,3,1));
+plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,3,1));
 plot_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
-% plot_hist_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
-% plot_subplot_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
+plot_hist_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1));
+plot_subplot_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_snr(:,1,1), neural_lag);
 
 
 %% ------------------- Compute Pitch tracking 
@@ -232,7 +233,7 @@ OPTIONS_pitch.minFrequency_stim = 80;
 OPTIONS_pitch.maxFrequency_stim = 120; 
 
 [PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_ffr); 
-
+fprintf('JUST FINISHED COMPUTE PITCH TRACKING\n');
 % 
 % %% ------------------- Display Pitch violin
 % OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
