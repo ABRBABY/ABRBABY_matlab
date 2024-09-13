@@ -44,6 +44,10 @@ function [does_exist, count] = check_exist_set_params(subject, suffix, OPTIONS)
 % Reads all folders that are in indir 
 d = dir(fullfile(OPTIONS.indir,subject,strcat(suffix,'.set'))); 
 
+if ~contains(suffix, 'stepB')
+    d(contains({d.name},'stepB')) = [] ;
+end
+
 % No file exists 
 if isempty(d) ; does_exist=0 ; count =1 ; return ; end
 
