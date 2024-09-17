@@ -14,9 +14,9 @@ FONTSZ = 12 ;
 figure('Units','normalized','Position',[0,0.4,0.6,1]) ; 
 hplot = gca; 
 
-neural_lag(snr<0) = [] ; 
-subjects_to_process = subjects_to_process(snr>0) ; 
-snr(snr<0) = [] ; 
+% neural_lag(snr<0) = [] ; 
+% subjects_to_process = subjects_to_process(snr>0) ; 
+% snr(snr<0) = [] ; 
 
 for iGrp=1:length(OPTIONS.groups)
 
@@ -24,10 +24,7 @@ for iGrp=1:length(OPTIONS.groups)
     % [hplot,p1,p2,p3,p4] = plot_patch_violin(hplot,snr(flag_grp),OPTIONS.colors{iGrp},count_violin, OPTIONS.groups{iGrp});
     subplot(length(OPTIONS.groups),1,iGrp) ; 
     plot(snr(flag_grp),neural_lag(flag_grp),'*','MarkerEdgeColor',OPTIONS.colors{iGrp},'MarkerFaceColor',OPTIONS.colors{iGrp},'MarkerSize',12 ) ; 
-    % [X,N] = hist(hplot,snr(flag_grp),10); hold on ; 
-    % h = bar(N,X);
-    % h.FaceColor = OPTIONS.colors{iGrp}; 
-    % h.FaceAlpha = 0.2;
+    
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
     title(conditions{iGrp}) ;
     xlabel('SNR'); ylabel('Neural Lag');

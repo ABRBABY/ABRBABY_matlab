@@ -11,7 +11,7 @@ subjects_to_process = subjects(flag_sub_to_create) ;
 
 FONTSZ = 12 ; 
 
-figure('Units','normalized','Position',[0,0.4,0.6,0.6]) ; 
+figure('Units','normalized','Position',[0,0.4,0.4,0.6]) ; 
 hplot = gca; 
 violin_shift = 3 ;
 count_violin = 0 ; 
@@ -21,15 +21,17 @@ for iGrp=1:length(OPTIONS.groups)
 
     flag_grp = contains(subjects_to_process,OPTIONS.groups{iGrp});
     subplot(length(OPTIONS.groups),1,iGrp) ; 
-   
+       
+    
     % [X,N] = hist(snr(flag_grp),10);
-    hplot(iGrp) = histogram(snr(flag_grp),10,'FaceColor', OPTIONS.colors{iGrp},'facealpha',0.2); %hold on ;
+    hplot(iGrp) = histogram(snr(flag_grp),20,'FaceColor', OPTIONS.colors{iGrp},'facealpha',0.3); %hold on ;
     conditions{iGrp} = sprintf('Group %s (n=%d)',cell2mat(strrep(OPTIONS.groups{iGrp},'_','')),sum(flag_grp));
-    legend(conditions) ;
-
+    legend(conditions{iGrp},'Location','NorthWest') ;
+    xlim([-6, 3]); ylim([0, 15]); 
+    set(gca,'Fontsize',14);
+    if iGrp==1 ; title(OPTIONS.title); end
+ 
 end
-% legend(conditions) ;
-% title(OPTIONS.title);
 % 
 % set(hplot,'XTick',ticklabels, 'XTickLabels',groups_names, 'FontSize',FONTSZ) ; 
 % xtickangle(hplot,40) ; 

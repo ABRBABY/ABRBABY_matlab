@@ -36,7 +36,7 @@ for jj=1:length(subjects)
     out_filenames = fullfile(indir,subjects{jj}, strcat(filename,'_',OPTIONS.analysis,suffix,num2str(count),'.set'));
           
     % Do not overwrite
-    if exist(out_filenames,'file'); continue; end
+    % if exist(out_filenames,'file'); continue; end
 
     % Select bdf file in the folder
     EEG = pop_biosig(fullfile(indir, subjects{jj}, fname.name));

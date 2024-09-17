@@ -48,7 +48,7 @@ startLat = lagstart + startLatencyComp;
 startPt = ms2row(file, startLat);
 startLatency = latency(startPt);
 stopPt = startPt + total;
-stopLatency = latency(stopPt);
+% stopLatency = latency(stopPt);
 % (c)  find start lag 
 REALstartLag = startLatency-startLatencyComp;
 msPoints = latency(2)-latency(1);

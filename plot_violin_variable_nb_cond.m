@@ -11,7 +11,7 @@ subjects_to_process = subjects(flag_sub_to_create) ;
 
 FONTSZ = 12 ; 
 
-figure('Units','normalized','Position',[0,0.4,0.6,0.6]) ; 
+figure('Units','normalized','Position',[0,0.4,0.3,0.6]) ; 
 hplot = gca; 
 violin_shift = 3 ;
 count_violin = 0 ; 

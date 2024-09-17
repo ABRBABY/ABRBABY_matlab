@@ -125,14 +125,15 @@ fprintf('JUST FINISHED PREPARE INPUT BRAINSTEM\n');
 
 %% -------------------Compute neural lag for all subject and write a table
 % Suffix to use to compute neural lag (must exist in BT_toolbox_formatted folder)
-% IN_SUFFIX = 'stepA1_stepB2'; 
+IN_SUFFIX = 'stepA2_stepB2'; 
 
 % Init paramas for neural lag comutation
 OPTIONS_neural.params = IN_SUFFIX; 
 OPTIONS_neural.ffr_polarity = 'avg' ;                %polarity of the ffr ('avg', 'pos' or 'neg')
 OPTIONS_neural.indir= indir;
 OPTIONS_neural.plot_dir = plot_dir ;
-OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+% OPTIONS_neural.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+OPTIONS_neural.stim = '/Volumes/x9/pourASD/DEVLANG_data/da_170_kraus_filtered_80_1500.avg' ;
 OPTIONS_neural.start = 0 ;      % first time point in the simulti to compute neural lag 
 OPTIONS_neural.stop = 169 ;     % last time point in the simulti to compute neural lag 
 OPTIONS_neural.lagstart = 3 ;   % first time point to search for neural lag
@@ -155,22 +156,33 @@ flag_sub_to_compute_nlag = (contains(list_subjects,subj_to_process))';
 if sum(flag_sub_to_compute_nlag)~=0
     % Computes the neural lag
     neural_lag = compute_neural_lag(OPTIONS_neural,flag_sub_to_compute_nlag ) ;
+
+    % Create a table : 1 line per subject, two columns : SubjectID, neural_lag 
+    SubjectName = subj_to_process;
+    Neural_lag = neural_lag';
+    T = table(SubjectName,Neural_lag) ;
+    
+    % Write into a csv file
+    writetable(T,fullfile(fileparts(indir),'output','results_FFR.csv')); 
+
 else
     fprintf('No files to computes (please prepare_input_brainstem)\n');
 end
 
-
-%% ICI cree un tab_results avec id subj, group, age, etc.. 
-SubjectName = subj_to_process;
-Neural_lag = neural_lag';
-T = table(SubjectName,Neural_lag) ; 
-writetable(T,fullfile(fileparts(indir),'output','results_FFR.csv')); 
-
 % Prints out message on progress
 fprintf('JUST FINISHED COMPUTE NEURAL LAG\n');
 
-% %% ------------------- This section is meant for writing any results in a table with the participants id 
-% write_FFR_result_in_csv(OPTIONS_neural, flag_sub_to_compute_nlag, neural_lag, 'neural_lags.csv') ;
+%% Reads age of participants 
+ages = readtable('/Volumes/x9/pourASD/age_in_days.csv');
+% Remove participants for whom we don't have age . 
+T(LIA==0,:) =[];
+LOCB(LIA==0) = [];
+T.("age_in_days") = ages.age_in_days(LOCB);
+% Write into a csv file
+writetable(T,fullfile(fileparts(indir),'output','results_FFR_autorej30_filters80_1500_w_ages.csv')); 
+
+figure ; plot(T.age_in_days,T.Neural_lag,'r*'); grid on ; title('Neural lag VS age'); xlabel('Age in days','FontSize',14); ylabel('Neural lag (ms)','FontSize',14);
+
 
 %% -------------------Compute SNRs 
 OPTIONS_SNR.params = IN_SUFFIX;                       % parameters to run
@@ -205,7 +217,16 @@ fprintf('JUST FINISHED COMPUTE SNR\n');
 
 %% ------------------- This section is meant for writing any results in a table with the participants id 
 spectral_snr_to_proc = spectral_snr(:,1,1); 
-write_FFR_result_in_csv(OPTIONS_SNR, flag_sub_to_create_ffr, spectral_snr_to_proc', 'snr.csv') ;
+
+% Create a table : 1 line per subject, two columns : SubjectID, neural_lag 
+SubjectName = subj_to_process;
+Neural_lag = neural_lag';
+SNR_transition_f0 = spectral_snr(:,1,1); 
+SNR_vowel_f0 = spectral_snr(:,2,1); 
+T = table(SubjectName,Neural_lag,SNR_transition_f0,SNR_vowel_f0) ;
+
+% Write into a csv file
+writetable(T,fullfile(fileparts(indir),'output','results_FFR.csv')); 
 
 %% ------------------- Display SNR violin
 % With the piece of code you can modulate how many viollin plot to display,
@@ -219,12 +240,11 @@ OPTIONS_display_violin.colors = {[0,0,1],[0,1,0],[0.5,0.5,0],[0.5,0,0.5]};
 OPTIONS_display_violin.indir = indir ; 
 % OPTIONS_display_violin.title = {'Contrats between SNR : f0, win transition '} ; 
 % OPTIONS_display_violin.title = {'Contrats between SNR : f0, vowel'} ; 
-OPTIONS_display_violin.title = {'My Title'} ; 
+OPTIONS_display_violin.title = {'SNR (f0, win transition) by group age'} ; 
 
 % Exclude some participant based on max_psd 
 % size(flag_sub_to_disp) --> nb subjects in the whole database
 % sum(flag_sub_to_disp) --> nb subjects which will be processed from this point
-idx_ffr= find(flag_sub_to_create_ffr==1) ; flag_sub_to_disp = flag_sub_to_create_ffr ;
 
 % Filter by max_psd
 % select_disp= (max_psd>100.3-4)&(max_psd<100.3+4); 
@@ -247,13 +267,15 @@ plot_subplot_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, spectral_sn
 
 
 %% ------------------- Compute Pitch tracking 
+OPTIONS_pitch.params = 'stepA2_stepB2'; 
 OPTIONS_pitch.indir = indir; 
 OPTIONS_pitch.blocksz = 40 ; 
 OPTIONS_pitch.step= 1 ; 
 OPTIONS_pitch.startSTIM = 55 ; 
 OPTIONS_pitch.endSTIM = 169 ; 
 OPTIONS_pitch.expectedNeuralag= 10 ; 
-OPTIONS_pitch.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+% OPTIONS_pitch.stim = 'da_170_kraus_16384_LP3000_HP80.avg' ;
+OPTIONS_pitch.stim = '/Volumes/x9/pourASD/DEVLANG_data/da_170_kraus_filtered_80_1500.avg' ;
 OPTIONS_pitch.BT_toolbox = BT_toolbox; 
 
 OPTIONS_pitch.minFrequencyR = 100; 
@@ -264,21 +286,21 @@ OPTIONS_pitch.maxFrequency_stim = 120;
 % [PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_ffr); 
 [PITCH_ERROR_AC,PITCH_ERROR_FFT,  PITCH_STRENGTH2, PITCH_SRCORR, vTime, vFreqAC, vFreqFFT, vTime_stim, vFreqAC_stim, vFreqFFT_stim] = compute_pitchtracking(OPTIONS_pitch, flag_sub_to_create_ffr); 
 
-% 
-% %% ------------------- Display Pitch violin
-% OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
-% OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
-% OPTIONS_display_violin.indir = indir ; 
-% OPTIONS_display_violin.title = {'Pitch errors'} ; 
-% 
+% Create a table : 1 line per subject, two columns : SubjectID, neural_lag 
+SubjectName = subj_to_process;
+Neural_lag = neural_lag';
+SNR_transition_f0 = spectral_snr(:,1,1); 
+SNR_vowel_f0 = spectral_snr(:,2,1); 
+T = table(SubjectName,Neural_lag,SNR_transition_f0,SNR_vowel_f0,PITCH_ERROR_AC',PITCH_ERROR_FFT',PITCH_STRENGTH2',PITCH_SRCORR') ;
+T.Properties.VariableNames = {'SubjectName','Neural_lag','SNR_transition_f0','SNR_vowel_f0','PITCH_ERROR_AC','PITCH_ERROR_FFT','PITCH_STRENGTH2','PITCH_SRCORR'};
 
-% %% One subject display 
-% ss=1 ; figure ; subplot(2,1,1) ; plot(vTime(ss,:),vFreqFFT(ss,:),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(ss,:),vFreqFFT_stim, 'k', 'LineWidth', 2); subplot(2,1,2) ; plot(vTime(ss,:),vFreqAC(ss,:),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(ss,:),vFreqAC_stim, 'k', 'LineWidth', 2);
-% 
-% %% Mean group display 
-% figure ; plot(vTime(1,:),mean(vFreqAC,1),'s', 'color',  [1 0.7  0], 'MarkerFaceColor', 'y',  'MarkerSize', 6) ; hold on ; plot(vTime_stim(1,:),mean(vFreqAC_stim,1), 'k', 'LineWidth', 2);
+% Write into a csv file
+writetable(T,fullfile(fileparts(indir),'output','results_FFR_autorej30_filters80_1500.csv')); 
 
-%% TODOS next : subplot by group (same nb of subplot than groups) 
+fprintf('JUST FINISHED COMPUTE PITCH TRACKING\n');
+
+
+%% Display Pitch tracking
 % OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T18','_T24'},{'_T10'}};
 % OPTIONS_display_violin.groups = {{'_T6'},{'_T8'},{'_T18'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.groups = {{'_T8','_T24','_T10','T24'}};
@@ -287,7 +309,7 @@ OPTIONS_display_violin.groups = {{'_T6','_T8'},{'_T10'},{'_T18'},{'_T24'}};
 % OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0], [0.5,1,0]}; 
 OPTIONS_display_violin.indir = indir ; 
-OPTIONS_display_violin.title = {'ADAPT THIS TITLE'} ; 
+OPTIONS_display_violin.title = {'Pitch tracking (Auto-correlation)'} ; 
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqFFT, vTime_stim(1,:),vFreqFFT_stim);
 % plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_create_ffr, vTime(1,:), vFreqAC, vTime_stim(1,:),vFreqAC_stim);
@@ -295,12 +317,12 @@ plot_pitchtrack(OPTIONS_display_violin, flag_sub_to_disp, vTime(1,:), vFreqAC, v
 
 
 %% ------------------- Display Pitch violin
-OPTIONS_display_violin.groups = {{'_T8'},{'_T24'},{'_T10'}};
+OPTIONS_display_violin.groups = {{'_T8'},{'_T10'},{'_T24'}};
 OPTIONS_display_violin.colors = {[1,0,0],[0,0,1],[0,1,0]}; 
 OPTIONS_display_violin.indir = indir ; 
 OPTIONS_display_violin.title = {'Pitch errors'} ; 
 plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_ERROR_AC');
-plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_SRCORR');
+% plot_violin_variable_nb_cond(OPTIONS_display_violin, flag_sub_to_create_ffr, PITCH_SRCORR');
 
 % % Or choose subjects with csv file
 % subjects_to_process = get_subjects(indir, []) ;

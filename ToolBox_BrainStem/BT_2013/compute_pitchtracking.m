@@ -5,7 +5,6 @@ block = OPTIONS.blocksz ;
 startSTIM = OPTIONS.startSTIM; 
 neural_lag = OPTIONS.expectedNeuralag ; 
 stimulus_name = OPTIONS.stim ;
-stimulus_name_path = OPTIONS.BT_toolbox ; 
 endSTIM = OPTIONS.endSTIM; 
 minFrequency_stim = OPTIONS.minFrequency_stim; 
 maxFrequency_stim = OPTIONS.maxFrequency_stim;
@@ -40,12 +39,13 @@ for ss=1:length(subjects_to_process) %for each subject
     
     response_name_path = fullfile(OPTIONS.indir,subjects_to_process{ss},'BT_toolbox_formatted/'); 
     tmp = dir(fullfile(response_name_path,'*avg_*.avg'));
-    
+    tmp = {tmp.name} ; fname= tmp(contains(tmp,OPTIONS.params));
+
     % pitchtrack response
-    [time autocorr lag FFT_resp freqaxis prestimFFT totalblocks]= pitchtrack(fullfile(response_name_path,tmp.name), block, step, startRESP, 1, 0);
+    [time autocorr lag FFT_resp freqaxis prestimFFT totalblocks]= pitchtrack(cell2mat(fullfile(response_name_path,fname)), block, step, startRESP, 1, 0);
     
     % pitchtrack stimulus (make conditional)
-    [time_stim autocorr_stim lag_stim FFT_stim null freqaxis_stim totalblocks_stim]=pitchtrack(fullfile(stimulus_name_path ,stimulus_name), block, step, startSTIM, 1,0);
+    [time_stim autocorr_stim lag_stim FFT_stim null freqaxis_stim totalblocks_stim]=pitchtrack(stimulus_name, block, step, startSTIM, 1,0);
     
     time_stim = time_stim + neural_lag;  %for plotting purpose shift stimulus forward in time.
     
